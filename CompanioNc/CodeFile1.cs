@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HDLibrary.Wpf.Input;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
@@ -6,10 +7,98 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CompanioNc
 {
+    [Serializable]
+    public class CustomHotKey : HotKey
+    {
+        public CustomHotKey(string name, Key key, ModifierKeys modifiers, bool enabled)
+            : base(key, modifiers, enabled)
+        {
+            Name = name;
+        }
+
+        private string name;
+
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                if (value != name)
+                {
+                    name = value;
+                    OnPropertyChanged(name);
+                }
+            }
+        }
+
+        protected override void OnHotKeyPress()
+        {
+            //MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
+            switch (Name)
+            {
+                case "ShowPopup":
+                    MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
+                    break;
+
+                case "Paste":
+                    List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
+                        "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
+                        "Maintenance phase.", "Nothing particular."};
+                    // 先決定一句還是兩句
+                    Random crandom = new Random();
+                    int n = crandom.Next(2) + 1;
+                    int chosen = crandom.Next(10);
+                    string output = strAnswer[chosen];
+                    if (n == 2)
+                    {
+                        strAnswer.Remove(output);
+                        output += " " + strAnswer[crandom.Next(9)];
+                    }
+                    output = DateTime.Now.ToShortDateString() + ": " + output + "\r\n";
+                    SendKeys.Send(Key.A);
+                    break;
+            }
+
+            base.OnHotKeyPress();
+        }
+
+        protected CustomHotKey(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+            : base(info, context)
+        {
+            Name = info.GetString("Name");
+        }
+
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue("Name", Name);
+        }
+    }
+    public static class SendKeys
+    {
+        /// <summary>
+        ///   Sends the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        public static void Send(Key key)
+        {
+            if (Keyboard.PrimaryDevice != null)
+            {
+                if (Keyboard.PrimaryDevice.ActiveSource != null)
+                {
+                    var e1 = new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, Key.Down) { RoutedEvent = Keyboard.KeyDownEvent };
+                    InputManager.Current.ProcessInput(e1);
+                }
+            }
+        }
+    }
+
     public class BooleanToForegroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -58,7 +147,7 @@ namespace CompanioNc
         public string szWindowName;
     }
 
-    class GetWindow
+    internal class GetWindow
     {
         private string _key = string.Empty;
         private string _type = string.Empty;
@@ -78,7 +167,8 @@ namespace CompanioNc
 
         // 函數代理
         private delegate bool WNDENUMPROC(IntPtr hWnd, int lParam);
-        // 回調函數代理  
+
+        // 回調函數代理
         private delegate bool CallBack(int hwnd, int lParam);
 
         private WindowInfo[] GetAllDesktopWindows()
@@ -173,7 +263,7 @@ namespace CompanioNc
             log_Adm newLog = new log_Adm()
             {
                 regdate = DateTime.Now,
-                application_name = System.Reflection.Assembly.GetExecutingAssembly().FullName.Substring(0,49),
+                application_name = System.Reflection.Assembly.GetExecutingAssembly().FullName.Substring(0, 49),
                 machine_name = Dns.GetHostName(),
                 ip_address = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0].ToString(),
                 userid = "Ethan",

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Timers;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+using HDLibrary.Wpf.Input;
 
 namespace CompanioNc
 {
@@ -22,11 +25,11 @@ namespace CompanioNc
         private string strUID = string.Empty;
         private string strSDATE = string.Empty;
         private string tempID = string.Empty;
-        public const int MOD_ALT = 0x1; //Alt key for hotkey
-        public const int MOD_SHIFT = 0x4; //Alt key for hotkey
-        public const int MOD_CONTROL = 0x2; //Alt key for hotkey
-        public const int MOD_WINKEY = 0x8; //Alt key for hotkey
-        public const int WM_HOTKEY = 0x312;   //Hotkey
+
+        public string SSDATE
+        {
+            get { return strSDATE;}
+        }
 
         public MainWindow()
         {
@@ -43,6 +46,9 @@ namespace CompanioNc
             Refresh_data();
             this.Label1.Content = string.Empty;
             this.Label2.Content = string.Empty;
+            HotKeyHost hotKeyHost = new HotKeyHost((HwndSource)HwndSource.FromVisual(App.Current.MainWindow));
+            hotKeyHost.AddHotKey(new CustomHotKey("ShowPopup", Key.Q, ModifierKeys.Control | ModifierKeys.Shift, true));
+            hotKeyHost.AddHotKey(new CustomHotKey("Paste", Key.F2, ModifierKeys.Control, true));
         }
 
         private void _TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -91,7 +97,7 @@ namespace CompanioNc
                         return;
                     }
                     strSDATE = s[0];
-                    //dc.sp_insert_access(CDate(s[0]), s[1], CInt(s[2]), CInt(s[4]), strUID, s[8], 1);
+                    dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], true);
                     // do something
                     this.Dispatcher.Invoke((Action)(() =>
                     {
@@ -124,7 +130,7 @@ namespace CompanioNc
                     //' 做的事情也不少
                     ComDataDataContext dc = new ComDataDataContext();
                     string[] s = strID.Split(' ');   //'0 SDATE, 1 VIST, 2 RMNO, 4 Nr, 7 uid, 8 cname
-                    //dc.sp_insert_access(CDate(s[0]), s[1], CInt(s[2]), CInt(s[4]), s[7].Substring(1, 10), s[8], 0);
+                    dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], false);
                     strID = tempID;
                     strUID = string.Empty;
                     strSDATE = string.Empty;
