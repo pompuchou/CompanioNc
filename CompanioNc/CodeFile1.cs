@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using WindowsInput;
+using WindowsInput.Native;
 
 namespace CompanioNc
 {
@@ -59,8 +61,9 @@ namespace CompanioNc
                         strAnswer.Remove(output);
                         output += " " + strAnswer[crandom.Next(9)];
                     }
-                    output = DateTime.Now.ToShortDateString() + ": " + output + "\r\n";
-                    SendKeys.Send(Key.A);
+                    output = DateTime.Now.ToShortDateString() + ": " + output + "\n";
+                    InputSimulator sim = new InputSimulator();
+                    sim.Keyboard.TextEntry(output);
                     break;
             }
 
@@ -78,24 +81,6 @@ namespace CompanioNc
             base.GetObjectData(info, context);
 
             info.AddValue("Name", Name);
-        }
-    }
-    public static class SendKeys
-    {
-        /// <summary>
-        ///   Sends the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        public static void Send(Key key)
-        {
-            if (Keyboard.PrimaryDevice != null)
-            {
-                if (Keyboard.PrimaryDevice.ActiveSource != null)
-                {
-                    var e1 = new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, Key.Down) { RoutedEvent = Keyboard.KeyDownEvent };
-                    InputManager.Current.ProcessInput(e1);
-                }
-            }
         }
     }
 
