@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompanioNc"
         mc:Ignorable="d"
-        Title="Companion" Height="600" Width="800" Icon="Nerd-7.jpg" Loaded="Main_Loaded" Closed="Main_Closed">
+        Title="Companion" Height="600" Width="800" Icon="Nerd-7.jpg" Loaded="Main_Loaded" Closed="Main_Closed" SizeChanged="Window_SizeChanged">
     <Window.Resources>
         <local:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter" />
         <Style x:Key="BoolStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text, 
+            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text,
                 Converter={StaticResource BooleanToForegroundConverter}}" />
         </Style>
     </Window.Resources>
@@ -21,13 +21,197 @@
         <Label Name="Label1" FontSize="18" Content="Label" HorizontalAlignment="Left" Margin="6,6,6,6" VerticalAlignment="Top" Grid.Row="0" />
         <Label Name="Label2" FontSize="18" Content="Label" HorizontalAlignment="Left" Margin="120,6,6,6" VerticalAlignment="Top" Grid.Row="0" />
         <Button FontSize="18" Content="Refresh" Margin="600,6,6,6" Grid.Row="0" Click="Refresh_Click" />
-        <TabControl FontSize="18" Grid.Row="1">
-            <TabItem Header="檢驗結果" />
-            <TabItem Header="雲端資料" />
-            <TabItem Header="手術牙醫" />
-            <TabItem Header="中醫復健" />
-            <TabItem Header="關懷出院過敏" />
-            <TabItem Header="雲端查詢">
+        <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
+            <TabItem Name="Tab1" Header="檢驗結果">
+                <DataGrid Name="DGLab" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
+                        <DataGridTextColumn Header="結果" Width="2*" Binding="{Binding o}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Name="Tab2" Header="雲端資料">
+                <ListBox Name="LB01">
+                    <Label Name="LBDG01" Content="雲端藥歷" />
+                    <DataGrid Name="DGQ01" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="來源" Width="100" Binding="{Binding source}" />
+                            <DataGridTextColumn Header="診斷" Width="1*" Binding="{Binding diag}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="藥物" Width="4.5*" Binding="{Binding o}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG02" Content="檢驗結果" />
+                    <DataGrid Name="DGQ02" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="來源" Width="100" Binding="{Binding source}" />
+                            <DataGridTextColumn Header="檢驗結果" Width="1*" Binding="{Binding o}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG03" Content="牙科處置" />
+                    <DataGrid Name="DGQ03" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="來源" Width="65" Binding="{Binding source_name}" />
+                            <DataGridTextColumn Header="診斷" Width="1*" Binding="{Binding diagnosis}" />
+                            <DataGridTextColumn Header="位置" Width="65" Binding="{Binding loca}" />
+                            <DataGridTextColumn Header="牙科處置" Width="1*" Binding="{Binding op_name}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="量" Width="25" Binding="{Binding amt}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG04" Content="手術" />
+                    <DataGrid Name="DGQ04" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="來源" Width="65" Binding="{Binding source_name}" />
+                            <DataGridTextColumn Header="科" Width="50" Binding="{Binding dep}" />
+                            <DataGridTextColumn Header="診斷" Width="1.5*" Binding="{Binding diagnosis}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="位置" Width="60" Binding="{Binding loca}" />
+                            <DataGridTextColumn Header="手術" Width="2*" Binding="{Binding op_name}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="量" Width="25" Binding="{Binding amt}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG05" Content="中醫" />
+                    <DataGrid Name="DGQ05" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="來源" Width="65" Binding="{Binding source_name}" />
+                            <DataGridTextColumn Header="診斷" Width="1.5*" Binding="{Binding diagnosis}" />
+                            <DataGridTextColumn Header="基準方名" Width="1*" Binding="{Binding base}" />
+                            <DataGridTextColumn Header="效能名稱" Width="1*" Binding="{Binding effect}" />
+                            <DataGridTextColumn Header="劑型" Width="1*" Binding="{Binding type}" />
+                            <DataGridTextColumn Header="用法" Width="1*" Binding="{Binding dosing}" />
+                            <DataGridTextColumn Header="天" Width="30" Binding="{Binding days}" />
+                            <DataGridTextColumn Header="量" Width="30" Binding="{Binding amt}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG06" Content="復健" />
+                    <DataGrid Name="DGQ06" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="來源" Width="1*" Binding="{Binding source_name}" />
+                            <DataGridTextColumn Header="診斷" Width="1*" Binding="{Binding diagnosis}" />
+                            <DataGridTextColumn Header="治療類別" Width="1*" Binding="{Binding type}" />
+                            <DataGridTextColumn Header="位置" Width="0.5*" Binding="{Binding loca}" />
+                            <DataGridTextColumn Header="治療強度" Width="1*" Binding="{Binding curegrade}" />
+                            <DataGridTextColumn Header="數量" Width="0.5*" Binding="{Binding amt}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG07" Content="出院" />
+                    <DataGrid Name="DGQ07" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="入院" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="出院" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="醫院" Width="0.5*" Binding="{Binding source_name}" />
+                            <DataGridTextColumn Header="科別" Width="0.5*" Binding="{Binding dep}" />
+                            <DataGridTextColumn Header="診斷" Width="1*" Binding="{Binding diagnosis}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG08" Content="過敏" />
+                    <DataGrid Name="DGQ08" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="上傳日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="醫療院所" Width="1*" Binding="{Binding source_name}" />
+                            <DataGridTextColumn Header="上傳註記" Width="1*" Binding="{Binding remark}" />
+                            <DataGridTextColumn Header="過敏藥物" Width="1*" Binding="{Binding drug_name}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG09" Content="管制藥物(一)" />
+                    <DataGrid Name="DGQ09" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drug_name}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="年月" Width="0.25*" Binding="{Binding YM}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="就醫" Width="0.25*" Binding="{Binding visit_n}" />
+                            <DataGridTextColumn Header="院所" Width="0.25*" Binding="{Binding clinic_n}" />
+                            <DataGridTextColumn Header="總劑量" Width="0.35*" Binding="{Binding t_dose}" />
+                            <DataGridTextColumn Header="總DDD" Width="0.35*" Binding="{Binding t_DDD}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="LBDG10" Content="管制藥物(二)" />
+                    <DataGrid Name="DGQ10" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drugname}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="日期" Width="0.25*" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
+                            <DataGridTextColumn Header="時間" Width="0.25*" Binding="{Binding STIME}" />
+                            <DataGridTextColumn Header="地點" Width="0.25*" Binding="{Binding clinic}" />
+                            <DataGridTextColumn Header="總劑量" Width="0.35*" Binding="{Binding t_dose}" />
+                            <DataGridTextColumn Header="總DDD" Width="0.35*" Binding="{Binding t_DDD}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ListBox>
+            </TabItem>
+            <TabItem Name="Tab3" Header="雲端查詢">
                 <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />

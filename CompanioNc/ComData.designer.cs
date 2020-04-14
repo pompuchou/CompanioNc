@@ -143,48 +143,6 @@ namespace CompanioNc
 			return ((ISingleResult<sp_cloudTCM_by_uidResult>)(result.ReturnValue));
 		}
 		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_CBC_by_uid")]
-		public ISingleResult<sp_labdata_CBC_by_uidResult> sp_labdata_CBC_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
-			return ((ISingleResult<sp_labdata_CBC_by_uidResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_DM_by_uid")]
-		public ISingleResult<sp_labdata_DM_by_uidResult> sp_labdata_DM_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
-			return ((ISingleResult<sp_labdata_DM_by_uidResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_DRUG_by_uid")]
-		public ISingleResult<sp_labdata_DRUG_by_uidResult> sp_labdata_DRUG_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
-			return ((ISingleResult<sp_labdata_DRUG_by_uidResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_hepa_by_uid")]
-		public ISingleResult<sp_labdata_hepa_by_uidResult> sp_labdata_hepa_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
-			return ((ISingleResult<sp_labdata_hepa_by_uidResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_OTHER_by_uid")]
-		public ISingleResult<sp_labdata_OTHER_by_uidResult> sp_labdata_OTHER_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
-			return ((ISingleResult<sp_labdata_OTHER_by_uidResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_UA_by_uid")]
-		public ISingleResult<sp_labdata_UA_by_uidResult> sp_labdata_UA_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
-			return ((ISingleResult<sp_labdata_UA_by_uidResult>)(result.ReturnValue));
-		}
-		
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_querytable")]
 		public ISingleResult<sp_querytableResult> sp_querytable()
 		{
@@ -197,6 +155,13 @@ namespace CompanioNc
 		{
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), sDATE, vIST, rMNO, nr, uid, cname, sTATUS);
 			return ((int)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_labdata_by_uid")]
+		public ISingleResult<sp_labdata_by_uidResult> sp_labdata_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
+			return ((ISingleResult<sp_labdata_by_uidResult>)(result.ReturnValue));
 		}
 	}
 	
@@ -1560,270 +1525,6 @@ namespace CompanioNc
 		}
 	}
 	
-	public partial class sp_labdata_CBC_by_uidResult
-	{
-		
-		private System.Nullable<System.DateTime> _SDATE;
-		
-		private string _o;
-		
-		public sp_labdata_CBC_by_uidResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
-		public System.Nullable<System.DateTime> SDATE
-		{
-			get
-			{
-				return this._SDATE;
-			}
-			set
-			{
-				if ((this._SDATE != value))
-				{
-					this._SDATE = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
-		public string o
-		{
-			get
-			{
-				return this._o;
-			}
-			set
-			{
-				if ((this._o != value))
-				{
-					this._o = value;
-				}
-			}
-		}
-	}
-	
-	public partial class sp_labdata_DM_by_uidResult
-	{
-		
-		private System.Nullable<System.DateTime> _SDATE;
-		
-		private string _o;
-		
-		public sp_labdata_DM_by_uidResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
-		public System.Nullable<System.DateTime> SDATE
-		{
-			get
-			{
-				return this._SDATE;
-			}
-			set
-			{
-				if ((this._SDATE != value))
-				{
-					this._SDATE = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
-		public string o
-		{
-			get
-			{
-				return this._o;
-			}
-			set
-			{
-				if ((this._o != value))
-				{
-					this._o = value;
-				}
-			}
-		}
-	}
-	
-	public partial class sp_labdata_DRUG_by_uidResult
-	{
-		
-		private System.Nullable<System.DateTime> _SDATE;
-		
-		private string _o;
-		
-		public sp_labdata_DRUG_by_uidResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
-		public System.Nullable<System.DateTime> SDATE
-		{
-			get
-			{
-				return this._SDATE;
-			}
-			set
-			{
-				if ((this._SDATE != value))
-				{
-					this._SDATE = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
-		public string o
-		{
-			get
-			{
-				return this._o;
-			}
-			set
-			{
-				if ((this._o != value))
-				{
-					this._o = value;
-				}
-			}
-		}
-	}
-	
-	public partial class sp_labdata_hepa_by_uidResult
-	{
-		
-		private System.Nullable<System.DateTime> _SDATE;
-		
-		private string _o;
-		
-		public sp_labdata_hepa_by_uidResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
-		public System.Nullable<System.DateTime> SDATE
-		{
-			get
-			{
-				return this._SDATE;
-			}
-			set
-			{
-				if ((this._SDATE != value))
-				{
-					this._SDATE = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
-		public string o
-		{
-			get
-			{
-				return this._o;
-			}
-			set
-			{
-				if ((this._o != value))
-				{
-					this._o = value;
-				}
-			}
-		}
-	}
-	
-	public partial class sp_labdata_OTHER_by_uidResult
-	{
-		
-		private System.Nullable<System.DateTime> _SDATE;
-		
-		private string _o;
-		
-		public sp_labdata_OTHER_by_uidResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
-		public System.Nullable<System.DateTime> SDATE
-		{
-			get
-			{
-				return this._SDATE;
-			}
-			set
-			{
-				if ((this._SDATE != value))
-				{
-					this._SDATE = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
-		public string o
-		{
-			get
-			{
-				return this._o;
-			}
-			set
-			{
-				if ((this._o != value))
-				{
-					this._o = value;
-				}
-			}
-		}
-	}
-	
-	public partial class sp_labdata_UA_by_uidResult
-	{
-		
-		private System.Nullable<System.DateTime> _SDATE;
-		
-		private string _o;
-		
-		public sp_labdata_UA_by_uidResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
-		public System.Nullable<System.DateTime> SDATE
-		{
-			get
-			{
-				return this._SDATE;
-			}
-			set
-			{
-				if ((this._SDATE != value))
-				{
-					this._SDATE = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
-		public string o
-		{
-			get
-			{
-				return this._o;
-			}
-			set
-			{
-				if ((this._o != value))
-				{
-					this._o = value;
-				}
-			}
-		}
-	}
-	
 	public partial class sp_querytableResult
 	{
 		
@@ -2061,6 +1762,50 @@ namespace CompanioNc
 				if ((this._if_allergy != value))
 				{
 					this._if_allergy = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_labdata_by_uidResult
+	{
+		
+		private System.Nullable<System.DateTime> _SDATE;
+		
+		private string _o;
+		
+		public sp_labdata_by_uidResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
+		public System.Nullable<System.DateTime> SDATE
+		{
+			get
+			{
+				return this._SDATE;
+			}
+			set
+			{
+				if ((this._SDATE != value))
+				{
+					this._SDATE = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
+		public string o
+		{
+			get
+			{
+				return this._o;
+			}
+			set
+			{
+				if ((this._o != value))
+				{
+					this._o = value;
 				}
 			}
 		}

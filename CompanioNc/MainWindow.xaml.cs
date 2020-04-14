@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HDLibrary.Wpf.Input;
+using System;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using HDLibrary.Wpf.Input;
 
 namespace CompanioNc
 {
@@ -28,7 +29,7 @@ namespace CompanioNc
 
         public string SSDATE
         {
-            get { return strSDATE;}
+            get { return strSDATE; }
         }
 
         public MainWindow()
@@ -172,8 +173,106 @@ namespace CompanioNc
 
         private void Refresh_data()
         {
+            #region refresh all tabitem and listbox items
+            this.TabCon.Items.Clear();
+            this.TabCon.Items.Add(Tab1);
+            this.TabCon.Items.Add(Tab2);
+            this.TabCon.Items.Add(Tab3);
+            this.LB01.Items.Clear();
+            this.LB01.Items.Add(LBDG01);
+            this.LB01.Items.Add(DGQ01);
+            this.LB01.Items.Add(LBDG02);
+            this.LB01.Items.Add(DGQ02);
+            this.LB01.Items.Add(LBDG03);
+            this.LB01.Items.Add(DGQ03);
+            this.LB01.Items.Add(LBDG04);
+            this.LB01.Items.Add(DGQ04);
+            this.LB01.Items.Add(LBDG05);
+            this.LB01.Items.Add(DGQ05);
+            this.LB01.Items.Add(LBDG06);
+            this.LB01.Items.Add(DGQ06);
+            this.LB01.Items.Add(LBDG07);
+            this.LB01.Items.Add(DGQ07);
+            this.LB01.Items.Add(LBDG08);
+            this.LB01.Items.Add(DGQ08);
+            this.LB01.Items.Add(LBDG09);
+            this.LB01.Items.Add(DGQ09);
+            this.LB01.Items.Add(LBDG10);
+            this.LB01.Items.Add(DGQ10);
+            #endregion
             ComDataDataContext dc = new ComDataDataContext();
             DGQuerry.ItemsSource = dc.sp_querytable();
+            DGQ01.ItemsSource = dc.sp_cloudmed_by_uid(strUID);
+            DGQ02.ItemsSource = dc.sp_cloudlab_by_uid(strUID);
+            DGQ03.ItemsSource = dc.sp_cloudDEN_by_uid(strUID);
+            DGQ04.ItemsSource = dc.sp_cloudOP_by_uid(strUID);
+            DGQ05.ItemsSource = dc.sp_cloudTCM_by_uid(strUID);
+            DGQ06.ItemsSource = dc.sp_cloudREH_by_uid(strUID);
+            DGQ07.ItemsSource = dc.sp_cloudDIS_by_uid(strUID);
+            DGQ08.ItemsSource = dc.sp_cloudALL_by_uid(strUID);
+            DGQ09.ItemsSource = dc.sp_cloudSCH_R_by_uid(strUID);
+            DGQ10.ItemsSource = dc.sp_cloudSCH_U_by_uid(strUID);
+            DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
+            #region remove all unnessasary items
+            if (DGLab.Items.Count == 0)
+            {
+                this.TabCon.Items.Remove(Tab1);
+            }
+            if (DGQ01.Items.Count ==0)
+            {
+                this.LB01.Items.Remove(LBDG01);
+                this.LB01.Items.Remove(DGQ01);
+            }
+            if (DGQ02.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG02);
+                this.LB01.Items.Remove(DGQ02);
+            }
+            if (DGQ03.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG03);
+                this.LB01.Items.Remove(DGQ03);
+            }
+            if (DGQ04.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG04);
+                this.LB01.Items.Remove(DGQ04);
+            }
+            if (DGQ05.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG05);
+                this.LB01.Items.Remove(DGQ05);
+            }
+            if (DGQ06.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG06);
+                this.LB01.Items.Remove(DGQ06);
+            }
+            if (DGQ07.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG07);
+                this.LB01.Items.Remove(DGQ07);
+            }
+            if (DGQ08.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG08);
+                this.LB01.Items.Remove(DGQ08);
+            }
+            if (DGQ09.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG09);
+                this.LB01.Items.Remove(DGQ09);
+            }
+            if (DGQ10.Items.Count == 0)
+            {
+                this.LB01.Items.Remove(LBDG10);
+                this.LB01.Items.Remove(DGQ10);
+            }
+            if (LB01.Items.Count ==0)
+            {
+                this.TabCon.Items.Remove(Tab2);
+            }
+            #endregion
         }
 
         private void Main_Closed(object sender, EventArgs e)
@@ -185,6 +284,14 @@ namespace CompanioNc
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
             Refresh_data();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //Window w = (Window)sender;
+            //this.DGQuerry2.Width=w.Width-70;
+            //this.DGQuerry3.Width = w.Width - 70;
+
         }
     }
 }
