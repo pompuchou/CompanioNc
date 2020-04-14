@@ -102,8 +102,6 @@ namespace CompanioNc
                     // do something
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        this.Label1.Content = strUID;
-                        this.Label2.Content = strID;
                         // 更新資料
                         Refresh_data();
                     }));
@@ -137,23 +135,14 @@ namespace CompanioNc
                     strSDATE = string.Empty;
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        this.Label1.Content = strUID;
-                        this.Label2.Content = strID;
+                        // 更新資料
+                        Refresh_data();
                     }));
                     if (System.IO.File.Exists(@"C:\vpn\current_uid.txt"))
                     {
                         //' 如果有檔案就殺了它
                         System.IO.File.Delete(@"C:\vpn\current_uid.txt");
                     }
-                    //' 清理檢驗資料
-                    //Me.DataGridView1.Visible = False
-                    //Me.DataGridView2.Visible = False
-                    //Me.DataGridView3.Visible = False
-                    //Me.DataGridView4.Visible = False
-                    //Me.DataGridView5.Visible = False
-                    //Me.DataGridView6.Visible = False
-                    //Me.DataGridView7.Visible = False
-                    //Me.DataGridView8.Visible = False
                 }
                 else
                 {
@@ -200,19 +189,38 @@ namespace CompanioNc
             this.LB01.Items.Add(LBDG10);
             this.LB01.Items.Add(DGQ10);
             #endregion
+            this.Label1.Content = strUID;
+            this.Label2.Content = strID;
             ComDataDataContext dc = new ComDataDataContext();
             DGQuerry.ItemsSource = dc.sp_querytable();
-            DGQ01.ItemsSource = dc.sp_cloudmed_by_uid(strUID);
-            DGQ02.ItemsSource = dc.sp_cloudlab_by_uid(strUID);
-            DGQ03.ItemsSource = dc.sp_cloudDEN_by_uid(strUID);
-            DGQ04.ItemsSource = dc.sp_cloudOP_by_uid(strUID);
-            DGQ05.ItemsSource = dc.sp_cloudTCM_by_uid(strUID);
-            DGQ06.ItemsSource = dc.sp_cloudREH_by_uid(strUID);
-            DGQ07.ItemsSource = dc.sp_cloudDIS_by_uid(strUID);
-            DGQ08.ItemsSource = dc.sp_cloudALL_by_uid(strUID);
-            DGQ09.ItemsSource = dc.sp_cloudSCH_R_by_uid(strUID);
-            DGQ10.ItemsSource = dc.sp_cloudSCH_U_by_uid(strUID);
-            DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
+            if (strUID=="")
+            {
+                DGQ01.ItemsSource = null;
+                DGQ02.ItemsSource = null;
+                DGQ03.ItemsSource = null;
+                DGQ04.ItemsSource = null;
+                DGQ05.ItemsSource = null;
+                DGQ06.ItemsSource = null;
+                DGQ07.ItemsSource = null;
+                DGQ08.ItemsSource = null;
+                DGQ09.ItemsSource = null;
+                DGQ10.ItemsSource = null;
+                DGLab.ItemsSource = null;
+            }
+            else
+            {
+                DGQ01.ItemsSource = dc.sp_cloudmed_by_uid(strUID);
+                DGQ02.ItemsSource = dc.sp_cloudlab_by_uid(strUID);
+                DGQ03.ItemsSource = dc.sp_cloudDEN_by_uid(strUID);
+                DGQ04.ItemsSource = dc.sp_cloudOP_by_uid(strUID);
+                DGQ05.ItemsSource = dc.sp_cloudTCM_by_uid(strUID);
+                DGQ06.ItemsSource = dc.sp_cloudREH_by_uid(strUID);
+                DGQ07.ItemsSource = dc.sp_cloudDIS_by_uid(strUID);
+                DGQ08.ItemsSource = dc.sp_cloudALL_by_uid(strUID);
+                DGQ09.ItemsSource = dc.sp_cloudSCH_R_by_uid(strUID);
+                DGQ10.ItemsSource = dc.sp_cloudSCH_U_by_uid(strUID);
+                DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
+            }
             #region remove all unnessasary items
             if (DGLab.Items.Count == 0)
             {
@@ -286,12 +294,19 @@ namespace CompanioNc
             Refresh_data();
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            //Window w = (Window)sender;
-            //this.DGQuerry2.Width=w.Width-70;
-            //this.DGQuerry3.Width = w.Width - 70;
-
+            strID = string.Empty;
+            strUID = string.Empty;
+            Refresh_data();
+            this._timer1.Stop();
+            this.Label1.Visibility = Visibility.Hidden;
+        }
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            strID = "";
+            this._timer1.Start();
+            this.Label1.Visibility = Visibility.Visible;
         }
     }
 }
