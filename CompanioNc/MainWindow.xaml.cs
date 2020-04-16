@@ -167,6 +167,7 @@ namespace CompanioNc
             this.TabCon.Items.Add(Tab1);
             this.TabCon.Items.Add(Tab2);
             this.TabCon.Items.Add(Tab3);
+            this.TabCon.Items.Add(Tab4);
             this.LB01.Items.Clear();
             this.LB01.Items.Add(LBDG01);
             this.LB01.Items.Add(DGQ01);
@@ -206,6 +207,7 @@ namespace CompanioNc
                 DGQ09.ItemsSource = null;
                 DGQ10.ItemsSource = null;
                 DGLab.ItemsSource = null;
+                DGMed.ItemsSource = null;
             }
             else
             {
@@ -220,11 +222,16 @@ namespace CompanioNc
                 DGQ09.ItemsSource = dc.sp_cloudSCH_R_by_uid(strUID);
                 DGQ10.ItemsSource = dc.sp_cloudSCH_U_by_uid(strUID);
                 DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
+                DGMed.ItemsSource = dc.sp_meddata_by_uid(strUID);
             }
             #region remove all unnessasary items
-            if (DGLab.Items.Count == 0)
+            if (DGMed.Items.Count == 0)
             {
                 this.TabCon.Items.Remove(Tab1);
+            }
+            if (DGLab.Items.Count == 0)
+            {
+                this.TabCon.Items.Remove(Tab2);
             }
             if (DGQ01.Items.Count ==0)
             {
@@ -278,7 +285,7 @@ namespace CompanioNc
             }
             if (LB01.Items.Count ==0)
             {
-                this.TabCon.Items.Remove(Tab2);
+                this.TabCon.Items.Remove(Tab3);
             }
             #endregion
         }

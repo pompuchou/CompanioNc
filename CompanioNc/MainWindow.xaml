@@ -84,8 +84,31 @@
         <Button FontSize="18" Content="Refresh" Margin="330,6,6,6" Grid.Row="0" HorizontalAlignment="Right" Click="Refresh_Click" Width="100" 
                 Style="{StaticResource RoundCorner}" />
         <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
-            <TabItem Name="Tab1" Header="檢驗結果">
-                <DataGrid Name="DGLab" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+            <TabItem Name="Tab1" Header="藥物紀錄">
+                <DataGrid Name="DGMed" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="日期" Width="120" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
+                        <DataGridTextColumn Header="診斷" Width="1*" Binding="{Binding diag}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="藥物" Width="4*" Binding="{Binding o}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Name="Tab2" Header="檢驗結果">
+                <DataGrid Name="DGLab" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
                         <DataGridTextColumn Header="結果" Width="2*" Binding="{Binding o}">
@@ -99,10 +122,11 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Name="Tab2" Header="雲端資料">
-                <ListBox Name="LB01">
-                    <Label Name="LBDG01" Content="雲端藥歷" />
-                    <DataGrid Name="DGQ01" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+            <TabItem Name="Tab3" Header="雲端資料">
+                <ListBox Name="LB01" HorizontalContentAlignment="Center">
+                    <Label Name="LBDG01" Content="雲端藥歷" Background="LightCyan" />
+                    <DataGrid Name="DGQ01" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="來源" Width="100" Binding="{Binding source}" />
@@ -124,8 +148,9 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG02" Content="檢驗結果" />
-                    <DataGrid Name="DGQ02" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG02" Content="檢驗結果" Background="LightCyan" />
+                    <DataGrid Name="DGQ02" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="來源" Width="100" Binding="{Binding source}" />
@@ -139,8 +164,9 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG03" Content="牙科處置" />
-                    <DataGrid Name="DGQ03" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG03" Content="牙科處置" Background="LightCyan" />
+                    <DataGrid Name="DGQ03" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="來源" Width="65" Binding="{Binding source_name}" />
@@ -157,8 +183,9 @@
                             <DataGridTextColumn Header="量" Width="25" Binding="{Binding amt}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG04" Content="手術" />
-                    <DataGrid Name="DGQ04" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG04" Content="手術" Background="LightCyan" />
+                    <DataGrid Name="DGQ04" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="來源" Width="65" Binding="{Binding source_name}" />
@@ -183,8 +210,9 @@
                             <DataGridTextColumn Header="量" Width="25" Binding="{Binding amt}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG05" Content="中醫" />
-                    <DataGrid Name="DGQ05" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG05" Content="中醫" Background="LightCyan" />
+                    <DataGrid Name="DGQ05" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="來源" Width="65" Binding="{Binding source_name}" />
@@ -197,8 +225,9 @@
                             <DataGridTextColumn Header="量" Width="30" Binding="{Binding amt}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG06" Content="復健" />
-                    <DataGrid Name="DGQ06" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG06" Content="復健" Background="LightCyan" />
+                    <DataGrid Name="DGQ06" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="來源" Width="1*" Binding="{Binding source_name}" />
@@ -209,8 +238,9 @@
                             <DataGridTextColumn Header="數量" Width="0.5*" Binding="{Binding amt}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG07" Content="出院" />
-                    <DataGrid Name="DGQ07" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG07" Content="出院" Background="LightCyan" />
+                    <DataGrid Name="DGQ07" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="入院" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="出院" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -219,8 +249,9 @@
                             <DataGridTextColumn Header="診斷" Width="1*" Binding="{Binding diagnosis}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG08" Content="過敏" />
-                    <DataGrid Name="DGQ08" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG08" Content="過敏" Background="LightCyan" />
+                    <DataGrid Name="DGQ08" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="上傳日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
                             <DataGridTextColumn Header="醫療院所" Width="1*" Binding="{Binding source_name}" />
@@ -228,8 +259,9 @@
                             <DataGridTextColumn Header="過敏藥物" Width="1*" Binding="{Binding drug_name}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG09" Content="管制藥物(一)" />
-                    <DataGrid Name="DGQ09" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG09" Content="管制藥物(一)" Background="LightCyan" />
+                    <DataGrid Name="DGQ09" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drug_name}" >
                                 <DataGridTextColumn.ElementStyle>
@@ -253,8 +285,9 @@
                             <DataGridTextColumn Header="總DDD" Width="0.35*" Binding="{Binding t_DDD}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Name="LBDG10" Content="管制藥物(二)" />
-                    <DataGrid Name="DGQ10" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <Label Name="LBDG10" Content="管制藥物(二)" Background="LightCyan" />
+                    <DataGrid Name="DGQ10" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drugname}" >
                                 <DataGridTextColumn.ElementStyle>
@@ -273,8 +306,9 @@
                     </DataGrid>
                 </ListBox>
             </TabItem>
-            <TabItem Name="Tab3" Header="雲端查詢">
-                <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+            <TabItem Name="Tab4" Header="雲端查詢">
+                <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" 
+                          AlternatingRowBackground="PapayaWhip">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />
                         <DataGridTextColumn Header="身分證" Width="2*" Binding="{Binding uid}" />

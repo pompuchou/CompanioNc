@@ -163,6 +163,13 @@ namespace CompanioNc
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
 			return ((ISingleResult<sp_labdata_by_uidResult>)(result.ReturnValue));
 		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_meddata_by_uid")]
+		public ISingleResult<sp_meddata_by_uidResult> sp_meddata_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
+			return ((ISingleResult<sp_meddata_by_uidResult>)(result.ReturnValue));
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tbl_Access")]
@@ -1795,6 +1802,68 @@ namespace CompanioNc
 		}
 		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(3999)")]
+		public string o
+		{
+			get
+			{
+				return this._o;
+			}
+			set
+			{
+				if ((this._o != value))
+				{
+					this._o = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_meddata_by_uidResult
+	{
+		
+		private System.Nullable<System.DateTime> _SDATE;
+		
+		private string _diag;
+		
+		private string _o;
+		
+		public sp_meddata_by_uidResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SDATE", DbType="Date")]
+		public System.Nullable<System.DateTime> SDATE
+		{
+			get
+			{
+				return this._SDATE;
+			}
+			set
+			{
+				if ((this._SDATE != value))
+				{
+					this._SDATE = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_diag", DbType="NVarChar(500)")]
+		public string diag
+		{
+			get
+			{
+				return this._diag;
+			}
+			set
+			{
+				if ((this._diag != value))
+				{
+					this._diag = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_o", DbType="NVarChar(4000)")]
 		public string o
 		{
 			get
