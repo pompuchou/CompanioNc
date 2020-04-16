@@ -154,12 +154,4 @@
       <Column Name="o" Type="System.String" DbType="NVarChar(3999)" CanBeNull="true" />
     </ElementType>
   </Function>
-  <Function Name="dbo.sp_meddata_by_uid" Method="sp_meddata_by_uid">
-    <Parameter Name="u" Type="System.String" DbType="NVarChar(50)" />
-    <ElementType Name="sp_meddata_by_uidResult">
-      <Column Name="SDATE" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="diag" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="o" Type="System.String" DbType="NVarChar(4000)" CanBeNull="true" />
-    </ElementType>
-  </Function>
 </Database>
