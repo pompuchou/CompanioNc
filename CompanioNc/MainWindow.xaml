@@ -117,6 +117,11 @@
         </Grid.RowDefinitions>
         <CheckBox Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" />
+        <actb:AutoCompleteTextBox Name="ACTextBox" FontSize="20"
+            Text="{Binding Source={StaticResource vm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
+            Margin="100,3,3,6" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Width="190" Height="40"
+            ItemsSource="{Binding Source={StaticResource xml}}" ItemTemplateSelector="{StaticResource TemplateSelector}"
+            Binding="{Binding XPath=suggestion/@uid}" MaxCompletions="20" Visibility="Hidden" KeyDown="ACTextBox_KeyDown"/>
         <Label Name="Label1" FontSize="16" Content="H221914027" HorizontalAlignment="Right" Margin="6,6,520,6" VerticalAlignment="Center" Grid.Row="0" />
         <Label Name="Label2" FontSize="16" Content="2020/04/14 夜間02診002號 - (H221914027) 向雅平" HorizontalAlignment="Right" VerticalAlignment="Center"
                Margin="6,6,110,6" Grid.Row="0" />

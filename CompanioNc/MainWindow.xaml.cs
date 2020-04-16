@@ -342,12 +342,23 @@ namespace CompanioNc
             Refresh_data();
             this._timer1.Stop();
             this.Label1.Visibility = Visibility.Hidden;
+            this.ACTextBox.Visibility = Visibility.Visible;
         }
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             strID = "";
             this._timer1.Start();
             this.Label1.Visibility = Visibility.Visible;
+            this.ACTextBox.Visibility = Visibility.Hidden;
+        }
+
+        private void ACTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                strUID = ACTextBox.Text;
+                Refresh_data();
+            }
         }
     }
 }
