@@ -1,0 +1,18 @@
+    /// <summary>
+    ///     '20200411 created
+    ///目的有: 1. 監控問診畫面, 紀錄 -done
+    ///        2. 顯示該人的檢驗或其他有用資料  -done
+    ///        3. 可貼上routine template -plausible
+    ///        4. 可貼上檢驗結果 -plausible
+    ///        5. 可copy 雲端    -done
+    ///        6. 可紀錄是否有查雲端, 是否有查關懷名單 -done
+    ///        7. 量表 -plausible
+    /// MainWindow.xaml 的互動邏輯
+    /// </summary>
+20200417:   加上了autocomplete textbox, 使用的是Aviad P的技術, https://www.codeproject.com/Articles/44920/A-Reusable-WPF-Autocomplete-TextBox
+            使用了global hotkey技術, 最先是使用Henning Dieterichs的技術, https://www.codeproject.com/Tips/274003/Global-Hotkeys-in-WPF
+            但是不知為何昨天晚上突然失效無法compile.
+            於是昨天晚上在nuget, 拿到NHotKey.wpf, 但是無法使用.
+            最後用的是nuget上的GlobalHotkey, https://github.com/kyrylomyr/GlobalHotKey
+            輸入文字則是用了inputsimulator技術, https://www.nuget.org/packages/InputSimulator/
+            至於監看看診畫面,則是網上找到的程式碼,去年開發的.
