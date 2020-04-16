@@ -162,4 +162,12 @@
       <Column Name="o" Type="System.String" DbType="NVarChar(4000)" CanBeNull="true" />
     </ElementType>
   </Function>
+  <Function Name="dbo.sp_finduid_by_info" Method="sp_finduid_by_info">
+    <Parameter Name="u" Type="System.String" DbType="NVarChar(50)" />
+    <ElementType Name="sp_finduid_by_infoResult">
+      <Column Name="uid" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="cname" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="[key]" Member="key" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
 </Database>

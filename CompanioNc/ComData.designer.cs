@@ -170,6 +170,13 @@ namespace CompanioNc
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
 			return ((ISingleResult<sp_meddata_by_uidResult>)(result.ReturnValue));
 		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_finduid_by_info")]
+		public ISingleResult<sp_finduid_by_infoResult> sp_finduid_by_info([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
+			return ((ISingleResult<sp_finduid_by_infoResult>)(result.ReturnValue));
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tbl_Access")]
@@ -1875,6 +1882,68 @@ namespace CompanioNc
 				if ((this._o != value))
 				{
 					this._o = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_finduid_by_infoResult
+	{
+		
+		private string _uid;
+		
+		private string _cname;
+		
+		private string _key;
+		
+		public sp_finduid_by_infoResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_uid", DbType="NVarChar(10)")]
+		public string uid
+		{
+			get
+			{
+				return this._uid;
+			}
+			set
+			{
+				if ((this._uid != value))
+				{
+					this._uid = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cname", DbType="NVarChar(20)")]
+		public string cname
+		{
+			get
+			{
+				return this._cname;
+			}
+			set
+			{
+				if ((this._cname != value))
+				{
+					this._cname = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[key]", Storage="_key", DbType="NVarChar(50)")]
+		public string key
+		{
+			get
+			{
+				return this._key;
+			}
+			set
+			{
+				if ((this._key != value))
+				{
+					this._key = value;
 				}
 			}
 		}

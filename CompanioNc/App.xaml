@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:CompanioNc"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <local:ViewModel x:Key="vm"/>
     </Application.Resources>
 </Application>

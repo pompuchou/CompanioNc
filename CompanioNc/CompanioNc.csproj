@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -117,6 +118,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyDataTemplateSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -183,6 +185,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Nerd.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ACTB\Aviad.WPF.Controls.csproj">
+      <Project>{952e558b-6e94-49a5-ba50-ec50c044709c}</Project>
+      <Name>Aviad.WPF.Controls</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

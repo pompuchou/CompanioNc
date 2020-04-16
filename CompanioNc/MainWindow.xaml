@@ -1,6 +1,7 @@
 ﻿<Window x:Class="CompanioNc.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:actb="clr-namespace:Aviad.WPF.Controls;assembly=Aviad.WPF.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompanioNc"
@@ -13,9 +14,9 @@
                 Converter={StaticResource BooleanToForegroundConverter}}" />
         </Style>
         <Style x:Key="RoundCorner" TargetType="{x:Type Button}">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="1" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -25,13 +26,13 @@
                                     <RadialGradientBrush GradientOrigin="0.496,1.052">
                                         <RadialGradientBrush.RelativeTransform>
                                             <TransformGroup>
-                                                <ScaleTransform CenterX="0.5" CenterY="0.5" 
-                                                        ScaleX="1.5" ScaleY="1.5"/>
-                                                <TranslateTransform X="0.02" Y="0.3"/>
+                                                <ScaleTransform CenterX="0.5" CenterY="0.5"
+                                                        ScaleX="1.5" ScaleY="1.5" />
+                                                <TranslateTransform X="0.02" Y="0.3" />
                                             </TransformGroup>
                                         </RadialGradientBrush.RelativeTransform>
-                                        <GradientStop Offset="1" Color="#00000000"/>
-                                        <GradientStop Offset="0.3" Color="#FFFFFFFF"/>
+                                        <GradientStop Offset="1" Color="#00000000" />
+                                        <GradientStop Offset="0.3" Color="#FFFFFFFF" />
                                     </RadialGradientBrush>
                                 </Border.Background>
                                 <ContentPresenter HorizontalAlignment="Center"
@@ -39,7 +40,6 @@
                                           TextElement.FontWeight="Bold">
                                 </ContentPresenter>
                             </Border>
-
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
@@ -48,40 +48,79 @@
                                         <RadialGradientBrush GradientOrigin="0.496,1.052">
                                             <RadialGradientBrush.RelativeTransform>
                                                 <TransformGroup>
-                                                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.5" ScaleY="1.5"/>
-                                                    <TranslateTransform X="0.02" Y="0.3"/>
+                                                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.5" ScaleY="1.5" />
+                                                    <TranslateTransform X="0.02" Y="0.3" />
                                                 </TransformGroup>
                                             </RadialGradientBrush.RelativeTransform>
-                                            <GradientStop Color="#00000000" Offset="1"/>
-                                            <GradientStop Color="#FF303030" Offset="0.3"/>
+                                            <GradientStop Color="#00000000" Offset="1" />
+                                            <GradientStop Color="#FF303030" Offset="0.3" />
                                         </RadialGradientBrush>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF33962B"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FF33962B" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" TargetName="grid" Value="0.25"/>
+                                <Setter Property="Opacity" TargetName="grid" Value="0.25" />
                             </Trigger>
-
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+        <CollectionViewSource x:Key="xml">
+            <CollectionViewSource.Source>
+                <PriorityBinding>
+                    <Binding Source="{StaticResource vm}"
+                             Path="QueryCollection"
+                             IsAsync="True"/>
+                    <Binding Source="{StaticResource vm}" Path="WaitMessage"/>
+                </PriorityBinding>
+            </CollectionViewSource.Source>
+        </CollectionViewSource>
+        <local:MyDataTemplateSelector x:Key="TemplateSelector"/>
+        <DataTemplate x:Key="TheItemTemplate">
+            <Border BorderBrush="Salmon" BorderThickness="2" CornerRadius="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="身分證:  "/>
+                    <TextBlock Grid.Column="1" 
+                               Text="{Binding XPath=suggestion/@uid}"/>
+                    <TextBlock Grid.Row="1" Text="姓名:  "/>
+                    <TextBlock Grid.Column="1" 
+                               Grid.Row="1" 
+                               Text="{Binding XPath=suggestion/@cname}"/>
+                    <TextBlock Grid.Row="2" Text="鍵值:  "/>
+                    <TextBlock Grid.Column="1" 
+                               Grid.Row="2" 
+                               Text="{Binding XPath=suggestion/@key}"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="WaitTemplate">
+            <TextBlock Text="{Binding}" Background="SlateBlue"/>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <CheckBox Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" 
+        <CheckBox Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" />
         <Label Name="Label1" FontSize="16" Content="H221914027" HorizontalAlignment="Right" Margin="6,6,520,6" VerticalAlignment="Center" Grid.Row="0" />
-        <Label Name="Label2" FontSize="16" Content="2020/04/14 夜間02診002號 - (H221914027) 向雅平" HorizontalAlignment="Right" VerticalAlignment="Center" 
+        <Label Name="Label2" FontSize="16" Content="2020/04/14 夜間02診002號 - (H221914027) 向雅平" HorizontalAlignment="Right" VerticalAlignment="Center"
                Margin="6,6,110,6" Grid.Row="0" />
-        <Button FontSize="18" Content="Refresh" Margin="330,6,6,6" Grid.Row="0" HorizontalAlignment="Right" Click="Refresh_Click" Width="100" 
+        <Button FontSize="18" Content="Refresh" Margin="330,6,6,6" Grid.Row="0" HorizontalAlignment="Right" Click="Refresh_Click" Width="100"
                 Style="{StaticResource RoundCorner}" />
         <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
             <TabItem Name="Tab1" Header="藥物紀錄">
@@ -149,7 +188,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG02" Content="檢驗結果" Background="LightCyan" />
-                    <DataGrid Name="DGQ02" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ02" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -165,7 +204,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG03" Content="牙科處置" Background="LightCyan" />
-                    <DataGrid Name="DGQ03" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ03" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -184,7 +223,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG04" Content="手術" Background="LightCyan" />
-                    <DataGrid Name="DGQ04" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ04" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -211,7 +250,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG05" Content="中醫" Background="LightCyan" />
-                    <DataGrid Name="DGQ05" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ05" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -226,7 +265,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG06" Content="復健" Background="LightCyan" />
-                    <DataGrid Name="DGQ06" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ06" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="日期" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -239,7 +278,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG07" Content="出院" Background="LightCyan" />
-                    <DataGrid Name="DGQ07" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ07" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="入院" Width="65" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -250,7 +289,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG08" Content="過敏" Background="LightCyan" />
-                    <DataGrid Name="DGQ08" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ08" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="上傳日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yy/MM/dd}}" />
@@ -260,10 +299,10 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG09" Content="管制藥物(一)" Background="LightCyan" />
-                    <DataGrid Name="DGQ09" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ09" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drug_name}" >
+                            <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drug_name}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style>
                                         <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
@@ -271,7 +310,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="年月" Width="0.25*" Binding="{Binding YM}" >
+                            <DataGridTextColumn Header="年月" Width="0.25*" Binding="{Binding YM}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style>
                                         <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
@@ -286,10 +325,10 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label Name="LBDG10" Content="管制藥物(二)" Background="LightCyan" />
-                    <DataGrid Name="DGQ10" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False" 
+                    <DataGrid Name="DGQ10" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drugname}" >
+                            <DataGridTextColumn Header="管制藥物" Width="1*" Binding="{Binding drugname}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style>
                                         <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
@@ -307,7 +346,7 @@
                 </ListBox>
             </TabItem>
             <TabItem Name="Tab4" Header="雲端查詢">
-                <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" 
+                <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           AlternatingRowBackground="PapayaWhip">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />
