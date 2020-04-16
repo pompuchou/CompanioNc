@@ -1,5 +1,4 @@
-﻿using HDLibrary.Wpf.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
@@ -7,83 +6,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
-using WindowsInput;
-using WindowsInput.Native;
 
 namespace CompanioNc
 {
-    [Serializable]
-    public class CustomHotKey : HotKey
-    {
-        public CustomHotKey(string name, Key key, ModifierKeys modifiers, bool enabled)
-            : base(key, modifiers, enabled)
-        {
-            Name = name;
-        }
-
-        private string name;
-
-        public string Name
-        {
-            get { return name; }
-            set
-            {
-                if (value != name)
-                {
-                    name = value;
-                    OnPropertyChanged(name);
-                }
-            }
-        }
-
-        protected override void OnHotKeyPress()
-        {
-            //MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
-            switch (Name)
-            {
-                case "ShowPopup":
-                    MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
-                    break;
-
-                case "Paste":
-                    List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
-                        "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
-                        "Maintenance phase.", "Nothing particular."};
-                    // 先決定一句還是兩句
-                    Random crandom = new Random();
-                    int n = crandom.Next(2) + 1;
-                    int chosen = crandom.Next(10);
-                    string output = strAnswer[chosen];
-                    if (n == 2)
-                    {
-                        strAnswer.Remove(output);
-                        output += " " + strAnswer[crandom.Next(9)];
-                    }
-                    output = DateTime.Now.ToShortDateString() + ": " + output + "\n";
-                    InputSimulator sim = new InputSimulator();
-                    sim.Keyboard.TextEntry(output);
-                    break;
-            }
-
-            base.OnHotKeyPress();
-        }
-
-        protected CustomHotKey(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
-            : base(info, context)
-        {
-            Name = info.GetString("Name");
-        }
-
-        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("Name", Name);
-        }
-    }
-
     public class BooleanToForegroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

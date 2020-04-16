@@ -1,10 +1,12 @@
-﻿using HDLibrary.Wpf.Input;
+﻿using GlobalHotKey;
 using System;
+using System.Collections.Generic;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using WindowsInput;
 
 namespace CompanioNc
 {
@@ -26,6 +28,7 @@ namespace CompanioNc
         private string strUID = string.Empty;
         private string strSDATE = string.Empty;
         private string tempID = string.Empty;
+        private HotKeyManager hotKeyManager;
 
         public string SSDATE
         {
@@ -43,13 +46,16 @@ namespace CompanioNc
             this._timer1.Interval = 500;
             this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
             _timer1.Start();
+            // Create the hotkey manager.
+            hotKeyManager = new HotKeyManager();
+            // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
+            hotKeyManager.Register(Key.F2, ModifierKeys.Control);
+            // Handle hotkey presses.
+            hotKeyManager.KeyPressed += HotKeyManagerPressed;
             Record_admin("Companion Log in", "");
             Refresh_data();
             this.Label1.Content = string.Empty;
             this.Label2.Content = string.Empty;
-            HotKeyHost hotKeyHost = new HotKeyHost((HwndSource)HwndSource.FromVisual(App.Current.MainWindow));
-            hotKeyHost.AddHotKey(new CustomHotKey("ShowPopup", Key.Q, ModifierKeys.Control | ModifierKeys.Shift, true));
-            hotKeyHost.AddHotKey(new CustomHotKey("Paste", Key.F2, ModifierKeys.Control, true));
         }
 
         private void _TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -290,10 +296,38 @@ namespace CompanioNc
             #endregion
         }
 
+        void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
+        {
+            if ((e.HotKey.Key == Key.F2) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
+                        "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
+                        "Maintenance phase.", "Nothing particular."};
+                // 先決定一句還是兩句
+                Random crandom = new Random();
+                int n = crandom.Next(2) + 1;
+                int chosen = crandom.Next(10);
+                string output = strAnswer[chosen];
+                if (n == 2)
+                {
+                    strAnswer.Remove(output);
+                    output += " " + strAnswer[crandom.Next(9)];
+                }
+                output = DateTime.Now.ToShortDateString() + ": " + output + "\n";
+                InputSimulator sim = new InputSimulator();
+                sim.Keyboard.TextEntry(output);
+            }
+        }
+
         private void Main_Closed(object sender, EventArgs e)
         {
             Record_admin("Companion Log out", "");
             _timer1.Stop();
+            // Unregister Ctrl+Alt+F2 hotkey.
+            hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);
+
+            // Dispose the hotkey manager.
+            hotKeyManager.Dispose();
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
