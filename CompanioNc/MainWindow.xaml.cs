@@ -1,11 +1,10 @@
 ﻿using GlobalHotKey;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using WindowsInput;
 
 namespace CompanioNc
@@ -169,11 +168,13 @@ namespace CompanioNc
         private void Refresh_data()
         {
             #region refresh all tabitem and listbox items
+
             this.TabCon.Items.Clear();
             this.TabCon.Items.Add(Tab1);
             this.TabCon.Items.Add(Tab2);
             this.TabCon.Items.Add(Tab3);
             this.TabCon.Items.Add(Tab4);
+            this.TabCon.Items.Add(Tab5);
             this.LB01.Items.Clear();
             this.LB01.Items.Add(LBDG01);
             this.LB01.Items.Add(DGQ01);
@@ -195,12 +196,14 @@ namespace CompanioNc
             this.LB01.Items.Add(DGQ09);
             this.LB01.Items.Add(LBDG10);
             this.LB01.Items.Add(DGQ10);
-            #endregion
+
+            #endregion refresh all tabitem and listbox items
+
             this.Label1.Content = strUID;
             this.Label2.Content = strID;
             ComDataDataContext dc = new ComDataDataContext();
             DGQuerry.ItemsSource = dc.sp_querytable();
-            if (strUID=="")
+            if (strUID == "")
             {
                 DGQ01.ItemsSource = null;
                 DGQ02.ItemsSource = null;
@@ -214,6 +217,7 @@ namespace CompanioNc
                 DGQ10.ItemsSource = null;
                 DGLab.ItemsSource = null;
                 DGMed.ItemsSource = null;
+                this.TabCon.Items.Remove(Tab5); //20200417: 沒有strUID就移除基本資料
             }
             else
             {
@@ -229,8 +233,21 @@ namespace CompanioNc
                 DGQ10.ItemsSource = dc.sp_cloudSCH_U_by_uid(strUID);
                 DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
                 DGMed.ItemsSource = dc.sp_meddata_by_uid(strUID);
+                sp_ptdata_by_uidResult pt = dc.sp_ptdata_by_uid(strUID).First();
+                if (this.CBunplug.IsChecked == true) this.Label2.Content = "(" + strUID + ") " + pt.cname;
+                this.LB501.Content = strUID; //身分證
+                this.LB502.Content = pt.cid; //病歷號
+                this.LB503.Content = pt.cname; //姓名
+                this.LB504.Content = pt.mf; //性別
+                this.LB505.Content = pt.bd.ToString("yyyy/MM/dd"); //生日
+                this.LB506.Content = pt.p01; //電話
+                this.LB507.Content = pt.p02; //手機
+                this.LB508.Content = pt.p03; //地址
+                this.LB509.Content = pt.p04; //註記
             }
+
             #region remove all unnessasary items
+
             if (DGMed.Items.Count == 0)
             {
                 this.TabCon.Items.Remove(Tab1);
@@ -239,7 +256,7 @@ namespace CompanioNc
             {
                 this.TabCon.Items.Remove(Tab2);
             }
-            if (DGQ01.Items.Count ==0)
+            if (DGQ01.Items.Count == 0)
             {
                 this.LB01.Items.Remove(LBDG01);
                 this.LB01.Items.Remove(DGQ01);
@@ -289,14 +306,15 @@ namespace CompanioNc
                 this.LB01.Items.Remove(LBDG10);
                 this.LB01.Items.Remove(DGQ10);
             }
-            if (LB01.Items.Count ==0)
+            if (LB01.Items.Count == 0)
             {
                 this.TabCon.Items.Remove(Tab3);
             }
-            #endregion
+
+            #endregion remove all unnessasary items
         }
 
-        void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
+        private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
             if ((e.HotKey.Key == Key.F2) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
@@ -344,12 +362,14 @@ namespace CompanioNc
             this.Label1.Visibility = Visibility.Hidden;
             this.ACTextBox.Visibility = Visibility.Visible;
         }
+
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             strID = "";
             this._timer1.Start();
             this.Label1.Visibility = Visibility.Visible;
             this.ACTextBox.Visibility = Visibility.Hidden;
+            this.ACTextBox.Text = string.Empty; //20200417 新增, uncheck時將Textbox清空
         }
 
         private void ACTextBox_KeyDown(object sender, KeyEventArgs e)

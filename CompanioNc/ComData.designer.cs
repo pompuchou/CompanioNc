@@ -177,6 +177,13 @@ namespace CompanioNc
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
 			return ((ISingleResult<sp_finduid_by_infoResult>)(result.ReturnValue));
 		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_ptdata_by_uid")]
+		public ISingleResult<sp_ptdata_by_uidResult> sp_ptdata_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), u);
+			return ((ISingleResult<sp_ptdata_by_uidResult>)(result.ReturnValue));
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tbl_Access")]
@@ -1944,6 +1951,176 @@ namespace CompanioNc
 				if ((this._key != value))
 				{
 					this._key = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_ptdata_by_uidResult
+	{
+		
+		private long _cid;
+		
+		private string _uid;
+		
+		private string _cname;
+		
+		private string _mf;
+		
+		private System.DateTime _bd;
+		
+		private string _p01;
+		
+		private string _p02;
+		
+		private string _p03;
+		
+		private string _p04;
+		
+		public sp_ptdata_by_uidResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cid", DbType="BigInt NOT NULL")]
+		public long cid
+		{
+			get
+			{
+				return this._cid;
+			}
+			set
+			{
+				if ((this._cid != value))
+				{
+					this._cid = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_uid", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string uid
+		{
+			get
+			{
+				return this._uid;
+			}
+			set
+			{
+				if ((this._uid != value))
+				{
+					this._uid = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cname", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string cname
+		{
+			get
+			{
+				return this._cname;
+			}
+			set
+			{
+				if ((this._cname != value))
+				{
+					this._cname = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_mf", DbType="NVarChar(2)")]
+		public string mf
+		{
+			get
+			{
+				return this._mf;
+			}
+			set
+			{
+				if ((this._mf != value))
+				{
+					this._mf = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_bd", DbType="Date NOT NULL")]
+		public System.DateTime bd
+		{
+			get
+			{
+				return this._bd;
+			}
+			set
+			{
+				if ((this._bd != value))
+				{
+					this._bd = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_p01", DbType="NVarChar(50)")]
+		public string p01
+		{
+			get
+			{
+				return this._p01;
+			}
+			set
+			{
+				if ((this._p01 != value))
+				{
+					this._p01 = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_p02", DbType="NVarChar(50)")]
+		public string p02
+		{
+			get
+			{
+				return this._p02;
+			}
+			set
+			{
+				if ((this._p02 != value))
+				{
+					this._p02 = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_p03", DbType="NVarChar(50)")]
+		public string p03
+		{
+			get
+			{
+				return this._p03;
+			}
+			set
+			{
+				if ((this._p03 != value))
+				{
+					this._p03 = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_p04", DbType="NVarChar(500)")]
+		public string p04
+		{
+			get
+			{
+				return this._p04;
+			}
+			set
+			{
+				if ((this._p04 != value))
+				{
+					this._p04 = value;
 				}
 			}
 		}

@@ -115,7 +115,7 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <CheckBox Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"
+        <CheckBox Name="CBunplug" Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" />
         <actb:AutoCompleteTextBox Name="ACTextBox" FontSize="20"
             Text="{Binding Source={StaticResource vm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
@@ -368,6 +368,59 @@
                         <DataGridTextColumn Header="復健" Width="1*" Binding="{Binding rehab}" ElementStyle="{StaticResource BoolStyle}" />
                     </DataGrid.Columns>
                 </DataGrid>
+            </TabItem>
+            <TabItem Name="Tab5" Header="基本資料">
+                <Grid Margin="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="身分證" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                    <Label Name="LB501" Content="A123871035" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Column="1"/>
+                    <Label Content="病歷號" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Column="2"/>
+                    <Label Name="LB502" Content="9000000088" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Column="3"/>
+                    <Label Content="姓名" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Row="1"/>
+                    <Label Name="LB503" Content="周孫元" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="1" Grid.Column="1"/>
+                    <Label Content="性別" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Row="1" Grid.Column="2"/>
+                    <Label Name="LB504" Content="男" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="1" Grid.Column="3"/>
+                    <Label Content="生日" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Row="2"/>
+                    <Label Name="LB505" Content="1973/01/07" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="2" Grid.Column="1"/>
+                    <Label Content="電話" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Row="3"/>
+                    <Label Name="LB506" Content="02-23278628" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="3" Grid.Column="1"/>
+                    <Label Content="手機" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Row="3" Grid.Column="2"/>
+                    <Label Name="LB507" Content="0921139735" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="3" Grid.Column="3"/>
+                    <Label Content="地址" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                           Grid.Row="4"/>
+                    <Label Name="LB508" Content="台北市大安區龍安里青田街九巷7-11號" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"/>
+                    <Label Content="註記" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                           Grid.Row="5"/>
+                    <Label Name="LB509" Content="是個大好人" FontSize="24" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                           Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

@@ -170,4 +170,18 @@
       <Column Name="[key]" Member="key" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
     </ElementType>
   </Function>
+  <Function Name="dbo.sp_ptdata_by_uid" Method="sp_ptdata_by_uid">
+    <Parameter Name="u" Type="System.String" DbType="NVarChar(50)" />
+    <ElementType Name="sp_ptdata_by_uidResult">
+      <Column Name="cid" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="uid" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="cname" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="mf" Type="System.String" DbType="NVarChar(2)" CanBeNull="true" />
+      <Column Name="bd" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="p01" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="p02" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="p03" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="p04" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+    </ElementType>
+  </Function>
 </Database>
