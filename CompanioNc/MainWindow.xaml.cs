@@ -1,6 +1,7 @@
 ﻿using GlobalHotKey;
 using System;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Linq;
 using System.Timers;
 using System.Windows;
@@ -41,6 +42,19 @@ namespace CompanioNc
 
         private void Main_Loaded(object sender, RoutedEventArgs e)
         {
+            string version = null;
+            try
+            {
+                //// get deployment version
+                version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+            }
+            catch (InvalidDeploymentException)
+            {
+                //// you cannot read publish version when app isn't installed 
+                //// (e.g. during debug)
+                version = "debugging, not installed";
+            }
+            this.Title += " " + version;
             this._timer1 = new System.Timers.Timer();
             this._timer1.Interval = 500;
             this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
