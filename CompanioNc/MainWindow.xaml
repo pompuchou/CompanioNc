@@ -128,7 +128,21 @@
         <Button FontSize="18" Content="Refresh" Margin="330,6,6,6" Grid.Row="0" HorizontalAlignment="Right" Click="Refresh_Click" Width="100"
                 Style="{StaticResource RoundCorner}" />
         <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
-            <TabItem Name="Tab1" Header="藥物紀錄">
+            <TabItem Name="Tab1">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <LinearGradientBrush StartPoint="0.25,0.25" EndPoint="0.75,0.75">
+                                    <GradientStop Color="Red" Offset="0.0" />
+                                    <GradientStop Color="Orange" Offset="0.5" />
+                                    <GradientStop Color="Yellow" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Label>藥物紀錄</Label>
+                    </StackPanel>
+                </TabItem.Header>
                 <DataGrid Name="DGMed" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="120" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
@@ -151,7 +165,21 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Name="Tab2" Header="檢驗結果">
+            <TabItem Name="Tab2">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <LinearGradientBrush StartPoint="0.25,0.25" EndPoint="0.75,0.75">
+                                    <GradientStop Color="Blue" Offset="0.0" />
+                                    <GradientStop Color="YellowGreen" Offset="0.5" />
+                                    <GradientStop Color="Yellow" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Label>檢驗結果</Label>
+                    </StackPanel>
+                </TabItem.Header>
                 <DataGrid Name="DGLab" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
@@ -166,7 +194,21 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Name="Tab3" Header="雲端資料">
+            <TabItem Name="Tab3">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <LinearGradientBrush StartPoint="0.25,0.25" EndPoint="0.75,0.75">
+                                    <GradientStop Color="Green" Offset="0.0" />
+                                    <GradientStop Color="GreenYellow" Offset="0.5" />
+                                    <GradientStop Color="Yellow" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Label>雲端資料</Label>
+                    </StackPanel>
+                </TabItem.Header>
                 <ListBox Name="LB01" HorizontalContentAlignment="Center">
                     <Label Name="LBDG01" Content="雲端藥歷" Background="LightCyan" />
                     <DataGrid Name="DGQ01" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
@@ -350,7 +392,21 @@
                     </DataGrid>
                 </ListBox>
             </TabItem>
-            <TabItem Name="Tab4" Header="雲端查詢">
+            <TabItem Name="Tab4">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <LinearGradientBrush StartPoint="0.75,0.25" EndPoint="0.25,0.75">
+                                    <GradientStop Color="Red" Offset="0.0" />
+                                    <GradientStop Color="Yellow" Offset="0.5" />
+                                    <GradientStop Color="Black" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Label>雲端查詢</Label>
+                    </StackPanel>
+                </TabItem.Header>
                 <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           AlternatingRowBackground="PapayaWhip">
                     <DataGrid.Columns>
@@ -369,7 +425,21 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Name="Tab5" Header="基本資料">
+            <TabItem Name="Tab5">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <LinearGradientBrush StartPoint="0.75,0.25" EndPoint="0.25,0.75">
+                                    <GradientStop Color="Red" Offset="0.0" />
+                                    <GradientStop Color="White" Offset="0.5" />
+                                    <GradientStop Color="Blue" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Label>基本資料</Label>
+                    </StackPanel>
+                </TabItem.Header>
                 <Grid Margin="30">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
