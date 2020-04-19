@@ -9,7 +9,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompanioNc
+namespace CompanioNc.Models
 {
 	using System.Data.Linq;
 	using System.Data.Linq.Mapping;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CompanioNc.Models;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace CompanioNc
+namespace CompanioNc.ViewModels
 {
-    public class ViewModel : INotifyPropertyChanged
+    public class Autocomplete_ViewModel : INotifyPropertyChanged
     {
         private List<string> _WaitMessage = new List<string>() { "Please Wait..." };
         public IEnumerable WaitMessage { get { return _WaitMessage; } }

@@ -1,12 +1,12 @@
-﻿using GlobalHotKey;
+﻿using CompanioNc.Models;
+using CompanioNc.ViewModels;
+using GlobalHotKey;
 using System;
-using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Linq;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
-using WindowsInput;
 
 namespace CompanioNc
 {
@@ -64,8 +64,8 @@ namespace CompanioNc
             // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
             hotKeyManager.Register(Key.F2, ModifierKeys.Control);
             // Handle hotkey presses.
-            hotKeyManager.KeyPressed += HotKeyManagerPressed;
-            Record_admin("Companion Log in", "");
+            hotKeyManager.KeyPressed += Hkp.HotKeyManagerPressed;
+            Logging.Record_admin("Companion Log in", "");
             Refresh_data();
             this.Label1.Content = string.Empty;
             this.Label2.Content = string.Empty;
@@ -182,7 +182,6 @@ namespace CompanioNc
         private void Refresh_data()
         {
             #region refresh all tabitem and listbox items
-
             this.TabCon.Items.Clear();
             this.TabCon.Items.Add(Tab1);
             this.TabCon.Items.Add(Tab2);
@@ -210,7 +209,6 @@ namespace CompanioNc
             this.LB01.Items.Add(DGQ09);
             this.LB01.Items.Add(LBDG10);
             this.LB01.Items.Add(DGQ10);
-
             #endregion refresh all tabitem and listbox items
 
             this.Label1.Content = strUID;
@@ -248,7 +246,7 @@ namespace CompanioNc
                 DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
                 DGMed.ItemsSource = dc.sp_meddata_by_uid(strUID);
                 sp_ptdata_by_uidResult pt = dc.sp_ptdata_by_uid(strUID).First();
-                if (this.CBunplug.IsChecked == true) this.Label2.Content = "(" + strUID + ") " + pt.cname;
+                if (this.CBunplug.IsChecked == true) this.Label2.Content = $"({strUID}) {pt.cname}";
                 this.LB501.Content = strUID; //身分證
                 this.LB502.Content = pt.cid; //病歷號
                 this.LB503.Content = pt.cname; //姓名
@@ -261,7 +259,6 @@ namespace CompanioNc
             }
 
             #region remove all unnessasary items
-
             if (DGMed.Items.Count == 0)
             {
                 this.TabCon.Items.Remove(Tab1);
@@ -324,36 +321,12 @@ namespace CompanioNc
             {
                 this.TabCon.Items.Remove(Tab3);
             }
-
             #endregion remove all unnessasary items
-        }
-
-        private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
-        {
-            if ((e.HotKey.Key == Key.F2) && (e.HotKey.Modifiers == ModifierKeys.Control))
-            {
-                List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
-                        "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
-                        "Maintenance phase.", "Nothing particular."};
-                // 先決定一句還是兩句
-                Random crandom = new Random();
-                int n = crandom.Next(2) + 1;
-                int chosen = crandom.Next(10);
-                string output = strAnswer[chosen];
-                if (n == 2)
-                {
-                    strAnswer.Remove(output);
-                    output += " " + strAnswer[crandom.Next(9)];
-                }
-                output = DateTime.Now.ToShortDateString() + ": " + output + "\n";
-                InputSimulator sim = new InputSimulator();
-                sim.Keyboard.TextEntry(output);
-            }
         }
 
         private void Main_Closed(object sender, EventArgs e)
         {
-            Record_admin("Companion Log out", "");
+            Logging.Record_admin("Companion Log out", "");
             _timer1.Stop();
             // Unregister Ctrl+Alt+F2 hotkey.
             hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);

@@ -100,7 +100,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="ViewModels\Autocomplete_ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -109,13 +109,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CodeFile1.cs" />
-    <Compile Include="Com.designer.cs">
+    <Compile Include="ViewModels\GetWindows.cs" />
+    <Compile Include="Models\Com.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Com.dbml</DependentUpon>
     </Compile>
-    <Compile Include="ComData.designer.cs">
+    <Compile Include="Models\ComData.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ComData.dbml</DependentUpon>
@@ -126,7 +126,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyDataTemplateSelector.cs" />
+    <Compile Include="ViewModels\Convertors\ValueConverters.cs" />
+    <Compile Include="ViewModels\HotKeyPressed.cs" />
+    <Compile Include="ViewModels\Log.cs" />
+    <Compile Include="ViewModels\Selectors\MyDataTemplateSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -144,20 +147,20 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Com.dbml">
+    <None Include="Models\Com.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>Com.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="Com.dbml.layout">
+    <None Include="Models\Com.dbml.layout">
       <DependentUpon>Com.dbml</DependentUpon>
     </None>
-    <None Include="ComData.dbml">
+    <None Include="Models\ComData.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>ComData.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="ComData.dbml.layout">
+    <None Include="Models\ComData.dbml.layout">
       <DependentUpon>ComData.dbml</DependentUpon>
     </None>
     <None Include="CompanioNc_TemporaryKey.pfx" />
@@ -172,9 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="200-2001382_media-tweets-pline-paulinevrrn-twitter-png-skype-nerd.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Nerd-7.jpg" />
@@ -200,5 +200,6 @@
       <Name>Aviad.WPF.Controls</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

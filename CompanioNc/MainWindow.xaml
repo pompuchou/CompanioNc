@@ -5,10 +5,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompanioNc"
+        xmlns:sltr="clr-namespace:CompanioNc.ViewModels.Selectors"
+        xmlns:cnvtr="clr-namespace:CompanioNc.ViewModels.Converters"
         mc:Ignorable="d"
         Title="Companion" Height="600" Width="800" Icon="Nerd-7.jpg" Loaded="Main_Loaded" Closed="Main_Closed">
     <Window.Resources>
-        <local:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter" />
+        <sltr:MyDataTemplateSelector x:Key="TemplateSelector"/>
+        <cnvtr:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter" />
         <Style x:Key="BoolStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text,
                 Converter={StaticResource BooleanToForegroundConverter}}" />
@@ -72,14 +75,13 @@
         <CollectionViewSource x:Key="xml">
             <CollectionViewSource.Source>
                 <PriorityBinding>
-                    <Binding Source="{StaticResource vm}"
+                    <Binding Source="{StaticResource acvm}"
                              Path="QueryCollection"
                              IsAsync="True"/>
-                    <Binding Source="{StaticResource vm}" Path="WaitMessage"/>
+                    <Binding Source="{StaticResource acvm}" Path="WaitMessage"/>
                 </PriorityBinding>
             </CollectionViewSource.Source>
         </CollectionViewSource>
-        <local:MyDataTemplateSelector x:Key="TemplateSelector"/>
         <DataTemplate x:Key="TheItemTemplate">
             <Border BorderBrush="Salmon" BorderThickness="2" CornerRadius="5">
                 <Grid>
@@ -118,7 +120,7 @@
         <CheckBox Name="CBunplug" Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" />
         <actb:AutoCompleteTextBox Name="ACTextBox" FontSize="20"
-            Text="{Binding Source={StaticResource vm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
+            Text="{Binding Source={StaticResource acvm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
             Margin="100,3,3,6" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Width="190" Height="40"
             ItemsSource="{Binding Source={StaticResource xml}}" ItemTemplateSelector="{StaticResource TemplateSelector}"
             Binding="{Binding XPath=suggestion/@uid}" MaxCompletions="20" Visibility="Hidden" KeyDown="ACTextBox_KeyDown"/>
