@@ -65,7 +65,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Nerd.ico</ApplicationIcon>
+    <ApplicationIcon>images\Nerd.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>CompanioNc.App</StartupObject>
@@ -177,9 +177,6 @@
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Nerd-7.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.7.2 %28x86 和 x64%29</ProductName>
@@ -192,14 +189,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Nerd.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ACTB\Aviad.WPF.Controls.csproj">
       <Project>{952e558b-6e94-49a5-ba50-ec50c044709c}</Project>
       <Name>Aviad.WPF.Controls</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\Nerd-7.jpg" />
+    <Resource Include="Images\Nerd.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

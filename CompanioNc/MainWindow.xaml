@@ -8,7 +8,7 @@
         xmlns:sltr="clr-namespace:CompanioNc.ViewModels.Selectors"
         xmlns:cnvtr="clr-namespace:CompanioNc.ViewModels.Converters"
         mc:Ignorable="d"
-        Title="Companion" Height="600" Width="800" Icon="Nerd-7.jpg" Loaded="Main_Loaded" Closed="Main_Closed">
+        Title="Companion" Height="600" Width="800" Icon="Images\Nerd-7.jpg" Loaded="Main_Loaded" Closed="Main_Closed">
     <Window.Resources>
         <sltr:MyDataTemplateSelector x:Key="TemplateSelector"/>
         <cnvtr:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter" />
