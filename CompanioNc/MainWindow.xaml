@@ -9,11 +9,12 @@
         xmlns:cnvtr="clr-namespace:CompanioNc.ViewModels.Converters"
         xmlns:mvm="clr-namespace:CompanioNc.ViewModels"
         mc:Ignorable="d"
-        Title="Companion" Height="600" Width="800" Icon="Images\Nerd-7.jpg" Loaded="Main_Loaded" Closed="Main_Closed">
+        Title="Companion" Height="600" Width="800" Icon="Images\Nerd-7.jpg" Loaded="Window_Loaded" Closed="Window_Closed">
     <Window.Resources>
         <mvm:MainVM x:Key="mvm" />
         <sltr:MyDataTemplateSelector x:Key="TemplateSelector"/>
         <cnvtr:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter" />
+        <cnvtr:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="BoolStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text,
                 Converter={StaticResource BooleanToForegroundConverter}}" />
@@ -63,17 +64,21 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <CheckBox Name="CBunplug" Content="Unplug" FontSize="16" HorizontalAlignment="Left" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"
+        <CheckBox Content="Unplug" FontSize="16" HorizontalAlignment="Left" IsChecked="{Binding UnPlug, Mode=TwoWay}"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" />
         <actb:AutoCompleteTextBox Name="ACTextBox" FontSize="20"
             Text="{Binding Source={StaticResource acvm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
-            Margin="100,3,3,6" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Width="190" Height="40"
+            Margin="100,3,3,6" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Width="140" Height="40"
             ItemsSource="{Binding Source={StaticResource xml}}" ItemTemplateSelector="{StaticResource TemplateSelector}"
-            Binding="{Binding XPath=suggestion/@uid}" MaxCompletions="20" Visibility="Hidden" KeyDown="ACTextBox_KeyDown"/>
-        <Label x:Name="Label1" FontSize="16" Content="{Binding StrUID}" HorizontalAlignment="Right" Margin="6,6,520,6" 
-               VerticalAlignment="Center" Grid.Row="0" />
+            Binding="{Binding XPath=suggestion/@uid}" MaxCompletions="20" Visibility="{Binding UnPlug, Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <actb:AutoCompleteTextBox.InputBindings>
+                <KeyBinding Command="{Binding Send_UID}" CommandParameter="{Binding Text, ElementName=ACTextBox}" Key="Enter" />
+            </actb:AutoCompleteTextBox.InputBindings>
+        </actb:AutoCompleteTextBox>
+        <TextBox x:Name="Label1" FontSize="16" Text="{Binding StrUID, Mode=TwoWay}" HorizontalAlignment="Right" Margin="6,6,420,6" IsReadOnly="True" 
+               VerticalAlignment="Center" Grid.Row="0" TextChanged="Label1_TextChanged" />
         <Label FontSize="16" Content="{Binding StrID}" HorizontalAlignment="Right" VerticalAlignment="Center"
-               Margin="6,6,110,6" Grid.Row="0" />
+               Margin="6,6,6,6" Grid.Row="0" />
         <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
             <TabItem Name="Tab1">
                 <TabItem.Header>
@@ -90,7 +95,7 @@
                         <Label>藥物紀錄</Label>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid Name="DGMed" ItemsSource="{Binding DGMed}" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" 
+                <DataGrid Name="DGMed" ItemsSource="{Binding DGMed}" Margin="12" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" 
                           CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="120" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
@@ -128,7 +133,7 @@
                         <Label>檢驗結果</Label>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid Name="DGLab" ItemsSource="{Binding DGLab}" Margin="6" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
+                <DataGrid Name="DGLab" ItemsSource="{Binding DGLab}" Margin="12" FontSize="18" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="Lavender">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="1*" Binding="{Binding SDATE, StringFormat={}{0:yyyy/MM/dd}}" />
                         <DataGridTextColumn Header="結果" Width="2*" Binding="{Binding o}">
@@ -157,7 +162,7 @@
                         <Label>雲端資料</Label>
                     </StackPanel>
                 </TabItem.Header>
-                <ListBox Name="LB01" HorizontalContentAlignment="Center">
+                <ListBox Name="LB01" Margin="12" HorizontalContentAlignment="Center">
                     <Label Name="LBDG01" Content="雲端藥歷" Background="LightCyan" />
                     <DataGrid Name="DGQ01" ItemsSource="{Binding DGQ01}" Margin="6" FontSize="12" Width="740" Height="Auto" MaxHeight="300" AutoGenerateColumns="False"
                               CanUserAddRows="False" CanUserDeleteRows="False" AlternatingRowBackground="PaleGreen">
@@ -355,7 +360,7 @@
                         <Label>雲端查詢</Label>
                     </StackPanel>
                 </TabItem.Header>
-                <DataGrid Name="DGQuerry" Margin="6" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                <DataGrid ItemsSource="{Binding DGQuery}" Margin="12" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           AlternatingRowBackground="PapayaWhip">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />

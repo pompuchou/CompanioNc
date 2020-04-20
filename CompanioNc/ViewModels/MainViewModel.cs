@@ -1,4 +1,5 @@
 ﻿using CompanioNc.Models;
+using CompanioNc.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,10 +12,7 @@ namespace CompanioNc.ViewModels
 {
     public class MainVM : INotifyPropertyChanged
 	{
-		private System.Timers.Timer _timer1;
-		private string tempID = string.Empty;
-		private string strID = string.Empty;
-		private string strUID = string.Empty;
+        private System.Timers.Timer _timer1;
 		private string strSDATE = string.Empty;
 
 		public MainVM() //constructor
@@ -23,6 +21,20 @@ namespace CompanioNc.ViewModels
             this._timer1.Interval = 500;
             this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
             _timer1.Start();
+
+            if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
+            {
+                StrUID = "A123871035";
+            }
+
+            // Query table的更新, 應該與WebTEst連動
+            ComDataDataContext dc = new ComDataDataContext();
+            DGQuery = dc.sp_querytable().ToList<sp_querytableResult>();
+
+            // initially not unplug
+            UnPlug = false;
+            // initialization of command property
+            Send_UID = new SendUID(this);
         }
 
         private CurrentPatient _currentPatient;
@@ -82,12 +94,6 @@ namespace CompanioNc.ViewModels
                     StrUID = s[7].Substring(1, 10);  // Propertychanged
                     strSDATE = s[0];
                     dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], true);
-                    // do something
-                    //this.Dispatcher.Invoke((Action)(() =>
-                    //{
-                    //    // 更新資料
-                    //    Refresh_data();
-                    //}));
                     //' 寫入current_uid
                     if (System.IO.File.Exists(@"C:\vpn\current_uid.txt"))
                     {
@@ -143,49 +149,114 @@ namespace CompanioNc.ViewModels
             }
         }
 
-        #region Properties
+        private void _Update_Data(string sUID)
+        {
+            if (sUID == string.Empty)
+            {
+                CPatient = null;
+                DGMed = null;
+                DGLab = null;
+                DGQ01 = null;
+                DGQ02 = null;
+                DGQ03 = null;
+                DGQ04 = null;
+                DGQ05 = null;
+                DGQ06 = null;
+                DGQ07 = null;
+                DGQ08 = null;
+                DGQ09 = null;
+                DGQ10 = null;
+            }
+            else
+            {
+                ComDataDataContext dc = new ComDataDataContext();
+                CPatient = new CurrentPatient(sUID);
+                DGMed = dc.sp_meddata_by_uid(sUID).ToList<sp_meddata_by_uidResult>();
+                DGLab = dc.sp_labdata_by_uid(sUID).ToList<sp_labdata_by_uidResult>();
+                DGQ01 = dc.sp_cloudmed_by_uid(sUID).ToList<sp_cloudmed_by_uidResult>();
+                DGQ02 = dc.sp_cloudlab_by_uid(sUID).ToList<sp_cloudlab_by_uidResult>();
+                DGQ03 = dc.sp_cloudDEN_by_uid(sUID).ToList<sp_cloudDEN_by_uidResult>();
+                DGQ04 = dc.sp_cloudOP_by_uid(sUID).ToList<sp_cloudOP_by_uidResult>();
+                DGQ05 = dc.sp_cloudTCM_by_uid(sUID).ToList<sp_cloudTCM_by_uidResult>();
+                DGQ06 = dc.sp_cloudREH_by_uid(sUID).ToList<sp_cloudREH_by_uidResult>();
+                DGQ07 = dc.sp_cloudDIS_by_uid(sUID).ToList<sp_cloudDIS_by_uidResult>();
+                DGQ08 = dc.sp_cloudALL_by_uid(sUID).ToList<sp_cloudALL_by_uidResult>();
+                DGQ09 = dc.sp_cloudSCH_R_by_uid(sUID).ToList<sp_cloudSCH_R_by_uidResult>();
+                DGQ10 = dc.sp_cloudSCH_U_by_uid(sUID).ToList<sp_cloudSCH_U_by_uidResult>();
+                if (unPlug) StrID = $"({_currentPatient.CID}) {_currentPatient.CNAME}";
+            }
+        }
+
+        #region Control Property
+        // Key property 所有資料幾乎跟著連動
+        private string strUID = string.Empty;
         public string StrUID
         {
             get { return strUID; }
             set
             {
                 strUID = value;
-                if (value == string.Empty)
-                {
-                    CPatient = null;
-                    DGMed = null;
-                    DGLab = null;
-                    DGQ01 = null;
-                    DGQ02 = null;
-                    DGQ03 = null;
-                    DGQ04 = null;
-                    DGQ05 = null;
-                    DGQ06 = null;
-                    DGQ07 = null;
-                    DGQ08 = null;
-                    DGQ09 = null;
-                    DGQ10 = null;
-                }
-                else
-                {
-                    ComDataDataContext dc = new ComDataDataContext();
-                    CPatient = new CurrentPatient(value);
-                    DGMed = dc.sp_meddata_by_uid(strUID).ToList<sp_meddata_by_uidResult>();
-                    DGLab = dc.sp_labdata_by_uid(strUID).ToList<sp_labdata_by_uidResult>();
-                    DGQ01 = dc.sp_cloudmed_by_uid(strUID).ToList<sp_cloudmed_by_uidResult>();
-                    DGQ02 = dc.sp_cloudlab_by_uid(strUID).ToList<sp_cloudlab_by_uidResult>();
-                    DGQ03 = dc.sp_cloudDEN_by_uid(strUID).ToList<sp_cloudDEN_by_uidResult>();
-                    DGQ04 = dc.sp_cloudOP_by_uid(strUID).ToList<sp_cloudOP_by_uidResult>();
-                    DGQ05 = dc.sp_cloudTCM_by_uid(strUID).ToList <sp_cloudTCM_by_uidResult>();
-                    DGQ06 = dc.sp_cloudREH_by_uid(strUID).ToList <sp_cloudREH_by_uidResult>();
-                    DGQ07 = dc.sp_cloudDIS_by_uid(strUID).ToList<sp_cloudDIS_by_uidResult>();
-                    DGQ08 = dc.sp_cloudALL_by_uid(strUID).ToList<sp_cloudALL_by_uidResult>();
-                    DGQ09 = dc.sp_cloudSCH_R_by_uid(strUID).ToList<sp_cloudSCH_R_by_uidResult>();
-                    DGQ10 = dc.sp_cloudSCH_U_by_uid(strUID).ToList<sp_cloudSCH_U_by_uidResult>();
-                }
+                _Update_Data(value);
                 OnPropertyChanged("StrUID");
             }
         }
+
+        private bool unPlug;
+
+        public bool UnPlug
+        {
+            get { return unPlug; }
+            set
+            {
+                unPlug = value;
+                if (value)
+                {
+                    // true, which means UNPLUG
+                    this._timer1.Stop();
+                    StrUID = string.Empty;
+                    StrID = string.Empty;
+                }
+                else
+                {
+                    // false, default value
+                    StrUID = string.Empty;
+                    StrID = string.Empty;
+                    this._timer1.Start();
+                }
+                OnPropertyChanged("UnPlug");
+            }
+        }
+
+        // Command property
+        public SendUID Send_UID { get; set; }
+        #endregion
+
+        #region Data Properties
+
+        private string tempID = string.Empty;
+        private string strID = string.Empty;
+        public string StrID
+        {
+            get { return strID; }
+            set
+            {
+                strID = value;
+                OnPropertyChanged("StrID");
+            }
+        }
+
+        private List<sp_querytableResult> dgQuery;
+
+        public List<sp_querytableResult> DGQuery
+        {
+            get { return dgQuery; }
+            set 
+            { 
+                dgQuery = value;
+                OnPropertyChanged("DGQuery");
+            }
+        }
+
         private List<sp_cloudSCH_U_by_uidResult> dgq10;
 
         public List<sp_cloudSCH_U_by_uidResult> DGQ10
@@ -197,6 +268,7 @@ namespace CompanioNc.ViewModels
                 OnPropertyChanged("DGQ10");
             }
         }
+
         private List<sp_cloudSCH_R_by_uidResult> dgq09;
 
         public List<sp_cloudSCH_R_by_uidResult> DGQ09
@@ -219,6 +291,7 @@ namespace CompanioNc.ViewModels
                 OnPropertyChanged("DGQ08");
             }
         }
+
         private List<sp_cloudDIS_by_uidResult> dgq07;
 
         public List<sp_cloudDIS_by_uidResult> DGQ07
@@ -230,6 +303,7 @@ namespace CompanioNc.ViewModels
                 OnPropertyChanged("DGQ07");
             }
         }
+
         private List<sp_cloudREH_by_uidResult> dgq06;
 
         public List<sp_cloudREH_by_uidResult> DGQ06
@@ -326,15 +400,7 @@ namespace CompanioNc.ViewModels
             }
         }
 
-        public string StrID
-        {
-            get { return strID; }
-            set 
-            { 
-                strID = value;
-                OnPropertyChanged("StrID");
-            }
-        }
+        #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -342,8 +408,6 @@ namespace CompanioNc.ViewModels
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
-
-        #endregion
 
         ~MainVM()  // destructor
 		{

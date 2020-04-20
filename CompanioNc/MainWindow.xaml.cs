@@ -1,5 +1,4 @@
-﻿using CompanioNc.Models;
-using CompanioNc.ViewModels;
+﻿using CompanioNc.ViewModels;
 using GlobalHotKey;
 using System;
 using System.Deployment.Application;
@@ -29,32 +28,12 @@ namespace CompanioNc
             InitializeComponent();
         }
 
-        private void Main_Loaded(object sender, RoutedEventArgs e)
+        private void Label1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            string version = null;
-            try
-            {
-                //// get deployment version
-                version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
-            }
-            catch (InvalidDeploymentException)
-            {
-                //// you cannot read publish version when app isn't installed 
-                //// (e.g. during debug)
-                version = "debugging, not installed";
-            }
-            this.Title += " " + version;
-            // Create the hotkey manager.
-            hotKeyManager = new HotKeyManager();
-            // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
-            hotKeyManager.Register(Key.F2, ModifierKeys.Control);
-            // Handle hotkey presses.
-            hotKeyManager.KeyPressed += Hkp.HotKeyManagerPressed;
-            Logging.Record_admin("Companion Log in", "");
-            Refresh_data();
+            Refresh();
         }
 
-        private void Refresh_data()
+        private void Refresh ()
         {
             #region refresh all tabitem and listbox items
             this.TabCon.Items.Clear();
@@ -85,10 +64,6 @@ namespace CompanioNc
             this.LB01.Items.Add(LBDG10);
             this.LB01.Items.Add(DGQ10);
             #endregion refresh all tabitem and listbox items
-
-            ComDataDataContext dc = new ComDataDataContext();
-            DGQuerry.ItemsSource = dc.sp_querytable();
-            if (this.Label1.Content.ToString() == string.Empty) this.TabCon.Items.Remove(Tab5); //20200417: 沒有strUID就移除基本資料
 
             #region remove all unnessasary items
             if (DGMed.Items.Count == 0)
@@ -153,10 +128,41 @@ namespace CompanioNc
             {
                 this.TabCon.Items.Remove(Tab3);
             }
+            if (this.Label1.Text == string.Empty) this.TabCon.Items.Remove(Tab5); //20200417: 沒有strUID就移除基本資料
             #endregion remove all unnessasary items
+
+            this.ACTextBox.Text = string.Empty;
         }
 
-        private void Main_Closed(object sender, EventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            string version = null;
+            try
+            {
+                //// get deployment version
+                version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+            }
+            catch (InvalidDeploymentException)
+            {
+                //// you cannot read publish version when app isn't installed 
+                //// (e.g. during debug)
+                version = "debugging, not installed";
+            }
+            this.Title += " " + version;
+
+            // Create the hotkey manager.
+            hotKeyManager = new HotKeyManager();
+            // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
+            hotKeyManager.Register(Key.F2, ModifierKeys.Control);
+            // Handle hotkey presses.
+            hotKeyManager.KeyPressed += Hkp.HotKeyManagerPressed;
+
+            Refresh();
+
+            Logging.Record_admin("Companion Log in", "");
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
         {
             Logging.Record_admin("Companion Log out", "");
             // Unregister Ctrl+Alt+F2 hotkey.
@@ -165,31 +171,5 @@ namespace CompanioNc
             hotKeyManager.Dispose();
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //strID = string.Empty;
-            Refresh_data();
-            //this._timer1.Stop();
-            //this.Label1.Visibility = Visibility.Hidden;
-            this.ACTextBox.Visibility = Visibility.Visible;
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            //strID = "";
-            //this._timer1.Start();
-            //this.Label1.Visibility = Visibility.Visible;
-            this.ACTextBox.Visibility = Visibility.Hidden;
-            this.ACTextBox.Text = string.Empty; //20200417 新增, uncheck時將Textbox清空
-        }
-
-        private void ACTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                //strUID = ACTextBox.Text;
-                Refresh_data();
-            }
-        }
     }
 }
