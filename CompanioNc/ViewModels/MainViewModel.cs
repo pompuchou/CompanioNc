@@ -424,9 +424,9 @@ namespace CompanioNc.ViewModels
 			get { return _uid; }
 		}
 
-		private int _cid;
+		private long _cid;
 
-		public int CID  // 病歷號
+		public long CID  // 病歷號
 		{
 			get { return _cid; }
 		}
@@ -486,7 +486,7 @@ namespace CompanioNc.ViewModels
 			ComDataDataContext dc = new ComDataDataContext();
 			sp_ptdata_by_uidResult pt = dc.sp_ptdata_by_uid(StrUID).First();
 			_uid = StrUID;
-			_cid = (int)pt.cid;
+			_cid = (long)pt.cid;
 			_cname = pt.cname;
 			_mf = pt.mf;
 			_bd = pt.bd;
