@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompanioNc", "CompanioNc\CompanioNc.csproj", "{AA057EFC-FD1B-4AEB-ABCD-04177AF2DE8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviad.WPF.Controls", "ACTB\Aviad.WPF.Controls.csproj", "{952E558B-6E94-49A5-BA50-EC50C044709C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompanioNc.Controls", "ACTB\CompanioNc.Controls.csproj", "{952E558B-6E94-49A5-BA50-EC50C044709C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68E47E8C-9919-4ECF-A4D1-B8815CF06E00}"
 	ProjectSection(SolutionItems) = preProject

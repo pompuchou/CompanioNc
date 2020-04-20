@@ -129,6 +129,7 @@
     <Compile Include="ViewModels\Convertors\ValueConverters.cs" />
     <Compile Include="ViewModels\HotKeyPressed.cs" />
     <Compile Include="ViewModels\Log.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Selectors\MyDataTemplateSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -189,9 +190,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ACTB\Aviad.WPF.Controls.csproj">
+    <ProjectReference Include="..\ACTB\CompanioNc.Controls.csproj">
       <Project>{952e558b-6e94-49a5-ba50-ec50c044709c}</Project>
-      <Name>Aviad.WPF.Controls</Name>
+      <Name>CompanioNc.Controls</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Aviad.WPF.Controls">
+    xmlns:local="clr-namespace:CompanioNc.Controls">
     <Style x:Key="ListBoxItemSelectOnMouseOverStyle" TargetType="ListBoxItem">
         <Setter Property="local:ListBoxItemBehavior.SelectOnMouseOver" Value="True"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>

@@ -3,8 +3,6 @@ using CompanioNc.ViewModels;
 using GlobalHotKey;
 using System;
 using System.Deployment.Application;
-using System.Linq;
-using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 
@@ -20,20 +18,11 @@ namespace CompanioNc
     ///        6. 可紀錄是否有查雲端, 是否有查關懷名單 -done
     ///        7. 量表 -plausible
     /// MainWindow.xaml 的互動邏輯
+    /// 20200419 started to MVVM
     /// </summary>
     public partial class MainWindow : Window
     {
-        private System.Timers.Timer _timer1;
-        private string strID = string.Empty;
-        private string strUID = string.Empty;
-        private string strSDATE = string.Empty;
-        private string tempID = string.Empty;
         private HotKeyManager hotKeyManager;
-
-        public string SSDATE
-        {
-            get { return strSDATE; }
-        }
 
         public MainWindow()
         {
@@ -55,10 +44,6 @@ namespace CompanioNc
                 version = "debugging, not installed";
             }
             this.Title += " " + version;
-            this._timer1 = new System.Timers.Timer();
-            this._timer1.Interval = 500;
-            this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
-            _timer1.Start();
             // Create the hotkey manager.
             hotKeyManager = new HotKeyManager();
             // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
@@ -67,116 +52,6 @@ namespace CompanioNc
             hotKeyManager.KeyPressed += Hkp.HotKeyManagerPressed;
             Logging.Record_admin("Companion Log in", "");
             Refresh_data();
-            this.Label1.Content = string.Empty;
-            this.Label2.Content = string.Empty;
-        }
-
-        private void _TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                GetWindow g = new GetWindow("問診");
-                // vb.NET里面的vbCr & vbLf 在c# 是\r\n, chr(13) chr(10)
-                // 第二個是身分證字號
-                //tempID = g.Key.Split('\n')[2];
-                tempID = g.Key;
-                //string[] ss = tempID.Split('\n');
-            }
-            catch
-            {
-                tempID = string.Empty;
-            }
-            if (strID == string.Empty)
-            {
-                if (tempID == string.Empty)
-                {
-                    // condition 1, strID = "" => ""                     do nothing
-                    return;
-                }
-                else
-                {
-                    // 檢單查核, 如果分解後數目小於8, 應該就不是正確的
-                    // 20190930似乎有效
-                    if (tempID.Split(' ').Length < 8)
-                    {
-                        //'MessageBox.Show("抓到了")
-                        return;
-                    }
-                    // condition 2, strID = "" => something A            record A, starttime
-                    // 要做很多事情, 分解
-                    // 20190930 有些"問診畫面"的狀態,文字是不一樣的,這樣的話會有錯誤
-                    strID = tempID;
-                    ComDataDataContext dc = new ComDataDataContext();
-                    string[] s = strID.Split(' ');   //0 SDATE, 1 VIST, 2 RMNO, 4 Nr, 7 uid, 8 cname
-                    strUID = s[7].Substring(1, 10);
-                    if (strUID == "A000000000")
-                    {
-                        strID = "";
-                        strUID = "";
-                        strSDATE = "";
-                        return;
-                    }
-                    strSDATE = s[0];
-                    dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], true);
-                    // do something
-                    this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        // 更新資料
-                        Refresh_data();
-                    }));
-                    //' 寫入current_uid
-                    if (System.IO.File.Exists(@"C:\vpn\current_uid.txt"))
-                    {
-                        // 如果有檔案就殺了它
-                        System.IO.File.Delete(@"C:\vpn\current_uid.txt");
-                    }
-                    System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\vpn\current_uid.txt");
-                    sw.Write(strUID);
-                    sw.Close();
-                }
-            }
-            else
-            {
-                if (strID == tempID)
-                {
-                    // condition 3, strID = something A => something A   do nothing
-                    return;
-                }
-                else if (tempID == "")
-                {
-                    //' condition 4, strID = something A => ""            record endtime, write into database
-                    //' 做的事情也不少
-                    ComDataDataContext dc = new ComDataDataContext();
-                    string[] s = strID.Split(' ');   //'0 SDATE, 1 VIST, 2 RMNO, 4 Nr, 7 uid, 8 cname
-                    dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], false);
-                    strID = tempID;
-                    strUID = string.Empty;
-                    strSDATE = string.Empty;
-                    this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        // 更新資料
-                        Refresh_data();
-                    }));
-                    if (System.IO.File.Exists(@"C:\vpn\current_uid.txt"))
-                    {
-                        //' 如果有檔案就殺了它
-                        System.IO.File.Delete(@"C:\vpn\current_uid.txt");
-                    }
-                }
-                else
-                {
-                    //' condition 5, strID = something A => something B   I don't know if this is possible
-                    //' 有可能嗎? 我不知道
-                    //' 20191001 答案揭曉了,有可能,因為THESIS在畫form時會有A000000000臨時的資料,然後再讀資料庫蓋上,就會出現something A => something B的情況
-                    //' 我採用檢核若A000000000的情形就不要寫入的方式處理
-                    //' 檢單查核, 如果分解後數目小於8, 應該就不是正確的
-                    //'                MessageBox.Show("抓到了! " + vbCrLf + strID + "=>" + tempID)
-                    if (tempID.Split(' ').Length < 8)
-                    {
-                        return;
-                    }
-                }
-            }
         }
 
         private void Refresh_data()
@@ -211,52 +86,9 @@ namespace CompanioNc
             this.LB01.Items.Add(DGQ10);
             #endregion refresh all tabitem and listbox items
 
-            this.Label1.Content = strUID;
-            this.Label2.Content = strID;
             ComDataDataContext dc = new ComDataDataContext();
             DGQuerry.ItemsSource = dc.sp_querytable();
-            if (strUID == "")
-            {
-                DGQ01.ItemsSource = null;
-                DGQ02.ItemsSource = null;
-                DGQ03.ItemsSource = null;
-                DGQ04.ItemsSource = null;
-                DGQ05.ItemsSource = null;
-                DGQ06.ItemsSource = null;
-                DGQ07.ItemsSource = null;
-                DGQ08.ItemsSource = null;
-                DGQ09.ItemsSource = null;
-                DGQ10.ItemsSource = null;
-                DGLab.ItemsSource = null;
-                DGMed.ItemsSource = null;
-                this.TabCon.Items.Remove(Tab5); //20200417: 沒有strUID就移除基本資料
-            }
-            else
-            {
-                DGQ01.ItemsSource = dc.sp_cloudmed_by_uid(strUID);
-                DGQ02.ItemsSource = dc.sp_cloudlab_by_uid(strUID);
-                DGQ03.ItemsSource = dc.sp_cloudDEN_by_uid(strUID);
-                DGQ04.ItemsSource = dc.sp_cloudOP_by_uid(strUID);
-                DGQ05.ItemsSource = dc.sp_cloudTCM_by_uid(strUID);
-                DGQ06.ItemsSource = dc.sp_cloudREH_by_uid(strUID);
-                DGQ07.ItemsSource = dc.sp_cloudDIS_by_uid(strUID);
-                DGQ08.ItemsSource = dc.sp_cloudALL_by_uid(strUID);
-                DGQ09.ItemsSource = dc.sp_cloudSCH_R_by_uid(strUID);
-                DGQ10.ItemsSource = dc.sp_cloudSCH_U_by_uid(strUID);
-                DGLab.ItemsSource = dc.sp_labdata_by_uid(strUID);
-                DGMed.ItemsSource = dc.sp_meddata_by_uid(strUID);
-                sp_ptdata_by_uidResult pt = dc.sp_ptdata_by_uid(strUID).First();
-                if (this.CBunplug.IsChecked == true) this.Label2.Content = $"({strUID}) {pt.cname}";
-                this.LB501.Content = strUID; //身分證
-                this.LB502.Content = pt.cid; //病歷號
-                this.LB503.Content = pt.cname; //姓名
-                this.LB504.Content = pt.mf; //性別
-                this.LB505.Content = pt.bd.ToString("yyyy/MM/dd"); //生日
-                this.LB506.Content = pt.p01; //電話
-                this.LB507.Content = pt.p02; //手機
-                this.LB508.Content = pt.p03; //地址
-                this.LB509.Content = pt.p04; //註記
-            }
+            if (this.Label1.Content.ToString() == string.Empty) this.TabCon.Items.Remove(Tab5); //20200417: 沒有strUID就移除基本資料
 
             #region remove all unnessasary items
             if (DGMed.Items.Count == 0)
@@ -327,34 +159,26 @@ namespace CompanioNc
         private void Main_Closed(object sender, EventArgs e)
         {
             Logging.Record_admin("Companion Log out", "");
-            _timer1.Stop();
             // Unregister Ctrl+Alt+F2 hotkey.
             hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);
-
             // Dispose the hotkey manager.
             hotKeyManager.Dispose();
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            Refresh_data();
-        }
-
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            strID = string.Empty;
-            strUID = string.Empty;
+            //strID = string.Empty;
             Refresh_data();
-            this._timer1.Stop();
-            this.Label1.Visibility = Visibility.Hidden;
+            //this._timer1.Stop();
+            //this.Label1.Visibility = Visibility.Hidden;
             this.ACTextBox.Visibility = Visibility.Visible;
         }
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            strID = "";
-            this._timer1.Start();
-            this.Label1.Visibility = Visibility.Visible;
+            //strID = "";
+            //this._timer1.Start();
+            //this.Label1.Visibility = Visibility.Visible;
             this.ACTextBox.Visibility = Visibility.Hidden;
             this.ACTextBox.Text = string.Empty; //20200417 新增, uncheck時將Textbox清空
         }
@@ -363,7 +187,7 @@ namespace CompanioNc
         {
             if (e.Key == Key.Enter)
             {
-                strUID = ACTextBox.Text;
+                //strUID = ACTextBox.Text;
                 Refresh_data();
             }
         }
