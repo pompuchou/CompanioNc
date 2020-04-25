@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CompanioNc"
              xmlns:vm="clr-namespace:CompanioNc.ViewModels"
-             StartupUri="MainWindow.xaml">
+             StartupUri="View\MainWindow.xaml">
     <Application.Resources>
+        <vm:MainVM x:Key="mvm" />
         <vm:Autocomplete_ViewModel x:Key="acvm"/>
+        <vm:VPN_ViewModel x:Key="vvm"/>
     </Application.Resources>
 </Application>

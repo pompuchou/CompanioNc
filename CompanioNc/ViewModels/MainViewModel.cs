@@ -27,10 +27,6 @@ namespace CompanioNc.ViewModels
                 StrUID = "A123871035";
             }
 
-            // Query table的更新, 應該與WebTEst連動
-            ComDataDataContext dc = new ComDataDataContext();
-            DGQuery = dc.sp_querytable().ToList<sp_querytableResult>();
-
             // initially not unplug
             UnPlug = false;
             // initialization of command property
@@ -242,18 +238,6 @@ namespace CompanioNc.ViewModels
             {
                 strID = value;
                 OnPropertyChanged("StrID");
-            }
-        }
-
-        private List<sp_querytableResult> dgQuery;
-
-        public List<sp_querytableResult> DGQuery
-        {
-            get { return dgQuery; }
-            set 
-            { 
-                dgQuery = value;
-                OnPropertyChanged("DGQuery");
             }
         }
 

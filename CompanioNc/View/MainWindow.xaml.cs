@@ -1,4 +1,5 @@
-﻿using CompanioNc.ViewModels;
+﻿using CompanioNc.View;
+using CompanioNc.ViewModels;
 using GlobalHotKey;
 using System;
 using System.Deployment.Application;
@@ -18,10 +19,12 @@ namespace CompanioNc
     ///        7. 量表 -plausible
     /// MainWindow.xaml 的互動邏輯
     /// 20200419 started to MVVM
+    /// 20200421 開始加入WebTEst
     /// </summary>
     public partial class MainWindow : Window
     {
         private HotKeyManager hotKeyManager;
+        private WebTEstView w;
 
         public MainWindow()
         {
@@ -41,7 +44,6 @@ namespace CompanioNc
             this.TabCon.Items.Add(Tab2);
             this.TabCon.Items.Add(Tab3);
             this.TabCon.Items.Add(Tab4);
-            this.TabCon.Items.Add(Tab5);
             this.LB01.Items.Clear();
             this.LB01.Items.Add(LBDG01);
             this.LB01.Items.Add(DGQ01);
@@ -128,7 +130,7 @@ namespace CompanioNc
             {
                 this.TabCon.Items.Remove(Tab3);
             }
-            if (this.Label1.Text == string.Empty) this.TabCon.Items.Remove(Tab5); //20200417: 沒有strUID就移除基本資料
+            if (this.Label1.Text == string.Empty) this.TabCon.Items.Remove(Tab4); //20200417: 沒有strUID就移除基本資料
             #endregion remove all unnessasary items
 
             this.ACTextBox.Text = string.Empty;
@@ -171,5 +173,37 @@ namespace CompanioNc
             hotKeyManager.Dispose();
         }
 
+        private void VPNwindow_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                hotKeyManager.Register(Key.G, ModifierKeys.Control);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            if (w is null) w = new WebTEstView(this);
+            w.Show();
+
+        }
+
+        private void VPNwindow_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            w.Close();
+            w = null;
+        }
     }
 }
