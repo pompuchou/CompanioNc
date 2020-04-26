@@ -6,11 +6,12 @@ namespace CompanioNc.ViewModels
 {
     public class Logging
     {
-            public static void Record_error(string er)
+        public static void Record_error(string er)
+        {
+            ///created on 2020/03/28, transcribed from vb.net
+            ///寫入錯誤訊息
+            using (Com_alDataContext dc = new Com_alDataContext())
             {
-                ///created on 2020/03/28, transcribed from vb.net
-                ///寫入錯誤訊息
-                ComDataContext dc = new ComDataContext();
                 log_Err newErr = new log_Err()
                 {
                     error_date = DateTime.Now,
@@ -23,11 +24,13 @@ namespace CompanioNc.ViewModels
                 dc.log_Err.InsertOnSubmit(newErr);
                 dc.SubmitChanges();
             }
+        }
 
-            public static void Record_admin(string op, string des)
+        public static void Record_admin(string op, string des)
+        {
+            ///寫入作業訊息
+            using (Com_alDataContext dc = new Com_alDataContext())
             {
-                ///寫入作業訊息
-                ComDataContext dc = new ComDataContext();
                 log_Adm newLog = new log_Adm()
                 {
                     regdate = DateTime.Now,
@@ -41,5 +44,6 @@ namespace CompanioNc.ViewModels
                 dc.log_Adm.InsertOnSubmit(newLog);
                 dc.SubmitChanges();
             }
+        }
     }
 }

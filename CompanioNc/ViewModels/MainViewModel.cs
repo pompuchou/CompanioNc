@@ -11,12 +11,12 @@ using System.Timers;
 namespace CompanioNc.ViewModels
 {
     public class MainVM : INotifyPropertyChanged
-	{
+    {
         private System.Timers.Timer _timer1;
-		private string strSDATE = string.Empty;
+        private string strSDATE = string.Empty;
 
-		public MainVM() //constructor
-		{
+        public MainVM() //constructor
+        {
             this._timer1 = new System.Timers.Timer();
             this._timer1.Interval = 500;
             this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
@@ -34,11 +34,12 @@ namespace CompanioNc.ViewModels
         }
 
         private CurrentPatient _currentPatient;
-		public CurrentPatient CPatient
-		{
-			get { return _currentPatient; }
-			set 
-            { 
+
+        public CurrentPatient CPatient
+        {
+            get { return _currentPatient; }
+            set
+            {
                 _currentPatient = value;
                 OnPropertyChanged("CPatient");
             }
@@ -79,7 +80,7 @@ namespace CompanioNc.ViewModels
                     // 要做很多事情, 分解
                     // 20190930 有些"問診畫面"的狀態,文字是不一樣的,這樣的話會有錯誤
                     StrID = tempID;
-                    ComDataDataContext dc = new ComDataDataContext();
+                    Com_clDataContext dc = new Com_clDataContext();
                     string[] s = strID.Split(' ');   //0 SDATE, 1 VIST, 2 RMNO, 4 Nr, 7 uid, 8 cname
                     if (s[7].Substring(1, 10) == "A000000000")
                     {
@@ -90,15 +91,6 @@ namespace CompanioNc.ViewModels
                     StrUID = s[7].Substring(1, 10);  // Propertychanged
                     strSDATE = s[0];
                     dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], true);
-                    //' 寫入current_uid
-                    if (System.IO.File.Exists(@"C:\vpn\current_uid.txt"))
-                    {
-                        // 如果有檔案就殺了它
-                        System.IO.File.Delete(@"C:\vpn\current_uid.txt");
-                    }
-                    System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\vpn\current_uid.txt");
-                    sw.Write(strUID);
-                    sw.Close();
                 }
             }
             else
@@ -112,22 +104,12 @@ namespace CompanioNc.ViewModels
                 {
                     //' condition 4, strID = something A => ""            record endtime, write into database
                     //' 做的事情也不少
-                    ComDataDataContext dc = new ComDataDataContext();
+                    Com_clDataContext dc = new Com_clDataContext();
                     string[] s = strID.Split(' ');   //'0 SDATE, 1 VIST, 2 RMNO, 4 Nr, 7 uid, 8 cname
                     dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], false);
                     StrID = tempID;
                     StrUID = string.Empty;  // Propertychanged
                     strSDATE = string.Empty;
-                    //this.Dispatcher.Invoke((Action)(() =>
-                    //{
-                    //    // 更新資料
-                    //    Refresh_data();
-                    //}));
-                    if (System.IO.File.Exists(@"C:\vpn\current_uid.txt"))
-                    {
-                        //' 如果有檔案就殺了它
-                        System.IO.File.Delete(@"C:\vpn\current_uid.txt");
-                    }
                 }
                 else
                 {
@@ -165,7 +147,7 @@ namespace CompanioNc.ViewModels
             }
             else
             {
-                ComDataDataContext dc = new ComDataDataContext();
+                Com_clDataContext dc = new Com_clDataContext();
                 CPatient = new CurrentPatient(sUID);
                 DGMed = dc.sp_meddata_by_uid(sUID).ToList<sp_meddata_by_uidResult>();
                 DGLab = dc.sp_labdata_by_uid(sUID).ToList<sp_labdata_by_uidResult>();
@@ -184,8 +166,10 @@ namespace CompanioNc.ViewModels
         }
 
         #region Control Property
+
         // Key property 所有資料幾乎跟著連動
         private string strUID = string.Empty;
+
         public string StrUID
         {
             get { return strUID; }
@@ -225,12 +209,14 @@ namespace CompanioNc.ViewModels
 
         // Command property
         public SendUID Send_UID { get; set; }
-        #endregion
+
+        #endregion Control Property
 
         #region Data Properties
 
         private string tempID = string.Empty;
         private string strID = string.Empty;
+
         public string StrID
         {
             get { return strID; }
@@ -264,6 +250,7 @@ namespace CompanioNc.ViewModels
                 OnPropertyChanged("DGQ09");
             }
         }
+
         private List<sp_cloudALL_by_uidResult> dgq08;
 
         public List<sp_cloudALL_by_uidResult> DGQ08
@@ -329,8 +316,8 @@ namespace CompanioNc.ViewModels
         public List<sp_cloudDEN_by_uidResult> DGQ03
         {
             get { return dgq03; }
-            set 
-            { 
+            set
+            {
                 dgq03 = value;
                 OnPropertyChanged("DGQ03");
             }
@@ -341,8 +328,8 @@ namespace CompanioNc.ViewModels
         public List<sp_labdata_by_uidResult> DGLab
         {
             get { return dgLab; }
-            set 
-            { 
+            set
+            {
                 dgLab = value;
                 OnPropertyChanged("DGLab");
             }
@@ -353,8 +340,8 @@ namespace CompanioNc.ViewModels
         public List<sp_meddata_by_uidResult> DGMed
         {
             get { return dgMed; }
-            set 
-            { 
+            set
+            {
                 dgMed = value;
                 OnPropertyChanged("DGMed");
             }
@@ -365,8 +352,8 @@ namespace CompanioNc.ViewModels
         public List<sp_cloudlab_by_uidResult> DGQ02
         {
             get { return dgq02; }
-            set 
-            { 
+            set
+            {
                 dgq02 = value;
                 OnPropertyChanged("DGQ02");
             }
@@ -377,107 +364,107 @@ namespace CompanioNc.ViewModels
         public List<sp_cloudmed_by_uidResult> DGQ01
         {
             get { return dgq01; }
-            set 
-            { 
+            set
+            {
                 dgq01 = value;
                 OnPropertyChanged("DGQ01");
             }
         }
 
-        #endregion
+        #endregion Data Properties
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-		private void OnPropertyChanged(string propertyName)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         ~MainVM()  // destructor
-		{
+        {
             _timer1.Stop();
         }
     }
 
-	public class CurrentPatient
-	{
-		private string _uid;
+    public class CurrentPatient
+    {
+        private string _uid;
 
-		public string UID  // 身分證字號
-		{
-			get { return _uid; }
-		}
+        public string UID  // 身分證字號
+        {
+            get { return _uid; }
+        }
 
-		private long _cid;
+        private long _cid;
 
-		public long CID  // 病歷號
-		{
-			get { return _cid; }
-		}
+        public long CID  // 病歷號
+        {
+            get { return _cid; }
+        }
 
-		private string _cname;
+        private string _cname;
 
-		public string CNAME  // 姓名
-		{
-			get { return _cname; }
-		}
+        public string CNAME  // 姓名
+        {
+            get { return _cname; }
+        }
 
-		private DateTime _bd;
+        private DateTime _bd;
 
-		public DateTime BD  // 生日
-		{
-			get { return _bd; }
-		}
+        public DateTime BD  // 生日
+        {
+            get { return _bd; }
+        }
 
-		private string _mf;
+        private string _mf;
 
-		public string MF  // 性別
-		{
-			get { return _mf; }
-		}
+        public string MF  // 性別
+        {
+            get { return _mf; }
+        }
 
-		private string _p01;
+        private string _p01;
 
-		public string P01  // 家中電話
-		{
-			get { return _p01; }
-		}
+        public string P01  // 家中電話
+        {
+            get { return _p01; }
+        }
 
-		private string _p02;
+        private string _p02;
 
-		public string P02  // 手機
-		{
-			get { return _p02; }
-		}
+        public string P02  // 手機
+        {
+            get { return _p02; }
+        }
 
-		private string _p03;
+        private string _p03;
 
-		public string P03  // 地址
-		{
-			get { return _p03; }
-		}
+        public string P03  // 地址
+        {
+            get { return _p03; }
+        }
 
-		private string _p04;
+        private string _p04;
 
-		public string P04  // 註記
-		{
-			get { return _p04; }
-			set { _p04 = value; }
-		}
+        public string P04  // 註記
+        {
+            get { return _p04; }
+            set { _p04 = value; }
+        }
 
-		public CurrentPatient(string StrUID)
-		{
-			ComDataDataContext dc = new ComDataDataContext();
-			sp_ptdata_by_uidResult pt = dc.sp_ptdata_by_uid(StrUID).First();
-			_uid = StrUID;
-			_cid = (long)pt.cid;
-			_cname = pt.cname;
-			_mf = pt.mf;
-			_bd = pt.bd;
-			_p01 = pt.p01;
-			_p02 = pt.p02;
-			_p03 = pt.p03;
-			_p04 = pt.p04;
-		}
-	}
+        public CurrentPatient(string StrUID)
+        {
+            Com_clDataContext dc = new Com_clDataContext();
+            sp_ptdata_by_uidResult pt = dc.sp_ptdata_by_uid(StrUID).First();
+            _uid = StrUID;
+            _cid = (long)pt.cid;
+            _cname = pt.cname;
+            _mf = pt.mf;
+            _bd = pt.bd;
+            _p01 = pt.p01;
+            _p02 = pt.p02;
+            _p03 = pt.p03;
+            _p04 = pt.p04;
+        }
+    }
 }

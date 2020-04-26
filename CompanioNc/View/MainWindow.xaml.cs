@@ -1,5 +1,6 @@
 ﻿using CompanioNc.View;
 using CompanioNc.ViewModels;
+using CompanioNc.Models;
 using GlobalHotKey;
 using System;
 using System.Deployment.Application;
@@ -24,7 +25,7 @@ namespace CompanioNc
     public partial class MainWindow : Window
     {
         private HotKeyManager hotKeyManager;
-        private WebTEstView w;
+        private WebTEst w;
 
         public MainWindow()
         {
@@ -150,7 +151,13 @@ namespace CompanioNc
                 //// (e.g. during debug)
                 version = "debugging, not installed";
             }
-            this.Title += " " + version;
+            this.Title += $" {version}";
+
+            ///WebTEst部分不採MVVM
+            using (Com_clDataContext dc =new Com_clDataContext())
+            {
+                this.DGQuery.ItemsSource = dc.sp_querytable();
+            }
 
             // Create the hotkey manager.
             hotKeyManager = new HotKeyManager();
@@ -166,44 +173,38 @@ namespace CompanioNc
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            Logging.Record_admin("Companion Log out", "");
             // Unregister Ctrl+Alt+F2 hotkey.
             hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);
             // Dispose the hotkey manager.
             hotKeyManager.Dispose();
+
+            // Close all windows at once, convenient
+            if (w != null) w.Close();
+
+            Logging.Record_admin("Companion Log out", "");
         }
 
+        #region WebTEst PART, NO MVVM used
         private void VPNwindow_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                hotKeyManager.Register(Key.G, ModifierKeys.Control);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            if (w is null) w = new WebTEstView(this);
+            if (w is null) w = new WebTEst(this);
             w.Show();
-
         }
 
         private void VPNwindow_Unchecked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
             w.Close();
             w = null;
         }
+        
+        private void WebTEst_refresh_Click(object sender, RoutedEventArgs e)
+        {
+            ///WebTEst部分不採MVVM
+            using (Com_clDataContext dc = new Com_clDataContext())
+            {
+                this.DGQuery.ItemsSource = dc.sp_querytable();
+            }
+        }
+        #endregion
     }
 }

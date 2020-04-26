@@ -23,7 +23,7 @@ namespace CompanioNc.Models
 	
 	
 	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="al")]
-	public partial class ComDataContext : System.Data.Linq.DataContext
+	public partial class Com_alDataContext : System.Data.Linq.DataContext
 	{
 		
 		private static System.Data.Linq.Mapping.MappingSource mappingSource = new AttributeMappingSource();
@@ -41,31 +41,31 @@ namespace CompanioNc.Models
     partial void Deletetbl_patients(tbl_patients instance);
     #endregion
 		
-		public ComDataContext() : 
+		public Com_alDataContext() : 
 				base(global::CompanioNc.Properties.Settings.Default.alConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataContext(string connection) : 
+		public Com_alDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataContext(System.Data.IDbConnection connection) : 
+		public Com_alDataContext(System.Data.IDbConnection connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+		public Com_alDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+		public Com_alDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();

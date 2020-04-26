@@ -23,7 +23,7 @@ namespace CompanioNc.Models
 	
 	
 	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="CL")]
-	public partial class ComDataDataContext : System.Data.Linq.DataContext
+	public partial class Com_clDataContext : System.Data.Linq.DataContext
 	{
 		
 		private static System.Data.Linq.Mapping.MappingSource mappingSource = new AttributeMappingSource();
@@ -80,31 +80,31 @@ namespace CompanioNc.Models
     partial void Deletep_source(p_source instance);
     #endregion
 		
-		public ComDataDataContext() : 
+		public Com_clDataContext() : 
 				base(global::CompanioNc.Properties.Settings.Default.CLConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataDataContext(string connection) : 
+		public Com_clDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataDataContext(System.Data.IDbConnection connection) : 
+		public Com_clDataContext(System.Data.IDbConnection connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+		public Com_clDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
 		}
 		
-		public ComDataDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+		public Com_clDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();

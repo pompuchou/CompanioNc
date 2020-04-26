@@ -134,7 +134,7 @@
                 </actb:AutoCompleteTextBox>
                 <TextBox x:Name="Label1" FontSize="16" Text="{Binding StrUID, Mode=TwoWay}" HorizontalAlignment="Right" Margin="6,6,420,6" IsReadOnly="True"
                VerticalAlignment="Center" Grid.Row="0" TextChanged="Label1_TextChanged" />
-                <Label FontSize="16" Content="{Binding StrID}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                <Label x:Name="strID" FontSize="16" Content="{Binding StrID}" HorizontalAlignment="Right" VerticalAlignment="Center"
                Margin="6,6,6,6" Grid.Row="0" />
                 <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
                     <TabItem Name="Tab1">
@@ -473,15 +473,15 @@
             </Grid>
         </TabItem>
         <TabItem Header="雲端查詢" Width="300">
-            <Grid DataContext="{StaticResource vvm}">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <CheckBox Content="VPN Window" x:Name="VPNwindow" FontSize="16" HorizontalAlignment="Left" IsChecked="{Binding UnPlug, Mode=TwoWay}"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" Checked="VPNwindow_Checked" Unchecked="VPNwindow_Unchecked" />
-                <Button Content="Refresh" Margin="150,5,5,0" Style="{StaticResource RoundCorner}"/>
-                <DataGrid ItemsSource="{Binding DGQuery}" Margin="12" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                <Button x:Name="WebTEst_refresh" Content="Refresh" Margin="150,5,5,0" Style="{StaticResource RoundCorner}" Click="WebTEst_refresh_Click" />
+                <DataGrid x:Name="DGQuery" Margin="12" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           AlternatingRowBackground="PapayaWhip"  Grid.Row="1">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />

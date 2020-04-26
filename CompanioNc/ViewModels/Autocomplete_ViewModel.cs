@@ -54,7 +54,7 @@ namespace CompanioNc.ViewModels
             //var result = xmlDoc.SelectNodes("//CompleteSuggestion");
             //_QueryCollection = result;
 
-            ComDataDataContext dc = new ComDataDataContext();
+            Com_clDataContext dc = new Com_clDataContext();
             XDocument doc = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"), new XElement("Toplevel",
                 from p in dc.sp_finduid_by_info(SearchTerm)
                 select new XElement("CompleteSuggestion",
