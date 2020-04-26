@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Linq;
 using System.Globalization;
 using Microsoft.VisualBasic;
+using System.Windows.Navigation;
 
 namespace CompanioNc.View
 {
@@ -78,15 +79,15 @@ namespace CompanioNc.View
         {
             if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
-                // 更新雲端資料
-                // 想到一個複雜的方式, 不斷利用LoadCompleted
+                /// 目的: 更新雲端資料, 讀寫雲端資料
+                /// 現在可以合併兩個步驟為一個步驟
+                /// 想到一個複雜的方式, 不斷利用LoadCompleted
                 this.g.LoadCompleted -= G_LoadCompleted;
                 this.g.LoadCompleted += G_LoadCompleted;
                 this.g.Navigate(VPN_URL);
             }
             if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
-                //// 目的: 讀寫雲端資料
                 //HTMLDocument d;
                 //string temp_uid;
 
@@ -109,14 +110,14 @@ namespace CompanioNc.View
                 //System.Windows.Forms.MessageBox.Show($"ID: {temp_uid}");
             }
         }
-
+        #region LoadCompleted methods
         private void G_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             HTMLDocument d;
             string temp_uid, strUID;
-            // 會有兩次
-            // 第一次讀完檔案會再執行javascript
-            // 第二次
+            /// 會有兩次
+            /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
+            /// 第二次如果認證OK, 會再透過javascript下載個案雲端資料
 
             d = (HTMLDocument)g.Document;
             if (d != null)
@@ -148,7 +149,7 @@ namespace CompanioNc.View
                     // if (strUID = string.Empty) 離開
                     if (strUID == string.Empty)
                     {
-                        tb.ShowBalloonTip("醫療系統資料庫查無此人", $"請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
+                        tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
                         return;
                     }
                     else
@@ -156,16 +157,76 @@ namespace CompanioNc.View
                         // show balloon with built-in icon
                         tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
                         this.g.LoadCompleted -= G_LoadCompleted;
+                        this.g.LoadCompleted -= Data_LoadCompleted;
+                        this.g.LoadCompleted += Data_LoadCompleted;
+                        /// 在外面的這個frame, 在下一步之前, 除了確定身分證字號外還有三件事情要做:
+                        /// 1. 讀取特殊註記, 如果有的話
+                        /// 2. 讀取提醒, 如果有的話
+                        /// 3. 讀取所有要讀的tab
+
+                        /// 1. 讀取特殊註記, 如果有的話
+                        ///    這是在ContentPlaceHolder1_tab02
+                        ///    是個table
+
+                        /// 2. 讀取提醒, 如果有的話
+                        ///    這是在ContentPlaceHolder1_GV
+                        ///    也是個table
+
+                        /// 3. 讀取所有要讀的tab
+                        ///    這是在ContentPlaceHolder1_tab
+                        ///    是個list
+                        ///    ContentPlaceHolder1_a_0008 是雲端藥歷
+                        ///    ContentPlaceHolder1_a_0009 是特定管制藥品用藥資訊
+                        ///    ContentPlaceHolder1_a_0060 是檢查檢驗結果
+                        ///    ContentPlaceHolder1_a_0020 是手術明細紀錄
+                        ///    ContentPlaceHolder1_a_0070 是出院病歷摘要
+                        ///    ContentPlaceHolder1_a_0080 是復健醫療
+                        ///    ContentPlaceHolder1_a_0030 是牙科處置及手術
+                        ///    我想應該放在一個list
+                        /// 每當按一次鍵就會觸發一次LoadCompleted
+                        /// 但是下一頁不會觸發LoadCompleted
+                        /// 如何使用遞歸方式?
+                        /// 各頁應該使用sequential方式讀取
+                        /// Parsing及寫入資料庫則可以用async await技術
+                        /// 用index來看處理的位置
+                        /// 分工:
+                        /// 1. 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
+                        /// 2. 流程控制: LoadCompleted, 遞歸, iterator, 每按一次tab就會回到從頭, 
+                        ///     2-1. 取得UID  -done
+                        ///     2-2. 取得LIST<ToDo>
+                        ///     2-3. 判斷位置, index property
+                        ///     2-4. 判斷現在該做什麼, by index and LIST<ToDo>
+                        /// 3. 網頁操弄與擷取資料: sequential
+                        ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發Load
+                        ///     3-2. 都放在記憶體裡, 快速, in the LIST
+                        /// 4. Parsing & Saving to SQL: async
+                        ///     4-1. 多工同時處理, 快速
+                        ///     4-2. 依照欄位資料/位置 Parsing
+                        ///     4-3. 存入SQL
+                        ///     4-4. 製作Query
+                        /// 查核機制?
                     }
-                    // 讀取特殊註記, 如果有的話
-
-                    // 讀取提醒, 如果有的話
-
-                    // 讀取所有要讀的tab
                 }
             }
         }
 
+        private void Data_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            IHTMLElement htmlgvList;
+
+            // d 是parent HTML document
+            HTMLDocument d = (HTMLDocument)g.Document;
+            // f 是frame(0) HTML document
+            HTMLDocument f = d.frames.item(0).document.body.document;
+            /// 20200426 我竟然神奇地找到了新的路徑
+            /// 新舊比較
+            /// 新: htmlgvList = d.frames.item(0).document.body.document.getElementById("ContentPlaceHolder1_gvList");
+            /// 舊: htmlgvList = d.Window.Frames(0).Document.GetElementById("ContentPlaceHolder1_gvList")
+            htmlgvList = f.getElementById("ContentPlaceHolder1_gvList");
+
+            tb.ShowBalloonTip("Hi", "Hello!", BalloonIcon.None);
+        }
+        #endregion
         private string MakeSure_UID(string vpnUID)
         {
             string thesisUID = string.Empty;
