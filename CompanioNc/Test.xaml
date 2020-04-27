@@ -8,6 +8,11 @@
         Title="Test" Height="450" Width="800"
         Loaded="Window_Loaded">
     <Grid>
-        <WebBrowser x:Name="g"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button Content="Hi, please push me" Click="Button_Click"/>
+        <WebBrowser x:Name="g" Grid.Row="1"/>
     </Grid>
 </Window>
