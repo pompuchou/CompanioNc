@@ -10,8 +10,10 @@ namespace CompanioNc.View
     /// 用來取代WebTEst.g.LoadComplete
     /// Dependency: WebTEst.xaml, 專門為其設計, 並沒有廣泛性
     /// </summary>
-    public class FrameMonitor
+    public class FrameMonitor : IDisposable
     {
+        // Flag: Has Dispose already been called?
+        bool disposed = false;
         private int _interval;
         private WebTEst w;
         private System.Timers.Timer _timer2;
@@ -66,13 +68,34 @@ namespace CompanioNc.View
             }
         }
 
+        // Public implementation of Dispose pattern callable by consumers.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Free any other managed objects here.
+                //
+                _timer2.Stop();
+                _timer2.Dispose();
+            }
+
+            disposed = true;
+        }
+
         public event FrameLoadCompleteEventHandler FrameLoadComplete;
 
-        ~FrameMonitor()
-        {
-            _timer2.Stop();
-            _timer2.Dispose();
-        }
     }
 
     public class FrameLoadCompleteEventArgs : EventArgs
