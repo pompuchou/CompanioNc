@@ -192,6 +192,8 @@ namespace CompanioNc.View
                         ///    ContentPlaceHolder1_a_0070 是出院病歷摘要
                         ///    ContentPlaceHolder1_a_0080 是復健醫療
                         ///    ContentPlaceHolder1_a_0030 是牙科處置及手術
+                        ///    ContentPlaceHolder1_a_0090 是中醫用藥
+                        ///    ContentPlaceHolder1_a_0040 是過敏藥
                         ///    我想應該放在一個list
                         /// 每當按一次鍵就會觸發一次LoadCompleted
                         /// 但是下一頁不會觸發LoadCompleted

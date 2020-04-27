@@ -109,8 +109,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FrameLoadCompleteEvent.cs" />
+    <Compile Include="View\FrameLoadCompleteEvent.cs" />
     <Compile Include="ViewModels\Autocomplete_ViewModel.cs" />
+    <Compile Include="View\StoryBoard.cs" />
     <Compile Include="View\WebTEst.xaml.cs">
       <DependentUpon>WebTEst.xaml</DependentUpon>
     </Compile>
