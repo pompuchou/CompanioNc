@@ -197,7 +197,8 @@ namespace CompanioNc.View
                         ///     2-3. 判斷位置, index property
                         ///     2-4. 判斷現在該做什麼, by index and LIST<ToDo>
                         /// 3. 網頁操弄與擷取資料: sequential
-                        ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發Load
+                        ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發LoadCompleted; 疑問會不會來不及?
+                        ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?
                         ///     3-2. 都放在記憶體裡, 快速, in the LIST
                         /// 4. Parsing & Saving to SQL: async
                         ///     4-1. 多工同時處理, 快速
@@ -218,6 +219,7 @@ namespace CompanioNc.View
             HTMLDocument d = (HTMLDocument)g.Document;
             // f 是frame(0) HTML document
             HTMLDocument f = d.frames.item(0).document.body.document;
+            
             /// 20200426 我竟然神奇地找到了新的路徑
             /// 新舊比較
             /// 新: htmlgvList = d.frames.item(0).document.body.document.getElementById("ContentPlaceHolder1_gvList");
