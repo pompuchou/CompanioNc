@@ -88,32 +88,7 @@ namespace CompanioNc.View
                 /// 想到一個複雜的方式, 不斷利用LoadCompleted
                 f.FrameLoadComplete -= F_LoadCompleted;
                 f.FrameLoadComplete += F_LoadCompleted;
-                //this.g.LoadCompleted -= G_LoadCompleted;
-                //this.g.LoadCompleted += G_LoadCompleted;
                 this.g.Navigate(VPN_URL);
-            }
-            if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
-            {
-                //HTMLDocument d;
-                //string temp_uid;
-
-                //// 第一步找到身分證字號
-                //d = (HTMLDocument)g.Document;
-                //// 如果是空值就離開
-                //if (d.getElementById("ContentPlaceHolder1_lbluserID") == null)
-                //{
-                //    // 無法抓取身分證字號
-                //    tb.ShowBalloonTip("讀卡失敗", "無法抓取", BalloonIcon.Error);
-                //    return;
-                //}
-                //else
-                //{
-                //    temp_uid = d.getElementById("ContentPlaceHolder1_lbluserID").innerText;
-                //}
-
-                //// 第二步找到正確的身分證號
-                //// 新病人一定要連動, 不然不做了
-                //System.Windows.Forms.MessageBox.Show($"ID: {temp_uid}");
             }
         }
 
