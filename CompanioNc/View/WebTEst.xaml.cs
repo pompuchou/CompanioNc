@@ -1,6 +1,7 @@
 ﻿using CompanioNc.Models;
 using GlobalHotKey;
 using Hardcodet.Wpf.TaskbarNotification;
+using HtmlAgilityPack;
 using Microsoft.VisualBasic;
 using mshtml;
 using System;
@@ -278,7 +279,10 @@ namespace CompanioNc.View
             // 目前重點, 如何判斷多頁?
             // 判斷是否多頁? 如何判斷多頁?????????????????????
             // 設定total_pages = ????
-
+            HtmlDocument p = new HtmlDocument();
+            p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").outerHTML);
+            HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
+            total_pages = o.Count;
             // 如果多頁, 轉換loadcomplete, 呼叫pager
             // 如果沒有多頁按鍵到下一tab, 此段程式到此結束
             if (total_pages > 0)
@@ -290,7 +294,14 @@ namespace CompanioNc.View
 
                 // 剛剛已經讀了第一頁了, 從下一頁開始
                 current_page = 2;
-                // 按鈕機制, 應該是某種inject javascript
+                // 按鈕機制
+                foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
+                {
+                    if (a.innerText == ">")
+                    {
+                        a.click();
+                    }
+                }
             }
 
             #endregion 判斷多頁
@@ -371,6 +382,14 @@ namespace CompanioNc.View
                 // 按鍵到下一頁, 此段程式到此結束
                 // HOW TO ?????????????????????????????????????????
                 // 如何下一頁, 可能要用invokescript
+                // 按鈕機制
+                foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
+                {
+                    if (a.innerText == ">")
+                    {
+                        a.click();
+                    }
+                }
             }
         }
 
