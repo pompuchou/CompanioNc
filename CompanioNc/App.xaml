@@ -4,8 +4,8 @@
              xmlns:local="clr-namespace:CompanioNc"
              xmlns:vm="clr-namespace:CompanioNc.ViewModels"
              xmlns:tb="http://www.hardcodet.net/taskbar"
-    StartupUri="View\MainWindow.xaml">
-    <!--StartupUri="Test.xaml">-->
+    StartupUri="Test.xaml">
+    <!--StartupUri="View\MainWindow.xaml">-->
     <Application.Resources>
         <vm:MainVM x:Key="mvm" />
         <vm:Autocomplete_ViewModel x:Key="acvm" />
