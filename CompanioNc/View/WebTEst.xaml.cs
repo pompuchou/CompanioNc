@@ -1,14 +1,14 @@
 ﻿using CompanioNc.Models;
 using GlobalHotKey;
 using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.VisualBasic;
 using mshtml;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Linq;
-using System.Globalization;
-using Microsoft.VisualBasic;
-using System.Windows.Navigation;
 
 namespace CompanioNc.View
 {
@@ -31,17 +31,27 @@ namespace CompanioNc.View
     {
         private HotKeyManager hotKeyManager;
         private const string VPN_URL = @"https://medcloud.nhi.gov.tw/imme0008/IMME0008S01.aspx";
+        private const string DEFAULT_URL = @"https://www.googl.com";
+
+        private readonly string[] tab_id_wanted = new string[] { "ContentPlaceHolder1_a_0008", "ContentPlaceHolder1_a_0009", "ContentPlaceHolder1_a_0020",
+                                                                 "ContentPlaceHolder1_a_0030", "ContentPlaceHolder1_a_0040", "ContentPlaceHolder1_a_0060",
+                                                                 "ContentPlaceHolder1_a_0070", "ContentPlaceHolder1_a_0080", "ContentPlaceHolder1_a_0090" };
+
+        private Queue<VPN_Operation> QueueOperation = new Queue<VPN_Operation>();
+        private VPN_Operation current_op;
+        private Queue<VPN_Retrieved> QueueRetrieved = new Queue<VPN_Retrieved>();
+        private int current_page, total_pages;
 
         private TaskbarIcon tb = new TaskbarIcon();
 
-        private readonly MainWindow m;
-        private FrameMonitor f;
+        private MainWindow m;
+        private FrameMonitor fm;
 
         public WebTEst(MainWindow mw)
         {
             // 把Caller傳遞過來
             m = mw;
-            f = new FrameMonitor(this, 100);
+            fm = new FrameMonitor(this, 100);
             InitializeComponent();
         }
 
@@ -57,7 +67,7 @@ namespace CompanioNc.View
                 throw;
             }
             m.VPNwindow.IsChecked = false;
-            f.Dispose();
+            fm.Dispose();
         }
 
         private void WebTEst_Loaded(object sender, RoutedEventArgs e)
@@ -74,7 +84,11 @@ namespace CompanioNc.View
             {
                 throw;
             }
+            // 漏了 +=, 難怪不fire
+            fm.FrameLoadComplete -= F_LoadCompleted;
+            fm.FrameLoadComplete += F_LoadCompleted;
             this.g.Navigate(VPN_URL);
+
             // Handle hotkey presses.
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
         }
@@ -86,20 +100,31 @@ namespace CompanioNc.View
                 /// 目的: 更新雲端資料, 讀寫雲端資料
                 /// 現在可以合併兩個步驟為一個步驟
                 /// 想到一個複雜的方式, 不斷利用LoadCompleted
-                f.FrameLoadComplete -= F_LoadCompleted;
-                f.FrameLoadComplete += F_LoadCompleted;
+                fm.FrameLoadComplete -= F_LoadCompleted;
+                fm.FrameLoadComplete += F_LoadCompleted;
                 this.g.Navigate(VPN_URL);
+            }
+            else if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                /// 目的: 取消讀取雲端藥歷
+                fm.FrameLoadComplete -= F_LoadCompleted;
+                this.g.Navigate(DEFAULT_URL);
             }
         }
 
         #region LoadCompleted methods
+
         private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
             HTMLDocument d;
             string temp_uid, strUID;
+
             /// 會有兩次
             /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
             /// 第二次如果認證OK, 會再透過javascript下載個案雲端資料
+            /// 這段程式的目的:
+            /// 1. 取得身分證字號
+            /// 2. 讀取有哪些tab
 
             d = (HTMLDocument)g.Document;
             if (d != null)
@@ -136,57 +161,82 @@ namespace CompanioNc.View
                     }
                     else
                     {
-                        // show balloon with built-in icon
+                        /// 表示讀卡成功
+                        /// show balloon with built-in icon
                         tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
-                        f.FrameLoadComplete -= F_LoadCompleted;
-                        f.FrameLoadComplete -= F_Data_LoadCompleted;
-                        f.FrameLoadComplete += F_Data_LoadCompleted;
-                        //this.g.LoadCompleted -= G_LoadCompleted;
-                        //this.g.LoadCompleted -= Data_LoadCompleted;
-                        //this.g.LoadCompleted += Data_LoadCompleted;
-                        /// 在外面的這個frame, 在下一步之前, 除了確定身分證字號外還有三件事情要做:
-                        /// 1. 讀取特殊註記, 如果有的話
-                        /// 2. 讀取提醒, 如果有的話
-                        /// 3. 讀取所有要讀的tab
 
+                        /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
+                        /// To Do:
                         /// 1. 讀取特殊註記, 如果有的話
                         ///    這是在ContentPlaceHolder1_tab02
                         ///    是個table
 
+                        /// To Do:
                         /// 2. 讀取提醒, 如果有的話
                         ///    這是在ContentPlaceHolder1_GV
                         ///    也是個table
 
-                        /// 3. 讀取所有要讀的tab
-                        ///    這是在ContentPlaceHolder1_tab
-                        ///    是個list
-                        ///    ContentPlaceHolder1_a_0008 是雲端藥歷
-                        ///    ContentPlaceHolder1_a_0009 是特定管制藥品用藥資訊
-                        ///    ContentPlaceHolder1_a_0060 是檢查檢驗結果
-                        ///    ContentPlaceHolder1_a_0020 是手術明細紀錄
-                        ///    ContentPlaceHolder1_a_0070 是出院病歷摘要
-                        ///    ContentPlaceHolder1_a_0080 是復健醫療
-                        ///    ContentPlaceHolder1_a_0030 是牙科處置及手術
-                        ///    ContentPlaceHolder1_a_0090 是中醫用藥
-                        ///    ContentPlaceHolder1_a_0040 是過敏藥
-                        ///    我想應該放在一個list
-                        /// 每當按一次鍵就會觸發一次LoadCompleted
-                        /// 但是下一頁不會觸發LoadCompleted
-                        /// 如何使用遞歸方式?
-                        /// 各頁應該使用sequential方式讀取
-                        /// Parsing及寫入資料庫則可以用async await技術
-                        /// 用index來看處理的位置
-                        /// 分工:
-                        /// 1. 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
-                        /// 2. 流程控制: LoadCompleted, 遞歸, iterator, 每按一次tab就會回到從頭, 
-                        ///     2-1. 取得UID  -done
-                        ///     2-2. 取得LIST<ToDo>
-                        ///     2-3. 判斷位置, index property
-                        ///     2-4. 判斷現在該做什麼, by index and LIST<ToDo>
-                        /// 3. 網頁操弄與擷取資料: sequential
-                        ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發LoadCompleted; 疑問會不會來不及?
-                        ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?
-                        ///     3-2. 都放在記憶體裡, 快速, in the LIST
+                        /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
+
+                        #region 準備
+
+                        // Initialization
+                        QueueOperation.Clear();
+                        QueueRetrieved.Clear();
+                        current_page = total_pages = 0;
+
+                        // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
+                        // IHTMLElement 無法轉型為 HTMLDocument
+                        // 20200429 tested successful
+                        IHTMLElement List_under_investigation = d.getElementById("ContentPlaceHolder1_tab");
+                        // li 之下就是 a
+                        foreach (IHTMLElement hTML in List_under_investigation.all)
+                        {
+                            if (tab_id_wanted.Contains(hTML.id))
+                            {
+                                QueueOperation.Enqueue(VPN_Dictionary.Making_new_operation(hTML.id));
+                            }
+                        }
+
+                        #endregion 準備
+
+                        #region 執行
+
+                        if (QueueOperation.Count > 0)
+                        {
+                            // 流程控制, fm = framemonitor
+                            // 換軌
+                            fm.FrameLoadComplete -= F_LoadCompleted;
+                            fm.FrameLoadComplete -= F_Data_LoadCompleted;
+                            fm.FrameLoadComplete += F_Data_LoadCompleted;
+
+                            // 載入第一個operation
+                            current_op = QueueOperation.Dequeue();
+
+                            // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
+                            // 不active就要按鍵
+                            // 要注意class這個attribute是在上一層li層, 需把它改過來
+                            if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active" )
+                            {
+                                // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
+                                FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
+                                args.MyProperty = 1;
+                                F_Data_LoadCompleted(this, args);
+                            }
+                            else
+                            {
+                                // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
+                                d.getElementById(current_op.TAB_ID).click();
+                            }
+                            // 這段程式到此結束
+                        }
+                        else
+                        {
+                            /// ToDo: 做個紀錄吧!
+                        }
+
+                        #endregion 執行
+
                         /// 4. Parsing & Saving to SQL: async
                         ///     4-1. 多工同時處理, 快速
                         ///     4-2. 依照欄位資料/位置 Parsing
@@ -200,12 +250,64 @@ namespace CompanioNc.View
 
         private void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            IHTMLElement htmlgvList;
-
+            // 這時候已經確保是 active
+            // 每當刷新後都要重新讀一次
             // d 是parent HTML document
             HTMLDocument d = (HTMLDocument)g.Document;
             // f 是frame(0) HTML document
             HTMLDocument f = d.frames.item(0).document.body.document;
+
+            /// 3. 網頁操弄與擷取資料: sequential
+            ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發LoadCompleted; 疑問會不會來不及? -done
+            ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done
+            ///     3-2. 都放在記憶體裡, 快速, in the LIST
+
+            // 讀取資料
+            foreach (Target_Table tt in current_op.Target)
+            {
+                // 這裡可能有問題, 要怎麼讀取正確的資料??????????????????????????????????????
+                HTMLDocument h = new HTMLDocument();
+                h.open();
+                h.write(f.getElementById(tt.TargetID).outerHTML);
+                h.close();
+                
+                QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, h));
+            }
+
+            // 判斷是否最後一tab
+            if (QueueOperation.Count == 0)
+            {
+                // Count = 1 代表最後一個 tab
+                // 確定是最後一個tab這段程式到此結束
+                fm.FrameLoadComplete -= F_LoadCompleted;
+            }
+            else
+            {
+                // 下一個tab
+                current_op = QueueOperation.Dequeue();
+                d.getElementById(current_op.TAB_ID).click();
+            }
+            // 目前重點, 如額判斷多頁
+            // 判斷是否多頁? 如何判斷多頁?????????????????????
+            // total_pages = ????
+            // 如果多頁, 轉換loadcomplete, 呼叫pager
+            // 如果沒有多頁按鍵到下一tab, 此段程式到此結束
+            // if (total_pages > 0)
+            // {
+            // 轉軌
+            fm.FrameLoadComplete -= F_Data_LoadCompleted;
+            fm.FrameLoadComplete -= F_Pager_LoadCompleted;
+            fm.FrameLoadComplete += F_Pager_LoadCompleted;
+
+            FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
+            args.MyProperty = 1;
+            F_Pager_LoadCompleted(this, args);
+            // }
+            // else
+            // {
+            // }
+
+            IHTMLElement htmlgvList;
 
             /// 20200426 我竟然神奇地找到了新的路徑
             /// 新舊比較
@@ -215,7 +317,41 @@ namespace CompanioNc.View
 
             tb.ShowBalloonTip("Hi", "Hello!", BalloonIcon.None);
         }
-        #endregion
+
+        private void F_Pager_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
+        {
+            // 每當刷新後都要重新讀一次
+            // d 是parent HTML document
+            HTMLDocument d = (HTMLDocument)g.Document;
+            // f 是frame(0) HTML document
+            HTMLDocument f = d.frames.item(0).document.body.document;
+
+            // 讀取資料
+            foreach (Target_Table tt in current_op.Target)
+            {
+                // 這裡可能有問題, 要怎麼讀取正確的資料
+                HTMLDocument h = (HTMLDocument)f.getElementById(tt.TargetID);
+                QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, h));
+            }
+
+            // 判斷是否最後一頁
+            // 最後一頁
+            // 處理index
+            // {
+            // 轉向
+            fm.FrameLoadComplete -= F_Pager_LoadCompleted;
+            fm.FrameLoadComplete -= F_Data_LoadCompleted;
+            fm.FrameLoadComplete += F_Data_LoadCompleted;
+
+            FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
+            args.MyProperty = 1;
+            F_Data_LoadCompleted(this, args);
+            // }
+            // 按鍵到下一頁, 此段程式到此結束
+        }
+
+        #endregion LoadCompleted methods
+
         private string MakeSure_UID(string vpnUID)
         {
             string thesisUID = string.Empty;
@@ -234,7 +370,7 @@ namespace CompanioNc.View
             /// VPN 有, 杏翔 有, 資料庫 無 => 新個案, UID寫入資料庫tbl_patients, 取得正確UID
             /// VPN 有, 杏翔 無, 資料庫 有 => 只有一筆, 直接取得UID; 若有多筆, 跳出視窗選擇正確UID
             /// VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
-             
+
             // 取得thesisUID
             try
             {
@@ -264,8 +400,8 @@ namespace CompanioNc.View
                     {
                         // Single() returns the item, throws an exception if there are 0 or more than one item in the sequence.
                         string sqlUID = (from p in dc.tbl_patients
-                                 where p.uid == thesisUID
-                                 select p.uid).Single();
+                                         where p.uid == thesisUID
+                                         select p.uid).Single();
                         // 如果沒有錯誤發生
                         // 此時為第一種狀況
                         /// VPN 有, 杏翔 有, 資料庫 有 => 理想狀況取的正確UID
@@ -308,17 +444,19 @@ namespace CompanioNc.View
                         // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
                         o = string.Empty;
                         break;
+
                     case 1:
                         // passed test
                         // 這是第三種狀況(1/2)
                         o = q.Single().uid;
                         break;
+
                     default:
                         // 這是第三種狀況(2/2)
                         string qu = "請選擇 \r\n";
                         for (int i = 0; i < q.Count(); i++)
                         {
-                            qu += $"{i+1}. {q.ToList()[i].uid} {q.ToList()[i].cname} \r\n";
+                            qu += $"{i + 1}. {q.ToList()[i].uid} {q.ToList()[i].cname} \r\n";
                         }
                         string answer = "0";
                         while ((int.Parse(answer) < 1) || (int.Parse(answer) > q.Count()))
@@ -333,7 +471,7 @@ namespace CompanioNc.View
                             int result;
                             if (!(int.TryParse(answer, out result))) answer = "0";
                         }
-                        o = q.ToList()[int.Parse(answer)-1].uid;
+                        o = q.ToList()[int.Parse(answer) - 1].uid;
                         break;
                 }
             }

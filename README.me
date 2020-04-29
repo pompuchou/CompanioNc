@@ -32,3 +32,39 @@
             Now then I can focus on next step.
             Safeinstance is not compatible with my FrameMonitor.
             I'm trying to write a new class storyboard.
+20200428    The StoryBoard is finished.
+            Start to work on flow control, that is LoadComplete.
+            To get how many pages in one table.
+            One tab, one operation.
+            One operation(tab) has at least one table
+            table med, lab might have multiple pages
+20200429    /// 3. 讀取所有要讀的tab
+            ///    這是在ContentPlaceHolder1_tab
+            ///    是個list
+            ///    ContentPlaceHolder1_a_0008 是雲端藥歷
+            ///    ContentPlaceHolder1_a_0009 是特定管制藥品用藥資訊
+            ///    ContentPlaceHolder1_a_0060 是檢查檢驗結果
+            ///    ContentPlaceHolder1_a_0020 是手術明細紀錄
+            ///    ContentPlaceHolder1_a_0070 是出院病歷摘要
+            ///    ContentPlaceHolder1_a_0080 是復健醫療
+            ///    ContentPlaceHolder1_a_0030 是牙科處置及手術
+            ///    ContentPlaceHolder1_a_0090 是中醫用藥
+            ///    ContentPlaceHolder1_a_0040 是過敏藥
+            ///    我想應該放在一個list
+            /// 每當按一次鍵就會觸發一次LoadCompleted
+            /// 但是下一頁不會觸發LoadCompleted
+            /// 如何使用遞歸方式?
+            /// 各頁應該使用sequential方式讀取
+            /// Parsing及寫入資料庫則可以用async await技術
+            /// 用index來看處理的位置
+            /// 分工:
+            /// 在外面的這個frame, 在下一步之前, 除了確定身分證字號外還有三件事情要做:
+            /// 1. 讀取特殊註記, 如果有的話
+            /// 2. 讀取提醒, 如果有的話
+            /// 3. 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
+
+            /// 2. 流程控制: LoadCompleted, 遞歸, iterator, 每按一次tab就會回到從頭,
+            ///     2-1. 取得UID  -done
+            ///     2-2. 取得LIST<ToDo>
+            ///     2-3. 判斷位置, index property
+            ///     2-4. 判斷現在該做什麼, by index and LIST<ToDo>
