@@ -216,7 +216,7 @@ namespace CompanioNc.View
                             // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
                             // 不active就要按鍵
                             // 要注意class這個attribute是在上一層li層, 需把它改過來
-                            if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active" )
+                            if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                             {
                                 // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
                                 FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
@@ -236,13 +236,6 @@ namespace CompanioNc.View
                         }
 
                         #endregion 執行
-
-                        /// 4. Parsing & Saving to SQL: async
-                        ///     4-1. 多工同時處理, 快速
-                        ///     4-2. 依照欄位資料/位置 Parsing
-                        ///     4-3. 存入SQL
-                        ///     4-4. 製作Query
-                        /// 查核機制?
                     }
                 }
             }
@@ -259,27 +252,62 @@ namespace CompanioNc.View
 
             /// 3. 網頁操弄與擷取資料: sequential
             ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發LoadCompleted; 疑問會不會來不及? -done
-            ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done
+            ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done, 不用再管排序
             ///     3-2. 都放在記憶體裡, 快速, in the LIST
 
             // 讀取資料
-            foreach (Target_Table tt in current_op.Target)
+            if (current_op != null)
             {
-                // 這裡可能有問題, 要怎麼讀取正確的資料??????????????????????????????????????
-                HTMLDocument h = new HTMLDocument();
-                h.open();
-                h.write(f.getElementById(tt.TargetID).outerHTML);
-                h.close();
-                
-                QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, h));
+                foreach (Target_Table tt in current_op.Target)
+                {
+                    // 是否有多tables, 端看tt.Children, 除了管制藥物外, 其餘都不用
+                    if (tt.Children == null)
+                    {
+                        QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML));
+                    }
+                    else
+                    {
+                        // 有多個table, 使用情形僅有管制藥物
+                        QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML));
+                    }
+                }
             }
+
+            #region 判斷多頁
+
+            // 目前重點, 如何判斷多頁?
+            // 判斷是否多頁? 如何判斷多頁?????????????????????
+            // 設定total_pages = ????
+
+            // 如果多頁, 轉換loadcomplete, 呼叫pager
+            // 如果沒有多頁按鍵到下一tab, 此段程式到此結束
+            if (total_pages > 0)
+            {
+                // 轉軌
+                fm.FrameLoadComplete -= F_Data_LoadCompleted;
+                fm.FrameLoadComplete -= F_Pager_LoadCompleted;
+                fm.FrameLoadComplete += F_Pager_LoadCompleted;
+
+                // 剛剛已經讀了第一頁了, 從下一頁開始
+                current_page = 2;
+                // 按鈕機制, 應該是某種inject javascript
+            }
+
+            #endregion 判斷多頁
 
             // 判斷是否最後一tab
             if (QueueOperation.Count == 0)
             {
-                // Count = 1 代表最後一個 tab
-                // 確定是最後一個tab這段程式到此結束
+                // Count = 0 代表最後一個 tab
                 fm.FrameLoadComplete -= F_LoadCompleted;
+
+                /// 確定是最後一個tab這段程式到此結束
+                /// 4. Parsing & Saving to SQL: async
+                ///     4-1. 多工同時處理, 快速
+                ///     4-2. 依照欄位資料/位置 Parsing
+                ///     4-3. 存入SQL
+                ///     4-4. 製作Query
+                /// 查核機制?
             }
             else
             {
@@ -287,35 +315,6 @@ namespace CompanioNc.View
                 current_op = QueueOperation.Dequeue();
                 d.getElementById(current_op.TAB_ID).click();
             }
-            // 目前重點, 如額判斷多頁
-            // 判斷是否多頁? 如何判斷多頁?????????????????????
-            // total_pages = ????
-            // 如果多頁, 轉換loadcomplete, 呼叫pager
-            // 如果沒有多頁按鍵到下一tab, 此段程式到此結束
-            // if (total_pages > 0)
-            // {
-            // 轉軌
-            fm.FrameLoadComplete -= F_Data_LoadCompleted;
-            fm.FrameLoadComplete -= F_Pager_LoadCompleted;
-            fm.FrameLoadComplete += F_Pager_LoadCompleted;
-
-            FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
-            args.MyProperty = 1;
-            F_Pager_LoadCompleted(this, args);
-            // }
-            // else
-            // {
-            // }
-
-            IHTMLElement htmlgvList;
-
-            /// 20200426 我竟然神奇地找到了新的路徑
-            /// 新舊比較
-            /// 新: htmlgvList = d.frames.item(0).document.body.document.getElementById("ContentPlaceHolder1_gvList");
-            /// 舊: htmlgvList = d.Window.Frames(0).Document.GetElementById("ContentPlaceHolder1_gvList")
-            htmlgvList = f.getElementById("ContentPlaceHolder1_gvList");
-
-            tb.ShowBalloonTip("Hi", "Hello!", BalloonIcon.None);
         }
 
         private void F_Pager_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
@@ -329,25 +328,50 @@ namespace CompanioNc.View
             // 讀取資料
             foreach (Target_Table tt in current_op.Target)
             {
-                // 這裡可能有問題, 要怎麼讀取正確的資料
-                HTMLDocument h = (HTMLDocument)f.getElementById(tt.TargetID);
-                QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, h));
+                // 這裡不用管多table, 因為多table只發生在管制藥那裏
+                QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML));
             }
 
-            // 判斷是否最後一頁
-            // 最後一頁
-            // 處理index
-            // {
-            // 轉向
-            fm.FrameLoadComplete -= F_Pager_LoadCompleted;
-            fm.FrameLoadComplete -= F_Data_LoadCompleted;
-            fm.FrameLoadComplete += F_Data_LoadCompleted;
+            // 判斷是否最後一頁, 最後一tab
+            if ((current_page == total_pages) && (QueueOperation.Count == 0))
+            {
+                // 最後一頁
+                // 處理index
+                current_page = total_pages = 0;
+                // 轉軌
+                fm.FrameLoadComplete -= F_Pager_LoadCompleted;
+                fm.FrameLoadComplete -= F_Data_LoadCompleted;
+                fm.FrameLoadComplete += F_Data_LoadCompleted;
 
-            FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
-            args.MyProperty = 1;
-            F_Data_LoadCompleted(this, args);
-            // }
-            // 按鍵到下一頁, 此段程式到此結束
+                // current_op 歸零
+                current_op = null;
+
+                // 沒有按鍵無法直接觸發, 只好直接呼叫
+                FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
+                args.MyProperty = 1;
+                F_Data_LoadCompleted(this, args);
+            }
+            else if (current_page == total_pages)
+            {
+                // 最後一頁
+                // 處理index
+                current_page = total_pages = 0;
+                // 轉軌
+                fm.FrameLoadComplete -= F_Pager_LoadCompleted;
+                fm.FrameLoadComplete -= F_Data_LoadCompleted;
+                fm.FrameLoadComplete += F_Data_LoadCompleted;
+
+                // 下一個tab
+                current_op = QueueOperation.Dequeue();
+                d.getElementById(current_op.TAB_ID).click();
+            }
+            else
+            {
+                current_page++;
+                // 按鍵到下一頁, 此段程式到此結束
+                // HOW TO ?????????????????????????????????????????
+                // 如何下一頁, 可能要用invokescript
+            }
         }
 
         #endregion LoadCompleted methods

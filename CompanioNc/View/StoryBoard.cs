@@ -213,9 +213,9 @@ namespace CompanioNc.View
     {
         private string _sname;
         private string[] _header_want;
-        private HTMLDocument _table;
+        private string _table;
 
-        public VPN_Retrieved(string sname, string[] hw, HTMLDocument doc)
+        public VPN_Retrieved(string sname, string[] hw, string doc)
         {
             _sname = sname;
             _table = doc;
@@ -227,7 +227,7 @@ namespace CompanioNc.View
             get { return _sname; }
         }
 
-        public HTMLDocument Retrieved_Table
+        public string Retrieved_Table
         {
             get { return _table; }
         }
