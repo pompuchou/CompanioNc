@@ -72,3 +72,7 @@
             /// 新舊比較
             /// 新: htmlgvList = d.frames.item(0).document.body.document.getElementById("ContentPlaceHolder1_gvList");
             /// 舊: htmlgvList = d.Window.Frames(0).Document.GetElementById("ContentPlaceHolder1_gvList")
+            流程已經完成
+20200430    熱鍵不反應期是個好主意, 取消鍵有用嗎?
+            取消的方式, 用property, if (), 因為不是使用單一個task, 由多個觸發程式構成的, 不能這樣用, 每段每段檢查, 最後寫入前都可以取消, 寫入階段就沒辦法了
+20200501    花了一整天終於把碼都改寫好了

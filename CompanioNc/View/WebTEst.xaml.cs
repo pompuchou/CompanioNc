@@ -30,6 +30,8 @@ namespace CompanioNc.View
     /// </summary>
     public partial class WebTEst : Window
     {
+        #region FLAGS
+
         private HotKeyManager hotKeyManager;
         private const string VPN_URL = @"https://medcloud.nhi.gov.tw/imme0008/IMME0008S01.aspx";
         private const string DEFAULT_URL = @"https://www.googl.com";
@@ -38,15 +40,17 @@ namespace CompanioNc.View
                                                                  "ContentPlaceHolder1_a_0030", "ContentPlaceHolder1_a_0040", "ContentPlaceHolder1_a_0060",
                                                                  "ContentPlaceHolder1_a_0070", "ContentPlaceHolder1_a_0080", "ContentPlaceHolder1_a_0090" };
 
-        private Queue<VPN_Operation> QueueOperation = new Queue<VPN_Operation>();
+        private readonly Queue<VPN_Operation> QueueOperation = new Queue<VPN_Operation>();
         private VPN_Operation current_op;
-        private Queue<VPN_Retrieved> QueueRetrieved = new Queue<VPN_Retrieved>();
+        private readonly List<VPN_Retrieved> ListRetrieved = new List<VPN_Retrieved>();
         private int current_page, total_pages;
 
-        private TaskbarIcon tb = new TaskbarIcon();
+        private readonly TaskbarIcon tb = new TaskbarIcon();
 
-        private MainWindow m;
-        private FrameMonitor fm;
+        private readonly MainWindow m;
+        private readonly FrameMonitor fm;
+
+        #endregion FLAGS
 
         public WebTEst(MainWindow mw)
         {
@@ -54,21 +58,6 @@ namespace CompanioNc.View
             m = mw;
             fm = new FrameMonitor(this, 100);
             InitializeComponent();
-        }
-
-        private void WebTEst_Closed(object sender, EventArgs e)
-        {
-            try
-            {
-                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            m.VPNwindow.IsChecked = false;
-            fm.Dispose();
         }
 
         private void WebTEst_Loaded(object sender, RoutedEventArgs e)
@@ -94,6 +83,21 @@ namespace CompanioNc.View
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
         }
 
+        private void WebTEst_Closed(object sender, EventArgs e)
+        {
+            try
+            {
+                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            m.VPNwindow.IsChecked = false;
+            fm.Dispose();
+        }
+
         private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
             if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
@@ -117,9 +121,6 @@ namespace CompanioNc.View
 
         private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            HTMLDocument d;
-            string temp_uid, strUID;
-
             /// 會有兩次
             /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
             /// 第二次如果認證OK, 會再透過javascript下載個案雲端資料
@@ -127,136 +128,115 @@ namespace CompanioNc.View
             /// 1. 取得身分證字號
             /// 2. 讀取有哪些tab
 
-            d = (HTMLDocument)g.Document;
-            if (d != null)
+            HTMLDocument d = (HTMLDocument)g.Document;
+            if (d?.getElementById("ContentPlaceHolder1_lbluserID") != null)
             {
-                // System.Windows.Forms.MessageBox.Show(d.documentElement.outerHTML);
-                // documentElement是整個html;
-                // 如果是空值就離開
-                if (d.getElementById("ContentPlaceHolder1_lblmsg") != null)
+                // 確定身分證字號
+                string strUID = MakeSure_UID(d.getElementById("ContentPlaceHolder1_lbluserID").innerText);
+                // if (strUID = string.Empty) 離開
+                if (strUID == string.Empty)
                 {
-                    // 1. 卡片讀取中
-                    // 無法抓取身分證字號
-                    temp_uid = d.getElementById("ContentPlaceHolder1_lblmsg").innerText;
-                    if (temp_uid == "卡片讀取中")
-                    {
-                        /// Do nothing, 這是第一次完成
-                        /// 兩種情況, 如果插入正確健保卡, javascript會驅動再去讀資料, 這樣會觸發第二次完成
-                        /// 第二種情況, 沒有健保卡, javascript雖然會去改動ContentPlaceHolder1_lblmsg
-                        /// 但因為沒有再去讀資料, 也就不會觸發第二次完成
-                        /// 所以就沒有機會this.g.LoadCompleted -= G_LoadCompleted;
-                        /// 這樣會造成一直加上去, 有多個LoadCompleted
-                        return;
-                    }
+                    tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
+                    return;
                 }
-                else if (d.getElementById("ContentPlaceHolder1_lbluserID") != null)
+                else
                 {
-                    temp_uid = d.getElementById("ContentPlaceHolder1_lbluserID").innerText;
-                    // 確定身分證字號
-                    strUID = MakeSure_UID(temp_uid);
-                    // if (strUID = string.Empty) 離開
-                    if (strUID == string.Empty)
+                    /// 表示讀卡成功
+                    /// show balloon with built-in icon
+                    tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
+
+                    /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
+                    /// To Do:
+                    /// 1. 讀取特殊註記, 如果有的話
+                    ///    這是在ContentPlaceHolder1_tab02
+                    ///    是個table
+
+                    /// To Do:
+                    /// 2. 讀取提醒, 如果有的話
+                    ///    這是在ContentPlaceHolder1_GV
+                    ///    也是個table
+
+                    /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
+
+                    #region 準備
+
+                    // Initialization
+                    QueueOperation.Clear();
+                    ListRetrieved.Clear();
+                    current_page = total_pages = 0;
+
+                    // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
+                    // IHTMLElement 無法轉型為 HTMLDocument
+                    // 20200429 tested successful
+                    IHTMLElement List_under_investigation = d.getElementById("ContentPlaceHolder1_tab");
+                    // li 之下就是 a
+                    foreach (IHTMLElement hTML in List_under_investigation.all)
                     {
-                        tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
-                        return;
-                    }
-                    else
-                    {
-                        /// 表示讀卡成功
-                        /// show balloon with built-in icon
-                        tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
-
-                        /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
-                        /// To Do:
-                        /// 1. 讀取特殊註記, 如果有的話
-                        ///    這是在ContentPlaceHolder1_tab02
-                        ///    是個table
-
-                        /// To Do:
-                        /// 2. 讀取提醒, 如果有的話
-                        ///    這是在ContentPlaceHolder1_GV
-                        ///    也是個table
-
-                        /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
-
-                        #region 準備
-
-                        // Initialization
-                        QueueOperation.Clear();
-                        QueueRetrieved.Clear();
-                        current_page = total_pages = 0;
-
-                        // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
-                        // IHTMLElement 無法轉型為 HTMLDocument
-                        // 20200429 tested successful
-                        IHTMLElement List_under_investigation = d.getElementById("ContentPlaceHolder1_tab");
-                        // li 之下就是 a
-                        foreach (IHTMLElement hTML in List_under_investigation.all)
+                        if (tab_id_wanted.Contains(hTML.id))
                         {
-                            if (tab_id_wanted.Contains(hTML.id))
-                            {
-                                QueueOperation.Enqueue(VPN_Dictionary.Making_new_operation(hTML.id));
-                            }
+                            QueueOperation.Enqueue(VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now));
                         }
+                    }
 
-                        #endregion 準備
+                    #endregion 準備
 
-                        #region 執行
+                    #region 執行
 
-                        if (QueueOperation.Count > 0)
+                    if (QueueOperation.Count > 0)
+                    {
+                        // 流程控制, fm = framemonitor
+                        // 換軌
+                        fm.FrameLoadComplete -= F_LoadCompleted;
+                        fm.FrameLoadComplete -= F_Data_LoadCompleted;
+                        fm.FrameLoadComplete += F_Data_LoadCompleted;
+
+                        // 載入第一個operation
+                        current_op = QueueOperation.Dequeue();
+
+                        // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
+                        // 不active就要按鍵
+                        // 要注意class這個attribute是在上一層li層, 需把它改過來
+                        if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                         {
-                            // 流程控制, fm = framemonitor
-                            // 換軌
-                            fm.FrameLoadComplete -= F_LoadCompleted;
-                            fm.FrameLoadComplete -= F_Data_LoadCompleted;
-                            fm.FrameLoadComplete += F_Data_LoadCompleted;
-
-                            // 載入第一個operation
-                            current_op = QueueOperation.Dequeue();
-
-                            // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
-                            // 不active就要按鍵
-                            // 要注意class這個attribute是在上一層li層, 需把它改過來
-                            if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
+                            // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
+                            FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs
                             {
-                                // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
-                                FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
-                                args.MyProperty = 1;
-                                F_Data_LoadCompleted(this, args);
-                            }
-                            else
-                            {
-                                // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
-                                d.getElementById(current_op.TAB_ID).click();
-                            }
-                            // 這段程式到此結束
+                                MyProperty = 1
+                            };
+                            F_Data_LoadCompleted(this, args);
                         }
                         else
                         {
-                            /// ToDo: 做個紀錄吧!
+                            // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
+                            d.getElementById(current_op.TAB_ID).click();
                         }
-
-                        #endregion 執行
+                        // 這段程式到此結束
                     }
+                    else
+                    {
+                        /// ToDo: 做個紀錄吧!
+                    }
+
+                    #endregion 執行
                 }
             }
         }
 
-        private void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
+        private async void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
             // 這時候已經確保是 active
             // 每當刷新後都要重新讀一次
             // d 是parent HTML document
             HTMLDocument d = (HTMLDocument)g.Document;
             // f 是frame(0) HTML document
-            HTMLDocument f = d.frames.item(0).document.body.document;
+            HTMLDocument f = d?.frames.item(0).document.body.document;
 
             /// 3. 網頁操弄與擷取資料: sequential
             ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發LoadCompleted; 疑問會不會來不及? -done
             ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done, 不用再管排序
             ///     3-2. 都放在記憶體裡, 快速, in the LIST
 
-            // 讀取資料
+            // 讀取資料, 存入記憶體
             if (current_op != null)
             {
                 foreach (Target_Table tt in current_op.Target)
@@ -264,12 +244,12 @@ namespace CompanioNc.View
                     // 是否有多tables, 端看tt.Children, 除了管制藥物外, 其餘都不用
                     if (tt.Children == null)
                     {
-                        QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML));
+                        ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
                     }
                     else
                     {
                         // 有多個table, 使用情形僅有管制藥物
-                        QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML));
+                        ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML, current_op.UID, current_op.QDate));
                     }
                 }
             }
@@ -277,16 +257,18 @@ namespace CompanioNc.View
             #region 判斷多頁
 
             // 目前重點, 如何判斷多頁?
-            // 判斷是否多頁? 如何判斷多頁?????????????????????
             // 設定total_pages = ????
             HtmlDocument p = new HtmlDocument();
-            p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").outerHTML);
-            HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
-            total_pages = o.Count;
-            // 如果多頁, 轉換loadcomplete, 呼叫pager
-            // 如果沒有多頁按鍵到下一tab, 此段程式到此結束
-            if (total_pages > 0)
+            if (f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input") == null)
             {
+                total_pages = 1;
+            }
+            else
+            {
+                // 如果多頁, 轉換loadcomplete, 呼叫pager by click
+                p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").outerHTML);
+                HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
+                total_pages = o.Count;
                 // 轉軌
                 fm.FrameLoadComplete -= F_Data_LoadCompleted;
                 fm.FrameLoadComplete -= F_Pager_LoadCompleted;
@@ -319,6 +301,17 @@ namespace CompanioNc.View
                 ///     4-3. 存入SQL
                 ///     4-4. 製作Query
                 /// 查核機制?
+
+                List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
+
+                // 製作紀錄by rd
+                foreach (Response_DataModel rd in rds)
+                {
+                    Com_clDataContext dc = new Com_clDataContext();
+                    tbl_Query q = new tbl_Query();
+                    dc.tbl_Query.InsertOnSubmit(q);
+                    dc.SubmitChanges();
+                }
             }
             else
             {
@@ -340,7 +333,7 @@ namespace CompanioNc.View
             foreach (Target_Table tt in current_op.Target)
             {
                 // 這裡不用管多table, 因為多table只發生在管制藥那裏
-                QueueRetrieved.Enqueue(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML));
+                ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
             }
 
             // 判斷是否最後一頁, 最後一tab
@@ -358,8 +351,10 @@ namespace CompanioNc.View
                 current_op = null;
 
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
-                FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
-                args.MyProperty = 1;
+                FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs
+                {
+                    MyProperty = 1
+                };
                 F_Data_LoadCompleted(this, args);
             }
             else if (current_page == total_pages)
@@ -511,8 +506,7 @@ namespace CompanioNc.View
                                 o = string.Empty;
                                 return o;
                             }
-                            int result;
-                            if (!(int.TryParse(answer, out result))) answer = "0";
+                            if (!(int.TryParse(answer, out int result))) answer = "0";
                         }
                         o = q.ToList()[int.Parse(answer) - 1].uid;
                         break;
