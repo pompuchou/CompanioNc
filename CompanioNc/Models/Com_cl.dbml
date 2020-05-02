@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Database Name="CL" Class="ComDataDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="CL" Class="Com_clDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
   <Connection Mode="AppSettings" ConnectionString="Data Source=s1\s1;Initial Catalog=CL;User ID=sa" SettingsObjectName="CompanioNc.Properties.Settings" SettingsPropertyName="CLConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.tbl_Access" Member="tbl_Access">
     <Type Name="tbl_Access">
@@ -224,6 +224,7 @@
       <Column Name="Query_id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="uid" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
       <Column Name="QDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="EDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
       <Column Name="cloudmed_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="schedule_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="cloudlab_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
@@ -233,6 +234,16 @@
       <Column Name="tcm_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="dental_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="allergy_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="remark" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tbl_NHI_lab_reminder" Member="tbl_NHI_lab_reminder">
+    <Type Name="tbl_NHI_lab_reminder">
+      <Column Name="Reminder_id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="uid" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="QDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="lab_name" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="last_date" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
     </Type>
   </Table>
   <Function Name="dbo.sp_cloudALL_by_uid" Method="sp_cloudALL_by_uid">

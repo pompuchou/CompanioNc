@@ -81,6 +81,9 @@ namespace CompanioNc.Models
     partial void Inserttbl_Query2(tbl_Query2 instance);
     partial void Updatetbl_Query2(tbl_Query2 instance);
     partial void Deletetbl_Query2(tbl_Query2 instance);
+    partial void Inserttbl_NHI_lab_reminder(tbl_NHI_lab_reminder instance);
+    partial void Updatetbl_NHI_lab_reminder(tbl_NHI_lab_reminder instance);
+    partial void Deletetbl_NHI_lab_reminder(tbl_NHI_lab_reminder instance);
     #endregion
 		
 		public Com_clDataContext() : 
@@ -246,6 +249,14 @@ namespace CompanioNc.Models
 			get
 			{
 				return this.GetTable<tbl_Query2>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tbl_NHI_lab_reminder> tbl_NHI_lab_reminder
+		{
+			get
+			{
+				return this.GetTable<tbl_NHI_lab_reminder>();
 			}
 		}
 		
@@ -4737,6 +4748,8 @@ namespace CompanioNc.Models
 		
 		private System.DateTime _QDATE;
 		
+		private System.DateTime _EDATE;
+		
 		private System.Nullable<short> _cloudmed_N;
 		
 		private System.Nullable<short> _schedule_N;
@@ -4755,6 +4768,8 @@ namespace CompanioNc.Models
 		
 		private System.Nullable<short> _allergy_N;
 		
+		private string _remark;
+		
     #region 擴充性方法定義
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -4765,6 +4780,8 @@ namespace CompanioNc.Models
     partial void OnuidChanged();
     partial void OnQDATEChanging(System.DateTime value);
     partial void OnQDATEChanged();
+    partial void OnEDATEChanging(System.DateTime value);
+    partial void OnEDATEChanged();
     partial void Oncloudmed_NChanging(System.Nullable<short> value);
     partial void Oncloudmed_NChanged();
     partial void Onschedule_NChanging(System.Nullable<short> value);
@@ -4783,6 +4800,8 @@ namespace CompanioNc.Models
     partial void Ondental_NChanged();
     partial void Onallergy_NChanging(System.Nullable<short> value);
     partial void Onallergy_NChanged();
+    partial void OnremarkChanging(string value);
+    partial void OnremarkChanged();
     #endregion
 		
 		public tbl_Query2()
@@ -4846,6 +4865,26 @@ namespace CompanioNc.Models
 					this._QDATE = value;
 					this.SendPropertyChanged("QDATE");
 					this.OnQDATEChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EDATE", DbType="DateTime NOT NULL")]
+		public System.DateTime EDATE
+		{
+			get
+			{
+				return this._EDATE;
+			}
+			set
+			{
+				if ((this._EDATE != value))
+				{
+					this.OnEDATEChanging(value);
+					this.SendPropertyChanging();
+					this._EDATE = value;
+					this.SendPropertyChanged("EDATE");
+					this.OnEDATEChanged();
 				}
 			}
 		}
@@ -5026,6 +5065,184 @@ namespace CompanioNc.Models
 					this._allergy_N = value;
 					this.SendPropertyChanged("allergy_N");
 					this.Onallergy_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_remark", DbType="NVarChar(100)")]
+		public string remark
+		{
+			get
+			{
+				return this._remark;
+			}
+			set
+			{
+				if ((this._remark != value))
+				{
+					this.OnremarkChanging(value);
+					this.SendPropertyChanging();
+					this._remark = value;
+					this.SendPropertyChanged("remark");
+					this.OnremarkChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tbl_NHI_lab_reminder")]
+	public partial class tbl_NHI_lab_reminder : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _Reminder_id;
+		
+		private string _uid;
+		
+		private System.DateTime _QDATE;
+		
+		private string _lab_name;
+		
+		private string _last_date;
+		
+    #region 擴充性方法定義
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnReminder_idChanging(long value);
+    partial void OnReminder_idChanged();
+    partial void OnuidChanging(string value);
+    partial void OnuidChanged();
+    partial void OnQDATEChanging(System.DateTime value);
+    partial void OnQDATEChanged();
+    partial void Onlab_nameChanging(string value);
+    partial void Onlab_nameChanged();
+    partial void Onlast_dateChanging(string value);
+    partial void Onlast_dateChanged();
+    #endregion
+		
+		public tbl_NHI_lab_reminder()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Reminder_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long Reminder_id
+		{
+			get
+			{
+				return this._Reminder_id;
+			}
+			set
+			{
+				if ((this._Reminder_id != value))
+				{
+					this.OnReminder_idChanging(value);
+					this.SendPropertyChanging();
+					this._Reminder_id = value;
+					this.SendPropertyChanged("Reminder_id");
+					this.OnReminder_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_uid", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string uid
+		{
+			get
+			{
+				return this._uid;
+			}
+			set
+			{
+				if ((this._uid != value))
+				{
+					this.OnuidChanging(value);
+					this.SendPropertyChanging();
+					this._uid = value;
+					this.SendPropertyChanged("uid");
+					this.OnuidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_QDATE", DbType="DateTime NOT NULL")]
+		public System.DateTime QDATE
+		{
+			get
+			{
+				return this._QDATE;
+			}
+			set
+			{
+				if ((this._QDATE != value))
+				{
+					this.OnQDATEChanging(value);
+					this.SendPropertyChanging();
+					this._QDATE = value;
+					this.SendPropertyChanged("QDATE");
+					this.OnQDATEChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_lab_name", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string lab_name
+		{
+			get
+			{
+				return this._lab_name;
+			}
+			set
+			{
+				if ((this._lab_name != value))
+				{
+					this.Onlab_nameChanging(value);
+					this.SendPropertyChanging();
+					this._lab_name = value;
+					this.SendPropertyChanged("lab_name");
+					this.Onlab_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_last_date", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string last_date
+		{
+			get
+			{
+				return this._last_date;
+			}
+			set
+			{
+				if ((this._last_date != value))
+				{
+					this.Onlast_dateChanging(value);
+					this.SendPropertyChanging();
+					this._last_date = value;
+					this.SendPropertyChanged("last_date");
+					this.Onlast_dateChanged();
 				}
 			}
 		}

@@ -132,32 +132,67 @@ namespace CompanioNc.View
                     tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
 
                     /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
-                    /// To Do:
-                    /// 1. 讀取特殊註記, 如果有的話
-                    ///    這是在ContentPlaceHolder1_tab02
-                    ///    是個table
 
-                    /// To Do:
                     /// 2. 讀取提醒, 如果有的話
                     ///    這是在ContentPlaceHolder1_GV
                     ///    也是個table
+                    IHTMLElement List_NHI_lab_reminder = d?.getElementById("ContentPlaceHolder1_GV");
+                    if (List_NHI_lab_reminder != null)
+                    {
+                        HtmlDocument Html_NHI_lab_reminder = new HtmlDocument();
+                        Html_NHI_lab_reminder.LoadHtml(List_NHI_lab_reminder?.outerHTML);
+
+                        // 寫入資料庫
+                        foreach (HtmlNode tr in Html_NHI_lab_reminder.DocumentNode.SelectNodes("//table/tbody/tr"))
+                        {
+                            HtmlDocument h_ = new HtmlDocument();
+                            h_.LoadHtml(tr.InnerHtml);
+                            HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                            if ((tds == null) || (tds.Count == 0)) continue;
+                            string Lab_Name = string.Empty, Last_Date = string.Empty;
+                            // tds[0] 是檢查(驗)項目類別名稱
+                            Lab_Name = tds[0]?.InnerText;
+                            // tds[1] 是最近1次檢查日期
+                            Last_Date = tds[1]?.InnerText;
+
+                            using (Com_clDataContext dc = new Com_clDataContext())
+                            {
+                                var q1 = from p1 in dc.tbl_NHI_lab_reminder
+                                         where (p1.uid == strUID) && (p1.lab_name == Lab_Name) && (p1.last_date == Last_Date)
+                                         select p1;
+                                if (q1.Count() == 0)
+                                {
+                                    tbl_NHI_lab_reminder newReminder = new tbl_NHI_lab_reminder()
+                                    {
+                                        uid = strUID,
+                                        QDATE = DateTime.Now,
+                                        lab_name = Lab_Name,
+                                        last_date = Last_Date
+                                    };
+                                    dc.tbl_NHI_lab_reminder.InsertOnSubmit(newReminder);
+                                    dc.SubmitChanges();
+                                }
+                            };
+                        }
+                    }
 
                     /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
 
                     #region 準備 - 製造QueueOperation
 
                     // Initialization
-                    QueueOperation.Clear();
-                    ListRetrieved.Clear();
+                    QueueOperation?.Clear();
+                    ListRetrieved?.Clear();
                     current_page = total_pages = 0;
 
                     // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
                     // IHTMLElement 無法轉型為 HTMLDocument
                     // 20200429 tested successful
-                    IHTMLElement List_under_investigation = d.getElementById("ContentPlaceHolder1_tab");
+                    IHTMLElement List_under_investigation = d?.getElementById("ContentPlaceHolder1_tab");
                     // li 之下就是 a
                     string BalloonTip = string.Empty;
-                    foreach (IHTMLElement hTML in List_under_investigation.all)
+                    foreach (IHTMLElement hTML in List_under_investigation?.all)
                     {
                         if (tab_id_wanted.Contains(hTML.id))
                         {
@@ -208,7 +243,6 @@ namespace CompanioNc.View
                         /// 一個都沒有
                         tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
                         // 製作紀錄by rd
-                        Com_clDataContext dc = new Com_clDataContext();
                         tbl_Query2 q = new tbl_Query2()
                         {
                             uid = strUID,
@@ -223,8 +257,11 @@ namespace CompanioNc.View
                             rehab_N = 0,
                             tcm_N = 0
                         };
-                        dc.tbl_Query2.InsertOnSubmit(q);
-                        dc.SubmitChanges();
+                        using (Com_clDataContext dc = new Com_clDataContext())
+                        {
+                            dc.tbl_Query2.InsertOnSubmit(q);
+                            dc.SubmitChanges();
+                        };
                     }
 
                     #endregion 執行
@@ -316,6 +353,12 @@ namespace CompanioNc.View
 
                 List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
 
+                /// 1. 讀取特殊註記, 如果有的話
+                ///    這是在ContentPlaceHolder1_tab02
+                ///    是個table
+                IHTMLElement Special_remark = d?.getElementById("ContentPlaceHolder1_tab02");
+                string _special_remark = Special_remark?.innerText;
+
                 // 製作紀錄by rd
                 short? med_N = (short?)(from p1 in rds
                                         where p1.SQL_Tablename == "med"
@@ -348,7 +391,8 @@ namespace CompanioNc.View
                 tbl_Query2 q = new tbl_Query2()
                 {
                     uid = ListRetrieved.First().UID,
-                    QDATE = ListRetrieved.First().QDate
+                    QDATE = ListRetrieved.First().QDate,
+                    remark = _special_remark
                 };
                 q.cloudmed_N = med_N;
                 q.cloudlab_N = lab_N;
