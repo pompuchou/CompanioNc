@@ -44,12 +44,8 @@ namespace CompanioNc.View
                     HTMLDocument f = d.frames.item(0).document.body.document;
                     if ((rSTATE == "loading" || rSTATE == "interactive") && (f.readyState == "complete"))
                     {
-                        FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs
-                        {
-                            MyProperty = 0
-                        };
                         rSTATE = f.readyState;
-                        OnFrameLoadComplete(args);
+                        OnFrameLoadComplete(EventArgs.Empty);
                     }
                     //Debug.WriteLine($"before rSTATE={rSTATE}");
                     rSTATE = f.readyState;
@@ -65,7 +61,7 @@ namespace CompanioNc.View
             }));
         }
 
-        protected virtual void OnFrameLoadComplete(FrameLoadCompleteEventArgs e)
+        protected virtual void OnFrameLoadComplete(EventArgs e)
         {
             FrameLoadComplete?.Invoke(this, e);
             // 原本是
@@ -106,10 +102,5 @@ namespace CompanioNc.View
 
     }
 
-    public class FrameLoadCompleteEventArgs : EventArgs
-    {
-        public int MyProperty { get; set; }
-    }
-
-    public delegate void FrameLoadCompleteEventHandler(Object sender, FrameLoadCompleteEventArgs e);
+    public delegate void FrameLoadCompleteEventHandler(Object sender, EventArgs e);
 }

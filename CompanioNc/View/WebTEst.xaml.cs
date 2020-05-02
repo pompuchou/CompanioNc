@@ -105,7 +105,7 @@ namespace CompanioNc.View
 
         #region LoadCompleted methods
 
-        private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
+        private void F_LoadCompleted(object sender, EventArgs e)
         {
             /// 會有兩次
             /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
@@ -224,11 +224,7 @@ namespace CompanioNc.View
                         if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                         {
                             // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
-                            FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs
-                            {
-                                MyProperty = 1
-                            };
-                            F_Data_LoadCompleted(this, args);
+                            F_Data_LoadCompleted(this, EventArgs.Empty);
                         }
                         else
                         {
@@ -269,7 +265,7 @@ namespace CompanioNc.View
             }
         }
 
-        private async void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
+        private async void F_Data_LoadCompleted(object sender, EventArgs e)
         {
             // 這時候已經確保是 active
             // 每當刷新後都要重新讀一次
@@ -421,7 +417,7 @@ namespace CompanioNc.View
             }
         }
 
-        private void F_Pager_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
+        private void F_Pager_LoadCompleted(object sender, EventArgs e)
         {
             // 每當刷新後都要重新讀一次
             // d 是parent HTML document
@@ -451,11 +447,7 @@ namespace CompanioNc.View
                 current_op = null;
 
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
-                FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs
-                {
-                    MyProperty = 1
-                };
-                F_Data_LoadCompleted(this, args);
+                F_Data_LoadCompleted(this, EventArgs.Empty);
             }
             else if (current_page == total_pages)
             {
