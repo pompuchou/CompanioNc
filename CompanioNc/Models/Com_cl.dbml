@@ -219,6 +219,22 @@
       <Column Name="source_name" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
     </Type>
   </Table>
+  <Table Name="dbo.tbl_Query2" Member="tbl_Query2">
+    <Type Name="tbl_Query2">
+      <Column Name="Query_id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="uid" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="QDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="cloudmed_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="schedule_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="cloudlab_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="op_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="discharge_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="rehab_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="tcm_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="dental_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="allergy_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+    </Type>
+  </Table>
   <Function Name="dbo.sp_cloudALL_by_uid" Method="sp_cloudALL_by_uid">
     <Parameter Name="u" Type="System.String" DbType="NVarChar(50)" />
     <ElementType Name="sp_cloudALL_by_uidResult">
@@ -405,5 +421,22 @@
   <Function Name="dbo.sp_insert_tbl_cloudmed" Method="sp_insert_tbl_cloudmed">
     <Parameter Name="QDATE" Parameter="qDATE" Type="System.DateTime" DbType="DateTime" />
     <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_querytable2" Method="sp_querytable2">
+    <ElementType Name="sp_querytable2Result">
+      <Column Name="Query_id" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="uid" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="QDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="cloudmed_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="schedule_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="cloudlab_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="cname" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="op_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="discharge_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="rehab_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="TCM_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="dental_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="allergy_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+    </ElementType>
   </Function>
 </Database>

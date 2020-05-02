@@ -12,7 +12,7 @@
         Title="Companion" Height="600" Width="800" Icon="..\Images\Nerd-7.jpg" Loaded="Window_Loaded" Closed="Window_Closed">
     <Window.Resources>
         <sltr:MyDataTemplateSelector x:Key="TemplateSelector" />
-        <cnvtr:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter" />
+        <cnvtr:NumberToForegroundConverter x:Key="NumberToForegroundConverter" />
         <cnvtr:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="RoundCorner" TargetType="{x:Type Button}">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -70,9 +70,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="BoolStyle" TargetType="TextBlock">
+        <Style x:Key="NumberStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text,
-                Converter={StaticResource BooleanToForegroundConverter}}" />
+                Converter={StaticResource NumberToForegroundConverter}}" />
         </Style>
         <CollectionViewSource x:Key="xml">
             <CollectionViewSource.Source>
@@ -487,15 +487,15 @@
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />
                         <DataGridTextColumn Header="身分證" Width="2*" Binding="{Binding uid}" />
                         <DataGridTextColumn Header="姓名" Width="1*" Binding="{Binding cname}" />
-                        <DataGridTextColumn Header="雲端藥歷" Width="1*" Binding="{Binding if_cloudmed}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="關懷名單" Width="1*" Binding="{Binding if_schedule}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="手術" Width="1*" Binding="{Binding OP}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="牙醫" Width="1*" Binding="{Binding if_dental}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="過敏" Width="1*" Binding="{Binding if_allergy}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="檢驗結果" Width="1*" Binding="{Binding if_cloudlab}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="出院病摘" Width="1*" Binding="{Binding discharge}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="中醫用藥" Width="1*" Binding="{Binding if_TCM}" ElementStyle="{StaticResource BoolStyle}" />
-                        <DataGridTextColumn Header="復健" Width="1*" Binding="{Binding rehab}" ElementStyle="{StaticResource BoolStyle}" />
+                        <DataGridTextColumn Header="雲端藥歷" Width="1*" Binding="{Binding cloudmed_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="關懷名單" Width="1*" Binding="{Binding schedule_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="手術" Width="1*" Binding="{Binding op_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="牙醫" Width="1*" Binding="{Binding dental_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="過敏" Width="1*" Binding="{Binding allergy_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="檢驗結果" Width="1*" Binding="{Binding cloudlab_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="出院病摘" Width="1*" Binding="{Binding discharge_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="中醫用藥" Width="1*" Binding="{Binding tcm_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="復健" Width="1*" Binding="{Binding rehab_N}" ElementStyle="{StaticResource NumberStyle}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

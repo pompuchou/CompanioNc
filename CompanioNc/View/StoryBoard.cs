@@ -5,9 +5,62 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace CompanioNc.View
 {
+    internal class Response_DataModel
+    {
+        public int Count { get; set; }
+        public string SQL_Tablename { get; set; }
+    }
+
+    internal class Target_Table
+    {
+        private readonly int? _children;
+
+        private readonly string[] _header_want;
+
+        private readonly string _sname;
+
+        /// <summary>
+        /// 20200428 created
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="sname"></param>
+        /// <param name="child"></param>
+        /// <param name="hw"></param>
+        private readonly string _targetid;
+
+        public Target_Table(string target, string sname, int? child, string[] hw)
+        {
+            _targetid = target;
+            _sname = sname;
+            _children = child;
+            _header_want = hw;
+        }
+
+        public int? Children
+        {
+            get { return _children; }
+        }
+
+        public string[] Header_Want
+        {
+            get { return _header_want; }
+        }
+
+        public string Short_Name
+        {
+            get { return _sname; }
+        }
+
+        public string TargetID
+        {
+            get { return _targetid; }
+        }
+    }
+
     internal class VPN_Dictionary
     {
         /// <summary>
@@ -16,6 +69,35 @@ namespace CompanioNc.View
         /// </summary>
 
         #region Header_Wants
+
+        // 過敏藥物, ContentPlaceHolder1_a_0040, 過敏藥, all = allergy
+        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0040").Click()
+        // 頁數: 無
+        // 排序: 無
+        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
+        private static readonly string[] hw_all = new string[] { "上傳日期", "醫療院所", "上傳註記", "過敏藥物" };
+
+        // 牙科處置, ContentPlaceHolder1_a_0030, 牙科處置及手術
+        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0030").Click()
+        // 頁數: 無
+        // 排序: 無
+        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
+        private static readonly string[] hw_dental = new string[] { "來源", "主診斷名稱", "牙醫處置代碼", "牙醫處置名稱", "診療部位", "執行時間-起", "執行時間-迄", "醫令總量" };
+
+        // 出院病歷, ContentPlaceHolder1_a_0070, 出院病歷摘要, dis = discharge
+        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0070").Click()
+        // 頁數: 無
+        // 排序: 無
+        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
+        private static readonly string[] hw_dis = new string[] { "來源", "出院科別", "出院診斷", "住院日期", "出院日期" };
+
+        // 檢驗結果, ContentPlaceHolder1_a_0060, 檢查檢驗結果
+        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0060").Click()
+        // 頁數: f.getElementById("ContentPlaceHolder1_pg_gvList"), NULL => 1 page, ELSE
+        // 排序: "報告日期" in th
+        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
+        private static readonly string[] hw_lab = new string[] {"項次", "來源", "就醫科別", "主診斷", "檢查檢驗類別", "醫令名稱", "檢查檢驗項目",
+            "檢查檢驗結果/報告結果/病理發現及診斷", "參考值", "報告日期", "醫令代碼"};
 
         // 資料都在ContentPlaceHolder1_divResult下, 只是部分table有命名: 例如: ContentPlaceHolder1_gvList
         // 雲端藥歷, ContentPlaceHolder1_a_0008, 雲端藥歷
@@ -26,13 +108,21 @@ namespace CompanioNc.View
         private static readonly string[] hw_med = new string[] { "項次", "來源", "主診斷", "ATC3名稱", "ATC5名稱", "成分名稱", "藥品健保代碼", "藥品名稱",
             "用法用量", "給藥日數", "藥品用量", "就醫(調劑)日期(住院用藥起日)", "慢連箋領藥日(住院用藥迄日)", "慢連箋原處方醫事機構代碼" };
 
-        // 檢驗結果, ContentPlaceHolder1_a_0060, 檢查檢驗結果
-        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0060").Click()
-        // 頁數: f.getElementById("ContentPlaceHolder1_pg_gvList"), NULL => 1 page, ELSE
-        // 排序: "報告日期" in th
+        // 手術明細, ContentPlaceHolder1_a_0020, 手術明細紀錄
+        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0020").Click()
+        // 頁數: 無
+        // 排序: 無
         // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
-        private static readonly string[] hw_lab = new string[] {"項次", "來源", "就醫科別", "主診斷", "檢查檢驗類別", "醫令名稱", "檢查檢驗項目",
-            "檢查檢驗結果/報告結果/病理發現及診斷", "參考值", "報告日期", "醫令代碼"};
+        private static readonly string[] hw_op = new string[] { "來源", "就醫科別", "主診斷名稱", "手術明細代碼", "手術明細名稱", "診療部位",
+            "執行時間-起", "執行時間-迄", "醫令總量" };
+
+        // 復健醫療, ContentPlaceHolder1_a_0080, 復健醫療, reh = rehabilitation
+        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0080").Click()
+        // 頁數: 無
+        // 排序: 無
+        // 擷取: f.getElementById("ContentPlaceHolder1_PanS01").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
+        private static readonly string[] hw_reh = new string[] { "診別", "來源", "主診斷碼", "治療類別", "強度", "醫令數量", "就醫日期/住院日期", "治療結束日期",
+            "診療部位", "執行時間-起", "執行時間-迄" };
 
         // 管制藥品, ContentPlaceHolder1_a_0009, 特定管制藥品用藥資訊, re = report 申報資料, up = upload 上傳資料
         // 按鍵: d.getElementById("ContentPlaceHolder1_a_0009").Click()
@@ -44,42 +134,9 @@ namespace CompanioNc.View
         // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(1)
         private static readonly string[] hw_sch_up = new string[] { "成分名稱（成分代碼）", "就診日期", "就診時間", "本院/他院", "總劑量", "總DDD數" };
 
-        // 手術明細, ContentPlaceHolder1_a_0020, 手術明細紀錄
-        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0020").Click()
-        // 頁數: 無
-        // 排序: 無
-        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
-        private static readonly string[] hw_op = new string[] { "來源", "就醫科別", "主診斷名稱", "手術明細代碼", "手術明細名稱", "診療部位",
-            "執行時間-起", "執行時間-迄", "醫令總量" };
-
-        // 牙科處置, ContentPlaceHolder1_a_0030, 牙科處置及手術
-        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0030").Click()
-        // 頁數: 無
-        // 排序: 無
-        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
-        private static readonly string[] hw_dental = new string[] { "來源", "主診斷名稱", "牙醫處置代碼", "牙醫處置名稱", "診療部位", "執行時間-起", "執行時間-迄", "醫令總量" };
-
-        // 過敏藥物, ContentPlaceHolder1_a_0040, 過敏藥, all = allergy
-        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0040").Click()
-        // 頁數: 無
-        // 排序: 無
-        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
-        private static readonly string[] hw_all = new string[] { "上傳日期", "醫療院所", "上傳註記", "過敏藥物" };
-
-        // 出院病歷, ContentPlaceHolder1_a_0070, 出院病歷摘要, dis = discharge
-        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0070").Click()
-        // 頁數: 無
-        // 排序: 無
-        // 擷取: f.getElementById("ContentPlaceHolder1_divResult").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
-        private static readonly string[] hw_dis = new string[] { "來源", "出院科別", "出院診斷", "住院日期", "出院日期" };
-
-        // 復健醫療, ContentPlaceHolder1_a_0080, 復健醫療, reh = rehabilitation
-        // 按鍵: d.getElementById("ContentPlaceHolder1_a_0080").Click()
-        // 頁數: 無
-        // 排序: 無
-        // 擷取: f.getElementById("ContentPlaceHolder1_PanS01").children(0) || f.getElementById("ContentPlaceHolder1_gvList")
-        private static readonly string[] hw_reh = new string[] { "診別", "來源", "主診斷碼", "治療類別", "強度", "醫令數量", "就醫日期/住院日期", "治療結束日期",
-            "診療部位", "執行時間-起", "執行時間-迄" };
+        // 擷取: f.getElementById("ContentPlaceHolder1_PanS01").children(1) || f.getElementById("ContentPlaceHolder1_gvDetail")
+        private static readonly string[] hw_tcm_de = new string[] { "主診斷", "藥品代碼", "複方註記", "基準方名", "效能名稱", "用法用量", "給藥日數", "劑型",
+            "給藥總量", "就醫(調劑)日期", "慢連籤領藥日", "就醫序號" };
 
         // 中醫用藥, ContentPlaceHolder1_a_0090, 中醫用藥, gr = group, de = detail
         // 按鍵: d.getElementById("ContentPlaceHolder1_a_0090").Click()
@@ -87,10 +144,6 @@ namespace CompanioNc.View
         // 排序: 無
         // 擷取: f.getElementById("ContentPlaceHolder1_PanS01").children(0) || f.getElementById("ContentPlaceHolder1_gvGroup")
         private static readonly string[] hw_tcm_gr = new string[] { "來源", "主診斷", "給藥日數", "慢連籤", "就醫(調劑)日期", "慢連籤領藥日", "就醫序號" };
-
-        // 擷取: f.getElementById("ContentPlaceHolder1_PanS01").children(1) || f.getElementById("ContentPlaceHolder1_gvDetail")
-        private static readonly string[] hw_tcm_de = new string[] { "主診斷", "藥品代碼", "複方註記", "基準方名", "效能名稱", "用法用量", "給藥日數", "劑型",
-            "給藥總量", "就醫(調劑)日期", "慢連籤領藥日", "就醫序號" };
 
         #endregion Header_Wants
 
@@ -157,14 +210,18 @@ namespace CompanioNc.View
                 html.LoadHtml(vr.Retrieved_Table);
 
                 // 找出要的順序
-                foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tobody/tr"))
+                foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
                     // 多出這行檢查是否有跨column, 這出現在管制藥品的表格
                     // 欄數最少的是allergy, 只有四欄
-                    if (tr.SelectNodes("//th").Count < 4) continue;
-                    foreach (HtmlNode th in tr.SelectNodes("//th"))
+                    // 20200502 發現錯誤, 第二次SelectNodes仍會從整個Document的XPATH去找
+                    HtmlDocument h_ = new HtmlDocument();
+                    h_.LoadHtml(tr.InnerHtml);
+                    HtmlNodeCollection a = h_.DocumentNode.SelectNodes("//th");
+                    if ((a == null) || (a.Count < 4)) continue;
+                    foreach (HtmlNode th in h_.DocumentNode.SelectNodes("//th"))
                     {
-                        string strT = th.InnerText.Replace(Environment.NewLine, string.Empty).Replace(" ", string.Empty);
+                        string strT = th.InnerText.Replace("<br>", string.Empty).Replace(" ", string.Empty);
                         for (int i = 0; i < vr.Header_Want.Count(); i++)
                         {
                             // 這個版本可以用在排序後, 字會多一個上下的符號
@@ -233,408 +290,52 @@ namespace CompanioNc.View
             return output;
         }
 
-        private static int Write_med(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        private static string MakeSure_source(string temp_source)
         {
             Com_clDataContext dc = new Com_clDataContext();
-            int count = 0;
-            // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            string[] s = temp_source.Replace("<br>", "|").Split('|');
+            string o_source = s[2].Replace("\n", string.Empty);
+            var q1 = from p1 in dc.p_source
+                     where p1.source_id == o_source
+                     select p1;
+            if (q1.Count() == 0)
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                tbl_cloudmed_temp newCloud = new tbl_cloudmed_temp()
+                p_source new_source = new p_source()
                 {
-                    uid = strUID,
-                    QDATE = current_date
+                    source_id = s[2].Replace("\n", string.Empty),
+                    @class = s[1].Replace("\n", string.Empty),
+                    source_name = s[0]
                 };
-
-                int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
-                {
-                    switch (header_order[order_n])
-                    {
-                        case 0:
-                            // 項次
-                            if (td.InnerText != null) newCloud.item_n = short.Parse(td.InnerText);
-                            break;
-
-                        case 1:
-                            if (td.InnerText != null) newCloud.source = td.InnerText;
-                            break;
-
-                        case 2:
-                            if (td.InnerText != null) newCloud.diagnosis = td.InnerText;
-                            break;
-
-                        case 3:
-                            if (td.InnerText != null) newCloud.atc3 = td.InnerText;
-                            break;
-
-                        case 4:
-                            if (td.InnerText != null) newCloud.atc5 = td.InnerText;
-                            break;
-
-                        case 5:
-                            if (td.InnerText != null) newCloud.comp = td.InnerText;
-                            break;
-
-                        case 6:
-                            if (td.InnerText != null) newCloud.NHI_code = td.InnerText;
-                            break;
-
-                        case 7:
-                            if (td.InnerText != null) newCloud.drug_name = td.InnerText;
-                            break;
-
-                        case 8:
-                            if (td.InnerText != null) newCloud.dosing = td.InnerText;
-                            break;
-
-                        case 9:
-                            if (td.InnerText != null) newCloud.days = td.InnerText;
-                            break;
-
-                        case 10:
-                            if (td.InnerText != null) newCloud.amt = td.InnerText;
-                            break;
-
-                        case 11:
-                            if (td.InnerText != null)
-                            {
-                                string[] temp_d = td.InnerText.Split('/');
-                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                                newCloud.SDATE = d;
-                            }
-                            break;
-
-                        case 12:
-                            if (td.InnerText != null)
-                            {
-                                string[] temp_d = td.InnerText.Split('/');
-                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                                newCloud.EDATE = d;
-                            }
-                            break;
-
-                        case 13:
-                            if (td.InnerText != null) newCloud.o_source = td.InnerText;
-                            break;
-                    }
-                    order_n++;
-                }
-                dc.tbl_cloudmed_temp.InsertOnSubmit(newCloud);
+                dc.p_source.InsertOnSubmit(new_source);
                 dc.SubmitChanges();
-                count++;
             }
-
-            // 匯入大表
-            try
-            {
-                dc.sp_insert_tbl_cloudmed(current_date);
-            }
-            catch (Exception ex)
-            {
-                Logging.Record_error(ex.Message);
-            }
-            try
-            {
-                dc.sp_insert_p_cloudmed(current_date);
-            }
-            catch (Exception ex)
-            {
-                Logging.Record_error(ex.Message);
-            }
-            // 這裡原本多了一次沒有try包覆的insert_p_cloudmed, 一但p_cloudmed有錯誤就沒辦法處理source
-            // 處理source
-            var r = (from p in dc.tbl_cloudmed_temp
-                     where p.QDATE == current_date
-                     select p.source).Distinct().ToList();  //this is a query
-            for (int i = 0; i < r.Count(); i++)
-            {
-                string[] s = r[i].Replace("\r\n", "|").Split('|');
-                // source_id s(2).substring(1)
-                // class s(1).substring(1)
-                // source_name s(0)
-                var qq = from pp in dc.p_source
-                         where pp.source_id == s[2].Substring(1)
-                         select pp;
-                if (qq.Count() == 0)
-                {
-                    p_source so = new p_source()
-                    {
-                        source_id = s[2].Substring(1),
-                        @class = s[1].Substring(1),
-                        source_name = s[0]
-                    };
-                    dc.p_source.InsertOnSubmit(so);
-                    dc.SubmitChanges();
-                }
-            }
-            return count;
+            return o_source;
         }
 
-        private static int Write_lab(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        #region Write Part
+        private static int Write_all(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
-            // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
-            {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                tbl_cloudlab_temp newLab = new tbl_cloudlab_temp()
-                {
-                    uid = strUID,
-                    QDATE = current_date
-                };
-
-                int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
-                {
-                    switch (header_order[order_n])
-                    {
-                        case 0:
-                            // 項次
-                            if (td.InnerText != null) newLab.item_n = short.Parse(td.InnerText);
-                            break;
-
-                        case 1:
-                            if (td.InnerText != null) newLab.source = td.InnerText;
-                            break;
-
-                        case 2:
-                            if (td.InnerText != null) newLab.dep = td.InnerText;
-                            break;
-
-                        case 3:
-                            if (td.InnerText != null) newLab.diagnosis = td.InnerText;
-                            break;
-
-                        case 4:
-                            if (td.InnerText != null) newLab.@class = td.InnerText;
-                            break;
-
-                        case 5:
-                            if (td.InnerText != null) newLab.order_name = td.InnerText;
-                            break;
-
-                        case 6:
-                            if (td.InnerText != null) newLab.lab_item = td.InnerText;
-                            break;
-
-                        case 7:
-                            if (td.InnerText != null) newLab.result = td.InnerText;
-                            break;
-
-                        case 8:
-                            if (td.InnerText != null) newLab.range = td.InnerText;
-                            break;
-
-                        case 9:
-                            string[] temp_d = td.InnerText.Split('/');
-                            DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                            newLab.SDATE = d;
-                            break;
-
-                        case 10:
-                            if (td.InnerText != null) newLab.NHI_code = td.InnerText;
-                            break;
-                    }
-                    order_n++;
-                }
-                dc.tbl_cloudlab_temp.InsertOnSubmit(newLab);
-                dc.SubmitChanges();
-                count++;
-            }
-            // 匯入大表
-            try
-            {
-                dc.sp_insert_tbl_cloudlab(current_date);
-            }
-            catch (Exception ex)
-            {
-                Logging.Record_error(ex.Message);
-            }
-            try
-            {
-                dc.sp_insert_p_cloudlab(current_date);
-            }
-            catch (Exception ex)
-            {
-                Logging.Record_error(ex.Message);
-            }
-            // 處理source
-            var r = (from p in dc.tbl_cloudlab_temp
-                     where p.QDATE == current_date
-                     select p.source).Distinct().ToList(); // this is a query
-            for (int i = 0; i < r.Count(); i++)
-            {
-                string[] s = r[i].Replace("\r\n", "|").Split('|');
-                var qq = from pp in dc.p_source
-                         where pp.source_id == s[2].Substring(1)
-                         select pp;
-                if (qq.Count() == 0)
-                {
-                    p_source so = new p_source()
-                    {
-                        source_id = s[2].Substring(1),
-                        @class = s[1].Substring(1),
-                        source_name = s[0]
-                    };
-                    dc.p_source.InsertOnSubmit(so);
-                    dc.SubmitChanges();
-                }
-            }
-            return count;
-        }
-
-        private static int Write_sch_re(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
-        {
-            Com_clDataContext dc = new Com_clDataContext();
-            int count = 0;
-            string o_drug = string.Empty, o_YM = string.Empty, drug_name = string.Empty;
-            int o_visit_n = 0, o_clinic_n = 0, o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
-
-            // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
-            {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                if (row_left > 0) row_left--;
-                int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
-                {
-                    //' header(order_n)是資料表的位置與實際table的對照
-                    //' order_n是table的位置, header(order_n)的值是資料表的位置
-                    //' 有rowspan會干擾
-                    int actual_n;
-
-                    if ((row_left != row_n) && (row_left > 0) && (order_n > 0))
-                    {
-                        actual_n = order_n + 1;
-                        o_drug = drug_name;
-                    }
-                    else
-                    {
-                        actual_n = order_n;
-                    }
-                    //' 第一輪
-
-                    if ((order_n == 1) && int.Parse(td.GetAttributeValue("rowspan", "1")) > 1)
-                    {
-                        //' order_n=1 名義上第一輪成分名稱的位置
-                        if (td.InnerText != null) drug_name = td.InnerText.Replace(Environment.NewLine, " ");
-                        row_n = int.Parse(td.GetAttributeValue("rowspan", "1"));
-                        row_left = row_n;
-                    }
-                    switch (header_order[actual_n])
-                    {
-                        case 0:
-                            // 成分名稱
-                            if (td.InnerText != null) o_drug = td.InnerText.Replace(Environment.NewLine, " ");
-                            break;
-
-                        case 1:
-                            // 就醫年月
-                            if (td.InnerText != null) o_YM = td.InnerText;
-                            break;
-
-                        case 2:
-                            // 就醫次數
-                            if (td.InnerText != null) o_visit_n = int.Parse(td.InnerText);
-                            break;
-
-                        case 3:
-                            // 就醫院所數
-                            if (td.InnerText != null) o_clinic_n = int.Parse(td.InnerText);
-                            break;
-
-                        case 4:
-                            // 總劑量
-                            if (td.InnerText != null) o_t_dose = int.Parse(td.InnerText);
-                            break;
-
-                        case 5:
-                            // 總DDD數
-                            if (td.InnerText != null) o_t_DDD = int.Parse(td.InnerText);
-                            break;
-                    }
-                    order_n++;
-                }
-
-                var q = from p in dc.tbl_cloudSCH_R
-                        where (p.uid == strUID) && (p.drug_name == o_drug) && (p.YM == o_YM)
-                        select p;
-                if (q.Count() == 0)
-                {
-                    tbl_cloudSCH_R newR = new tbl_cloudSCH_R()
-                    {
-                        uid = strUID,
-                        QDATE = current_date,
-                        YM = o_YM,
-                        drug_name = o_drug,
-                        visit_n = (byte?)o_visit_n,
-                        clinic_n = (byte?)o_clinic_n,
-                        t_dose = (short?)o_t_dose,
-                        t_DDD = (short?)o_t_DDD
-                    };
-
-                    // 存檔
-
-                    dc.tbl_cloudSCH_R.InsertOnSubmit(newR);
-                    dc.SubmitChanges();
-                }
-                count++;
-            }
-            return count;
-        }
-
-        private static int Write_sch_up(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
-        {
-            Com_clDataContext dc = new Com_clDataContext();
-            int count = 0;
-            string o_drug = string.Empty, drug_name = string.Empty, o_STIME = string.Empty, o_clinic = string.Empty;
-            int o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
+            string o_source = string.Empty, o_remark = string.Empty, o_drug_name = string.Empty;
             DateTime o_SDATE = new DateTime();
 
             // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                if (row_left > 0) row_left--;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection a = h_.DocumentNode.SelectNodes("//td");
+
+                if ((a == null)||(a.Count == 0)) continue;
                 int order_n = 0;
                 foreach (HtmlNode td in tr.SelectNodes("//td"))
                 {
-                    // header(order_n)是資料表的位置與實際table的對照
-                    // order_n是table的位置, header(order_n)的值是資料表的位置
-                    // 有rowspan會干擾
-                    int actual_n;
-
-                    if ((row_left != row_n) && (row_left > 0) && (order_n > 0))
-                    {
-                        actual_n = order_n + 1;
-                        o_drug = drug_name;
-                    }
-                    else
-                    {
-                        actual_n = order_n;
-                    }
-                    //' 第一輪
-
-                    if ((order_n == 1) && int.Parse(td.GetAttributeValue("rowspan", "1")) > 1)
-                    {
-                        //' order_n=1 名義上第一輪成分名稱的位置
-                        if (td.InnerText != null) drug_name = td.InnerText.Replace(Environment.NewLine, " ");
-                        row_n = int.Parse(td.GetAttributeValue("rowspan", "1"));
-                        row_left = row_n;
-                    }
-                    switch (header_order[actual_n])
+                    switch (header_order[order_n])
                     {
                         case 0:
-                            // 成分名稱
-                            if (td.InnerText != null) o_drug = td.InnerText.Replace(Environment.NewLine, " ");
-                            break;
-
-                        case 1:
-                            // 就診日期
-                            if (td.InnerText != null)
+                            // 上傳日期
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -642,159 +343,46 @@ namespace CompanioNc.View
                             }
                             break;
 
-                        case 2:
-                            // 就診時間
-                            if (td.InnerText != null) o_STIME = td.InnerText;
-                            break;
-
-                        case 3:
-                            // 本院/他院
-                            if (td.InnerText != null) o_clinic = td.InnerText;
-                            break;
-
-                        case 4:
-                            // 總劑量
-                            if (td.InnerText != null) o_t_dose = int.Parse(td.InnerText);
-                            break;
-
-                        case 5:
-                            // 總DDD數
-                            if (td.InnerText != null) o_t_DDD = int.Parse(td.InnerText);
-                            break;
-                    }
-                    order_n++;
-                }
-
-                var q = from p in dc.tbl_cloudSCH_U
-                        where (p.uid == strUID) && (p.drugname == o_drug) && (p.SDATE == o_SDATE)
-                        select p;
-                if (q.Count() == 0)
-                {
-                    tbl_cloudSCH_U newU = new tbl_cloudSCH_U()
-                    {
-                        uid = strUID,
-                        QDATE = current_date,
-                        SDATE = o_SDATE,
-                        drugname = o_drug,
-                        STIME = o_STIME,
-                        clinic = o_clinic,
-                        t_dose = (short?)o_t_dose,
-                        t_DDD = (short?)o_t_DDD
-                    };
-
-                    // 存檔
-
-                    dc.tbl_cloudSCH_U.InsertOnSubmit(newU);
-                    dc.SubmitChanges();
-                }
-                count++;
-            }
-            return count;
-        }
-
-        private static int Write_op(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
-        {
-            Com_clDataContext dc = new Com_clDataContext();
-            int count = 0;
-            string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
-            string o_NHI_code = string.Empty, o_op_name = string.Empty, o_loca = string.Empty;
-            int o_amt = 0;
-            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
-
-            // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
-            {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
-                {
-                    switch (header_order[order_n])
-                    {
-                        case 0:
-                            // 來源
-                            if (td.InnerText != null)
+                        case 1:
+                            // 醫療院所
+                            if (td.InnerText != string.Empty)
                             {
                                 o_source = MakeSure_source(td.InnerHtml);
                             }
                             break;
 
-                        case 1:
-                            // 就醫科別
-                            if (td.InnerText != null) o_dep = td.InnerText;
-                            break;
-
                         case 2:
-                            // 主診斷名稱
-                            if (td.InnerText != null) o_diagnosis = td.InnerText;
+                            // 上傳註記
+                            if (td.InnerText != string.Empty) o_remark = td.InnerText;
                             break;
 
                         case 3:
-                            // 手術明細代碼
-                            if (td.InnerText != null) o_NHI_code = td.InnerText;
-                            break;
-
-                        case 4:
-                            // 手術明細名稱
-                            if (td.InnerText != null) o_op_name = td.InnerText;
-                            break;
-
-                        case 5:
-                            // 診療部位
-                            if (td.InnerText != null) o_loca = td.InnerText;
-                            break;
-
-                        case 6:
-                            // 執行時間-起
-                            if (td.InnerText != null)
-                            {
-                                string[] temp_d = td.InnerText.Split('/');
-                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                                o_SDATE = d;
-                            }
-                            break;
-
-                        case 7:
-                            // 執行時間-迄
-                            if (td.InnerText != null)
-                            {
-                                string[] temp_d = td.InnerText.Split('/');
-                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                                o_EDATE = d;
-                            }
-                            break;
-
-                        case 8:
-                            // 醫令總量
-                            if (td.InnerText != null) o_amt = int.Parse(td.InnerText);
+                            // 過敏藥物
+                            if (td.InnerText != string.Empty) o_drug_name = td.InnerText;
                             break;
                     }
                     order_n++;
                 }
 
-                var q = from p in dc.tbl_cloudOP
-                        where (p.uid == strUID) && (p.source == o_source) && (p.NHI_code == o_NHI_code) &&
-                              (p.SDATE == o_SDATE) && (p.EDATE == o_EDATE)
+                var q = from p in dc.tbl_cloudALL
+                        where (p.uid == strUID) && (p.source == o_source) && (p.SDATE == o_SDATE) &&
+                              (p.remark == o_remark) && (p.drug_name == o_drug_name)
                         select p;
                 if (q.Count() == 0)
                 {
-                    tbl_cloudOP newOP = new tbl_cloudOP()
+                    tbl_cloudALL newALL = new tbl_cloudALL()
                     {
                         uid = strUID,
                         QDATE = current_date,
                         source = o_source,
-                        dep = o_dep,
-                        diagnosis = o_diagnosis,
-                        NHI_code = o_NHI_code,
-                        op_name = o_op_name,
-                        loca = o_loca,
                         SDATE = o_SDATE,
-                        EDATE = o_EDATE,
-                        amt = (byte?)o_amt
+                        remark = o_remark,
+                        drug_name = o_drug_name
                     };
 
                     // 存檔
 
-                    dc.tbl_cloudOP.InsertOnSubmit(newOP);
+                    dc.tbl_cloudALL.InsertOnSubmit(newALL);
                     dc.SubmitChanges();
                 }
                 count++;
@@ -812,7 +400,7 @@ namespace CompanioNc.View
             DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
             // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
                 if (tr.SelectNodes("//td").Count == 0) continue;
                 int order_n = 0;
@@ -822,7 +410,7 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 來源
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 o_source = MakeSure_source(td.InnerHtml);
                             }
@@ -830,27 +418,27 @@ namespace CompanioNc.View
 
                         case 1:
                             // 主診斷名稱
-                            if (td.InnerText != null) o_diagnosis = td.InnerText.Replace("\r\n", string.Empty).Replace("\n", string.Empty);
+                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
                             break;
 
                         case 2:
                             // 牙醫處置代碼
-                            if (td.InnerText != null) o_NHI_code = td.InnerText;
+                            if (td.InnerText != string.Empty) o_NHI_code = td.InnerText;
                             break;
 
                         case 3:
                             // 牙醫處置名稱
-                            if (td.InnerText != null) o_op_name = td.InnerText.Replace("\r\n", string.Empty).Replace("\n", string.Empty);
+                            if (td.InnerText != string.Empty) o_op_name = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
                             break;
 
                         case 4:
                             // 診療部位
-                            if (td.InnerText != null) o_loca = td.InnerText;
+                            if (td.InnerText != string.Empty) o_loca = td.InnerText;
                             break;
 
                         case 5:
                             // 執行時間-起
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -860,7 +448,7 @@ namespace CompanioNc.View
 
                         case 6:
                             // 執行時間-迄
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -870,7 +458,7 @@ namespace CompanioNc.View
 
                         case 7:
                             // 醫令總量
-                            if (td.InnerText != null) o_amt = int.Parse(td.InnerText);
+                            if (td.InnerText != string.Empty) o_amt = int.Parse(td.InnerText);
                             break;
                     }
                     order_n++;
@@ -906,79 +494,6 @@ namespace CompanioNc.View
             return count;
         }
 
-        private static int Write_all(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
-        {
-            Com_clDataContext dc = new Com_clDataContext();
-            int count = 0;
-            string o_source = string.Empty, o_remark = string.Empty, o_drug_name = string.Empty;
-            DateTime o_SDATE = new DateTime();
-
-            // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
-            {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
-                {
-                    switch (header_order[order_n])
-                    {
-                        case 0:
-                            // 上傳日期
-                            if (td.InnerText != null)
-                            {
-                                string[] temp_d = td.InnerText.Split('/');
-                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                                o_SDATE = d;
-                            }
-                            break;
-
-                        case 1:
-                            // 醫療院所
-                            if (td.InnerText != null)
-                            {
-                                o_source = MakeSure_source(td.InnerHtml);
-                            }
-                            break;
-
-                        case 2:
-                            // 上傳註記
-                            if (td.InnerText != null) o_remark = td.InnerText;
-                            break;
-
-                        case 3:
-                            // 過敏藥物
-                            if (td.InnerText != null) o_drug_name = td.InnerText;
-                            break;
-                    }
-                    order_n++;
-                }
-
-                var q = from p in dc.tbl_cloudALL
-                        where (p.uid == strUID) && (p.source == o_source) && (p.SDATE == o_SDATE) &&
-                              (p.remark == o_remark) && (p.drug_name == o_drug_name)
-                        select p;
-                if (q.Count() == 0)
-                {
-                    tbl_cloudALL newALL = new tbl_cloudALL()
-                    {
-                        uid = strUID,
-                        QDATE = current_date,
-                        source = o_source,
-                        SDATE = o_SDATE,
-                        remark = o_remark,
-                        drug_name = o_drug_name
-                    };
-
-                    // 存檔
-
-                    dc.tbl_cloudALL.InsertOnSubmit(newALL);
-                    dc.SubmitChanges();
-                }
-                count++;
-            }
-            return count;
-        }
-
         private static int Write_dis(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
             Com_clDataContext dc = new Com_clDataContext();
@@ -987,7 +502,7 @@ namespace CompanioNc.View
             DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
             // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
                 if (tr.SelectNodes("//td").Count == 0) continue;
                 int order_n = 0;
@@ -997,7 +512,7 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 來源
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 o_source = MakeSure_source(td.InnerHtml);
                             }
@@ -1005,17 +520,17 @@ namespace CompanioNc.View
 
                         case 1:
                             // 出院科別
-                            if (td.InnerText != null) o_dep = td.InnerText;
+                            if (td.InnerText != string.Empty) o_dep = td.InnerText;
                             break;
 
                         case 2:
                             // 出院診斷
-                            if (td.InnerText != null) o_diagnosis = td.InnerText;
+                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText;
                             break;
 
                         case 3:
                             // 住院日期
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1025,7 +540,7 @@ namespace CompanioNc.View
 
                         case 4:
                             // 出院日期
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1063,6 +578,369 @@ namespace CompanioNc.View
             return count;
         }
 
+        private static int Write_lab(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
+            {
+                if (tr.SelectNodes("//td").Count == 0) continue;
+                tbl_cloudlab_temp newLab = new tbl_cloudlab_temp()
+                {
+                    uid = strUID,
+                    QDATE = current_date
+                };
+
+                int order_n = 0;
+                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                {
+                    switch (header_order[order_n])
+                    {
+                        case 0:
+                            // 項次
+                            if (td.InnerText != string.Empty) newLab.item_n = short.Parse(td.InnerText);
+                            break;
+
+                        case 1:
+                            if (td.InnerText != string.Empty) newLab.source = td.InnerText;
+                            break;
+
+                        case 2:
+                            if (td.InnerText != string.Empty) newLab.dep = td.InnerText;
+                            break;
+
+                        case 3:
+                            if (td.InnerText != string.Empty) newLab.diagnosis = td.InnerText;
+                            break;
+
+                        case 4:
+                            if (td.InnerText != string.Empty) newLab.@class = td.InnerText;
+                            break;
+
+                        case 5:
+                            if (td.InnerText != string.Empty) newLab.order_name = td.InnerText;
+                            break;
+
+                        case 6:
+                            if (td.InnerText != string.Empty) newLab.lab_item = td.InnerText;
+                            break;
+
+                        case 7:
+                            if (td.InnerText != string.Empty) newLab.result = td.InnerText;
+                            break;
+
+                        case 8:
+                            if (td.InnerText != string.Empty) newLab.range = td.InnerText;
+                            break;
+
+                        case 9:
+                            string[] temp_d = td.InnerText.Split('/');
+                            DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                            newLab.SDATE = d;
+                            break;
+
+                        case 10:
+                            if (td.InnerText != string.Empty) newLab.NHI_code = td.InnerText;
+                            break;
+                    }
+                    order_n++;
+                }
+                dc.tbl_cloudlab_temp.InsertOnSubmit(newLab);
+                dc.SubmitChanges();
+                count++;
+            }
+            // 匯入大表
+            try
+            {
+                dc.sp_insert_tbl_cloudlab(current_date);
+            }
+            catch (Exception ex)
+            {
+                Logging.Record_error(ex.Message);
+            }
+            try
+            {
+                dc.sp_insert_p_cloudlab(current_date);
+            }
+            catch (Exception ex)
+            {
+                Logging.Record_error(ex.Message);
+            }
+            // 處理source
+            var r = (from p in dc.tbl_cloudlab_temp
+                     where p.QDATE == current_date
+                     select p.source).Distinct().ToList(); // this is a query
+            for (int i = 0; i < r.Count(); i++)
+            {
+                string[] s = r[i].Replace("<br>", "|").Split('|');
+                var qq = from pp in dc.p_source
+                         where pp.source_id == s[2].Substring(1)
+                         select pp;
+                if (qq.Count() == 0)
+                {
+                    p_source so = new p_source()
+                    {
+                        source_id = s[2].Substring(1),
+                        @class = s[1].Substring(1),
+                        source_name = s[0]
+                    };
+                    dc.p_source.InsertOnSubmit(so);
+                    dc.SubmitChanges();
+                }
+            }
+            return count;
+        }
+
+        private static int Write_med(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
+            {
+                if (tr.SelectNodes("//td").Count == 0) continue;
+                tbl_cloudmed_temp newCloud = new tbl_cloudmed_temp()
+                {
+                    uid = strUID,
+                    QDATE = current_date
+                };
+
+                int order_n = 0;
+                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                {
+                    switch (header_order[order_n])
+                    {
+                        case 0:
+                            // 項次
+                            if (td.InnerText != string.Empty) newCloud.item_n = short.Parse(td.InnerText);
+                            break;
+
+                        case 1:
+                            if (td.InnerText != string.Empty) newCloud.source = td.InnerText;
+                            break;
+
+                        case 2:
+                            if (td.InnerText != string.Empty) newCloud.diagnosis = td.InnerText;
+                            break;
+
+                        case 3:
+                            if (td.InnerText != string.Empty) newCloud.atc3 = td.InnerText;
+                            break;
+
+                        case 4:
+                            if (td.InnerText != string.Empty) newCloud.atc5 = td.InnerText;
+                            break;
+
+                        case 5:
+                            if (td.InnerText != string.Empty) newCloud.comp = td.InnerText;
+                            break;
+
+                        case 6:
+                            if (td.InnerText != string.Empty) newCloud.NHI_code = td.InnerText;
+                            break;
+
+                        case 7:
+                            if (td.InnerText != string.Empty) newCloud.drug_name = td.InnerText;
+                            break;
+
+                        case 8:
+                            if (td.InnerText != string.Empty) newCloud.dosing = td.InnerText;
+                            break;
+
+                        case 9:
+                            if (td.InnerText != string.Empty) newCloud.days = td.InnerText;
+                            break;
+
+                        case 10:
+                            if (td.InnerText != string.Empty) newCloud.amt = td.InnerText;
+                            break;
+
+                        case 11:
+                            if (td.InnerText != string.Empty)
+                            {
+                                string[] temp_d = td.InnerText.Split('/');
+                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                                newCloud.SDATE = d;
+                            }
+                            break;
+
+                        case 12:
+                            if (td.InnerText != string.Empty)
+                            {
+                                string[] temp_d = td.InnerText.Split('/');
+                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                                newCloud.EDATE = d;
+                            }
+                            break;
+
+                        case 13:
+                            if (td.InnerText != string.Empty) newCloud.o_source = td.InnerText;
+                            break;
+                    }
+                    order_n++;
+                }
+                dc.tbl_cloudmed_temp.InsertOnSubmit(newCloud);
+                dc.SubmitChanges();
+                count++;
+            }
+
+            // 匯入大表
+            try
+            {
+                dc.sp_insert_tbl_cloudmed(current_date);
+            }
+            catch (Exception ex)
+            {
+                Logging.Record_error(ex.Message);
+            }
+            try
+            {
+                dc.sp_insert_p_cloudmed(current_date);
+            }
+            catch (Exception ex)
+            {
+                Logging.Record_error(ex.Message);
+            }
+            // 這裡原本多了一次沒有try包覆的insert_p_cloudmed, 一但p_cloudmed有錯誤就沒辦法處理source
+            // 處理source
+            var r = (from p in dc.tbl_cloudmed_temp
+                     where p.QDATE == current_date
+                     select p.source).Distinct().ToList();  //this is a query
+            for (int i = 0; i < r.Count(); i++)
+            {
+                string[] s = r[i].Replace("<br>", "|").Split('|');
+                // source_id s(2).substring(1)
+                // class s(1).substring(1)
+                // source_name s(0)
+                var qq = from pp in dc.p_source
+                         where pp.source_id == s[2].Substring(1)
+                         select pp;
+                if (qq.Count() == 0)
+                {
+                    p_source so = new p_source()
+                    {
+                        source_id = s[2].Substring(1),
+                        @class = s[1].Substring(1),
+                        source_name = s[0]
+                    };
+                    dc.p_source.InsertOnSubmit(so);
+                    dc.SubmitChanges();
+                }
+            }
+            return count;
+        }
+
+        private static int Write_op(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
+            string o_NHI_code = string.Empty, o_op_name = string.Empty, o_loca = string.Empty;
+            int o_amt = 0;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
+            {
+                if (tr.SelectNodes("//td").Count == 0) continue;
+                int order_n = 0;
+                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                {
+                    switch (header_order[order_n])
+                    {
+                        case 0:
+                            // 來源
+                            if (td.InnerText != string.Empty)
+                            {
+                                o_source = MakeSure_source(td.InnerHtml);
+                            }
+                            break;
+
+                        case 1:
+                            // 就醫科別
+                            if (td.InnerText != string.Empty) o_dep = td.InnerText;
+                            break;
+
+                        case 2:
+                            // 主診斷名稱
+                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText;
+                            break;
+
+                        case 3:
+                            // 手術明細代碼
+                            if (td.InnerText != string.Empty) o_NHI_code = td.InnerText;
+                            break;
+
+                        case 4:
+                            // 手術明細名稱
+                            if (td.InnerText != string.Empty) o_op_name = td.InnerText;
+                            break;
+
+                        case 5:
+                            // 診療部位
+                            if (td.InnerText != string.Empty) o_loca = td.InnerText;
+                            break;
+
+                        case 6:
+                            // 執行時間-起
+                            if (td.InnerText != string.Empty)
+                            {
+                                string[] temp_d = td.InnerText.Split('/');
+                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                                o_SDATE = d;
+                            }
+                            break;
+
+                        case 7:
+                            // 執行時間-迄
+                            if (td.InnerText != string.Empty)
+                            {
+                                string[] temp_d = td.InnerText.Split('/');
+                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                                o_EDATE = d;
+                            }
+                            break;
+
+                        case 8:
+                            // 醫令總量
+                            if (td.InnerText != string.Empty) o_amt = int.Parse(td.InnerText);
+                            break;
+                    }
+                    order_n++;
+                }
+
+                var q = from p in dc.tbl_cloudOP
+                        where (p.uid == strUID) && (p.source == o_source) && (p.NHI_code == o_NHI_code) &&
+                              (p.SDATE == o_SDATE) && (p.EDATE == o_EDATE)
+                        select p;
+                if (q.Count() == 0)
+                {
+                    tbl_cloudOP newOP = new tbl_cloudOP()
+                    {
+                        uid = strUID,
+                        QDATE = current_date,
+                        source = o_source,
+                        dep = o_dep,
+                        diagnosis = o_diagnosis,
+                        NHI_code = o_NHI_code,
+                        op_name = o_op_name,
+                        loca = o_loca,
+                        SDATE = o_SDATE,
+                        EDATE = o_EDATE,
+                        amt = (byte?)o_amt
+                    };
+
+                    // 存檔
+
+                    dc.tbl_cloudOP.InsertOnSubmit(newOP);
+                    dc.SubmitChanges();
+                }
+                count++;
+            }
+            return count;
+        }
+
         private static int Write_reh(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
             Com_clDataContext dc = new Com_clDataContext();
@@ -1073,7 +951,7 @@ namespace CompanioNc.View
             DateTime o_begin_date = new DateTime(), o_end_date = new DateTime(), o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
             // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
                 if (tr.SelectNodes("//td").Count == 0) continue;
                 int order_n = 0;
@@ -1083,14 +961,14 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 診別
-                            if (td.InnerText != null) o_class = td.InnerText;
+                            if (td.InnerText != string.Empty) o_class = td.InnerText;
                             break;
 
                         case 1:
                             // 來源, 與別人有所不同, 只有兩行
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
-                                string[] s = td.InnerHtml.Replace("\r\n", "|").Split('|');
+                                string[] s = td.InnerHtml.Replace("<br>", "|").Split('|');
                                 o_source = s[1].Replace("\n", string.Empty);
                                 var q1 = from p1 in dc.p_source
                                          where p1.source_id == o_source
@@ -1110,27 +988,27 @@ namespace CompanioNc.View
 
                         case 2:
                             // 主診斷碼
-                            if (td.InnerText != null) o_diagnosis = td.InnerText;
+                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText;
                             break;
 
                         case 3:
                             // 治療類別
-                            if (td.InnerText != null) o_type = td.InnerText;
+                            if (td.InnerText != string.Empty) o_type = td.InnerText;
                             break;
 
                         case 4:
                             // 強度
-                            if (td.InnerText != null) o_curegrade = td.InnerText;
+                            if (td.InnerText != string.Empty) o_curegrade = td.InnerText;
                             break;
 
                         case 5:
                             // 醫令總量
-                            if (td.InnerText != null) o_amt = int.Parse(td.InnerText);
+                            if (td.InnerText != string.Empty) o_amt = int.Parse(td.InnerText);
                             break;
 
                         case 6:
                             // 就醫日期/住院日期
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1140,7 +1018,7 @@ namespace CompanioNc.View
 
                         case 7:
                             // 治療結束日期
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1150,12 +1028,12 @@ namespace CompanioNc.View
 
                         case 8:
                             // 診療部位
-                            if (td.InnerText != null) o_loca = td.InnerText;
+                            if (td.InnerText != string.Empty) o_loca = td.InnerText;
                             break;
 
                         case 9:
                             // 執行時間-起
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1165,7 +1043,7 @@ namespace CompanioNc.View
 
                         case 10:
                             // 執行時間-迄
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1208,49 +1086,155 @@ namespace CompanioNc.View
             return count;
         }
 
-        private static int Write_tcm_gr(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        private static int Write_sch_re(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
-            string o_source = string.Empty, o_diagnosis = string.Empty, o_chronic = string.Empty, o_serial = string.Empty;
-            int o_days = 0;
-            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+            string o_drug = string.Empty, o_YM = string.Empty, drug_name = string.Empty;
+            int o_visit_n = 0, o_clinic_n = 0, o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
 
             // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
                 if (tr.SelectNodes("//td").Count == 0) continue;
+                if (row_left > 0) row_left--;
                 int order_n = 0;
                 foreach (HtmlNode td in tr.SelectNodes("//td"))
                 {
-                    switch (header_order[order_n])
+                    //' header(order_n)是資料表的位置與實際table的對照
+                    //' order_n是table的位置, header(order_n)的值是資料表的位置
+                    //' 有rowspan會干擾
+                    int actual_n;
+
+                    if ((row_left != row_n) && (row_left > 0) && (order_n > 0))
+                    {
+                        actual_n = order_n + 1;
+                        o_drug = drug_name;
+                    }
+                    else
+                    {
+                        actual_n = order_n;
+                    }
+                    //' 第一輪
+
+                    if ((order_n == 1) && int.Parse(td.GetAttributeValue("rowspan", "1")) > 1)
+                    {
+                        //' order_n=1 名義上第一輪成分名稱的位置
+                        if (td.InnerText != string.Empty) drug_name = td.InnerText.Replace("<br>", " ");
+                        row_n = int.Parse(td.GetAttributeValue("rowspan", "1"));
+                        row_left = row_n;
+                    }
+                    switch (header_order[actual_n])
                     {
                         case 0:
-                            // 來源
-                            if (td.InnerText != null)
-                            {
-                                o_source = MakeSure_source(td.InnerHtml);
-                            }
+                            // 成分名稱
+                            if (td.InnerText != string.Empty) o_drug = td.InnerText.Replace("<br>", " ");
                             break;
 
                         case 1:
-                            // 主診斷
-                            if (td.InnerText != null) o_diagnosis = td.InnerText.Replace("\r\n", string.Empty).Replace("\n", string.Empty);
+                            // 就醫年月
+                            if (td.InnerText != string.Empty) o_YM = td.InnerText;
                             break;
 
                         case 2:
-                            // 給藥日數
-                            if (td.InnerText != null) o_days = int.Parse(td.InnerText);
+                            // 就醫次數
+                            if (td.InnerText != string.Empty) o_visit_n = int.Parse(td.InnerText);
                             break;
 
                         case 3:
-                            // 慢連箋
-                            if (td.InnerText != null) o_chronic = td.InnerText;
+                            // 就醫院所數
+                            if (td.InnerText != string.Empty) o_clinic_n = int.Parse(td.InnerText);
                             break;
 
                         case 4:
-                            // 就醫(調劑)日期
-                            if (td.InnerText != null)
+                            // 總劑量
+                            if (td.InnerText != string.Empty) o_t_dose = int.Parse(td.InnerText);
+                            break;
+
+                        case 5:
+                            // 總DDD數
+                            if (td.InnerText != string.Empty) o_t_DDD = int.Parse(td.InnerText);
+                            break;
+                    }
+                    order_n++;
+                }
+
+                var q = from p in dc.tbl_cloudSCH_R
+                        where (p.uid == strUID) && (p.drug_name == o_drug) && (p.YM == o_YM)
+                        select p;
+                if (q.Count() == 0)
+                {
+                    tbl_cloudSCH_R newR = new tbl_cloudSCH_R()
+                    {
+                        uid = strUID,
+                        QDATE = current_date,
+                        YM = o_YM,
+                        drug_name = o_drug,
+                        visit_n = (byte?)o_visit_n,
+                        clinic_n = (byte?)o_clinic_n,
+                        t_dose = (short?)o_t_dose,
+                        t_DDD = (short?)o_t_DDD
+                    };
+
+                    // 存檔
+
+                    dc.tbl_cloudSCH_R.InsertOnSubmit(newR);
+                    dc.SubmitChanges();
+                }
+                count++;
+            }
+            return count;
+        }
+
+        private static int Write_sch_up(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
+        {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_drug = string.Empty, drug_name = string.Empty, o_STIME = string.Empty, o_clinic = string.Empty;
+            int o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
+            DateTime o_SDATE = new DateTime();
+
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
+            {
+                if (tr.SelectNodes("//td").Count == 0) continue;
+                if (row_left > 0) row_left--;
+                int order_n = 0;
+                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                {
+                    // header(order_n)是資料表的位置與實際table的對照
+                    // order_n是table的位置, header(order_n)的值是資料表的位置
+                    // 有rowspan會干擾
+                    int actual_n;
+
+                    if ((row_left != row_n) && (row_left > 0) && (order_n > 0))
+                    {
+                        actual_n = order_n + 1;
+                        o_drug = drug_name;
+                    }
+                    else
+                    {
+                        actual_n = order_n;
+                    }
+                    //' 第一輪
+
+                    if ((order_n == 1) && int.Parse(td.GetAttributeValue("rowspan", "1")) > 1)
+                    {
+                        //' order_n=1 名義上第一輪成分名稱的位置
+                        if (td.InnerText != string.Empty) drug_name = td.InnerText.Replace("<br>", " ");
+                        row_n = int.Parse(td.GetAttributeValue("rowspan", "1"));
+                        row_left = row_n;
+                    }
+                    switch (header_order[actual_n])
+                    {
+                        case 0:
+                            // 成分名稱
+                            if (td.InnerText != string.Empty) o_drug = td.InnerText.Replace("<br>", " ");
+                            break;
+
+                        case 1:
+                            // 就診日期
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1258,45 +1242,49 @@ namespace CompanioNc.View
                             }
                             break;
 
-                        case 5:
-                            // 慢連箋領藥日
-                            if (td.InnerText != null)
-                            {
-                                string[] temp_d = td.InnerText.Split('/');
-                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
-                                o_EDATE = d;
-                            }
+                        case 2:
+                            // 就診時間
+                            if (td.InnerText != string.Empty) o_STIME = td.InnerText;
                             break;
 
-                        case 6:
-                            // 就醫序號
-                            if (td.InnerText != null) o_serial = td.InnerText;
+                        case 3:
+                            // 本院/他院
+                            if (td.InnerText != string.Empty) o_clinic = td.InnerText;
+                            break;
+
+                        case 4:
+                            // 總劑量
+                            if (td.InnerText != string.Empty) o_t_dose = int.Parse(td.InnerText);
+                            break;
+
+                        case 5:
+                            // 總DDD數
+                            if (td.InnerText != string.Empty) o_t_DDD = int.Parse(td.InnerText);
                             break;
                     }
                     order_n++;
                 }
 
-                var q = from p in dc.tbl_cloudTCM_G
-                        where (p.uid == strUID) && (p.SDATE == o_SDATE) && (p.serial == o_serial)
+                var q = from p in dc.tbl_cloudSCH_U
+                        where (p.uid == strUID) && (p.drugname == o_drug) && (p.SDATE == o_SDATE)
                         select p;
                 if (q.Count() == 0)
                 {
-                    tbl_cloudTCM_G newTCMG = new tbl_cloudTCM_G()
+                    tbl_cloudSCH_U newU = new tbl_cloudSCH_U()
                     {
                         uid = strUID,
                         QDATE = current_date,
-                        source = o_source,
-                        diagnosis = o_diagnosis,
-                        days = (byte?)o_days,
-                        chronic = o_chronic,
                         SDATE = o_SDATE,
-                        EDATE = o_EDATE,
-                        serial = o_serial
+                        drugname = o_drug,
+                        STIME = o_STIME,
+                        clinic = o_clinic,
+                        t_dose = (short?)o_t_dose,
+                        t_DDD = (short?)o_t_DDD
                     };
 
                     // 存檔
 
-                    dc.tbl_cloudTCM_G.InsertOnSubmit(newTCMG);
+                    dc.tbl_cloudSCH_U.InsertOnSubmit(newU);
                     dc.SubmitChanges();
                 }
                 count++;
@@ -1315,7 +1303,7 @@ namespace CompanioNc.View
             DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
             // 寫入資料庫
-            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//tbody/tr"))
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
                 if (tr.SelectNodes("//td").Count == 0) continue;
                 int order_n = 0;
@@ -1325,52 +1313,52 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 主診斷名稱
-                            if (td.InnerText != null) o_diagnosis = td.InnerText.Replace("\r\n", string.Empty).Replace("\n", string.Empty);
+                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
                             break;
 
                         case 1:
                             // 藥品代碼
-                            if (td.InnerText != null) o_NHI_code = td.InnerText;
+                            if (td.InnerText != string.Empty) o_NHI_code = td.InnerText;
                             break;
 
                         case 2:
                             // 複方註記
-                            if (td.InnerText != null) o_complex = td.InnerText;
+                            if (td.InnerText != string.Empty) o_complex = td.InnerText;
                             break;
 
                         case 3:
                             // 基準方名
-                            if (td.InnerText != null) o_base = td.InnerText;
+                            if (td.InnerText != string.Empty) o_base = td.InnerText;
                             break;
 
                         case 4:
                             // 效能名稱
-                            if (td.InnerText != null) o_effect = td.InnerText;
+                            if (td.InnerText != string.Empty) o_effect = td.InnerText;
                             break;
 
                         case 5:
                             // 用法用量
-                            if (td.InnerText != null) o_dosing = td.InnerText;
+                            if (td.InnerText != string.Empty) o_dosing = td.InnerText;
                             break;
 
                         case 6:
                             // 給藥日數
-                            if (td.InnerText != null) o_days = int.Parse(td.InnerText);
+                            if (td.InnerText != string.Empty) o_days = int.Parse(td.InnerText);
                             break;
 
                         case 7:
                             // 濟型
-                            if (td.InnerText != null) o_type = td.InnerText;
+                            if (td.InnerText != string.Empty) o_type = td.InnerText;
                             break;
 
                         case 8:
                             // 給藥總量
-                            if (td.InnerText != null) o_amt = int.Parse(td.InnerText);
+                            if (td.InnerText != string.Empty) o_amt = int.Parse(td.InnerText);
                             break;
 
                         case 9:
                             // 就醫(調劑)日期
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1380,7 +1368,7 @@ namespace CompanioNc.View
 
                         case 10:
                             // 慢連箋領藥日
-                            if (td.InnerText != null)
+                            if (td.InnerText != string.Empty)
                             {
                                 string[] temp_d = td.InnerText.Split('/');
                                 DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1390,7 +1378,7 @@ namespace CompanioNc.View
 
                         case 11:
                             // 就醫序號
-                            if (td.InnerText != null) o_serial = td.InnerText;
+                            if (td.InnerText != string.Empty) o_serial = td.InnerText;
                             break;
                     }
                     order_n++;
@@ -1430,37 +1418,113 @@ namespace CompanioNc.View
             return count;
         }
 
-        private static string MakeSure_source(string temp_source)
+        private static int Write_tcm_gr(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
             Com_clDataContext dc = new Com_clDataContext();
-            string[] s = temp_source.Replace("\r\n", "|").Split('|');
-            string o_source = s[2].Replace("\n", string.Empty);
-            var q1 = from p1 in dc.p_source
-                     where p1.source_id == o_source
-                     select p1;
-            if (q1.Count() == 0)
-            {
-                p_source new_source = new p_source()
-                {
-                    source_id = s[2].Replace("\n", string.Empty),
-                    @class = s[1].Replace("\n", string.Empty),
-                    source_name = s[0]
-                };
-                dc.p_source.InsertOnSubmit(new_source);
-                dc.SubmitChanges();
-            }
-            return o_source;
-        }
-    }
+            int count = 0;
+            string o_source = string.Empty, o_diagnosis = string.Empty, o_chronic = string.Empty, o_serial = string.Empty;
+            int o_days = 0;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
-    internal class Response_DataModel
-    {
-        public string SQL_Tablename { get; set; }
-        public int Count { get; set; }
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
+            {
+                if (tr.SelectNodes("//td").Count == 0) continue;
+                int order_n = 0;
+                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                {
+                    switch (header_order[order_n])
+                    {
+                        case 0:
+                            // 來源
+                            if (td.InnerText != string.Empty)
+                            {
+                                o_source = MakeSure_source(td.InnerHtml);
+                            }
+                            break;
+
+                        case 1:
+                            // 主診斷
+                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
+                            break;
+
+                        case 2:
+                            // 給藥日數
+                            if (td.InnerText != string.Empty) o_days = int.Parse(td.InnerText);
+                            break;
+
+                        case 3:
+                            // 慢連箋
+                            if (td.InnerText != string.Empty) o_chronic = td.InnerText;
+                            break;
+
+                        case 4:
+                            // 就醫(調劑)日期
+                            if (td.InnerText != string.Empty)
+                            {
+                                string[] temp_d = td.InnerText.Split('/');
+                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                                o_SDATE = d;
+                            }
+                            break;
+
+                        case 5:
+                            // 慢連箋領藥日
+                            if (td.InnerText != string.Empty)
+                            {
+                                string[] temp_d = td.InnerText.Split('/');
+                                DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
+                                o_EDATE = d;
+                            }
+                            break;
+
+                        case 6:
+                            // 就醫序號
+                            if (td.InnerText != string.Empty) o_serial = td.InnerText;
+                            break;
+                    }
+                    order_n++;
+                }
+
+                var q = from p in dc.tbl_cloudTCM_G
+                        where (p.uid == strUID) && (p.SDATE == o_SDATE) && (p.serial == o_serial)
+                        select p;
+                if (q.Count() == 0)
+                {
+                    tbl_cloudTCM_G newTCMG = new tbl_cloudTCM_G()
+                    {
+                        uid = strUID,
+                        QDATE = current_date,
+                        source = o_source,
+                        diagnosis = o_diagnosis,
+                        days = (byte?)o_days,
+                        chronic = o_chronic,
+                        SDATE = o_SDATE,
+                        EDATE = o_EDATE,
+                        serial = o_serial
+                    };
+
+                    // 存檔
+
+                    dc.tbl_cloudTCM_G.InsertOnSubmit(newTCMG);
+                    dc.SubmitChanges();
+                }
+                count++;
+            }
+            return count;
+        }
+
+#endregion
     }
 
     internal class VPN_Operation
     {
+        private readonly string _sname;
+
+        private readonly string _tabid;
+
+        private readonly List<Target_Table> _target;
+
         /// <summary>
         /// 20200428 created
         /// </summary>
@@ -1474,20 +1538,18 @@ namespace CompanioNc.View
             _target = target;
         }
 
-        private readonly string _tabid;
-        private readonly string _sname;
-        private readonly List<Target_Table> _target;
-
-        // tab 的 ID, 可以用來點擊, 選擇tab, 例如: ContentPlaceHolder1_a_0008 是雲端藥歷
-        public string TAB_ID
-        {
-            get { return _tabid; }
-        }
+        public DateTime QDate { get; set; }
 
         // 簡短名稱, 可以用來顯示訊息用, 例如: 檢驗檢查結果
         public string Short_Name
         {
             get { return _sname; }
+        }
+
+        // tab 的 ID, 可以用來點擊, 選擇tab, 例如: ContentPlaceHolder1_a_0008 是雲端藥歷
+        public string TAB_ID
+        {
+            get { return _tabid; }
         }
 
         public List<Target_Table> Target
@@ -1500,61 +1562,15 @@ namespace CompanioNc.View
 
         // 多頁也不用排序啊, 全部抓起來就好了, 不排序就快一點, 不限頁數的做法, 放棄排序, 但是要更好的翻頁程式
         public string UID { get; set; }
-
-        public DateTime QDate { get; set; }
-    }
-
-    internal class Target_Table
-    {
-        /// <summary>
-        /// 20200428 created
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="sname"></param>
-        /// <param name="child"></param>
-        /// <param name="hw"></param>
-        private readonly string _targetid;
-
-        private readonly string _sname;
-        private readonly int? _children;
-        private readonly string[] _header_want;
-
-        public Target_Table(string target, string sname, int? child, string[] hw)
-        {
-            _targetid = target;
-            _sname = sname;
-            _children = child;
-            _header_want = hw;
-        }
-
-        public string TargetID
-        {
-            get { return _targetid; }
-        }
-
-        public string Short_Name
-        {
-            get { return _sname; }
-        }
-
-        public int? Children
-        {
-            get { return _children; }
-        }
-
-        public string[] Header_Want
-        {
-            get { return _header_want; }
-        }
     }
 
     internal class VPN_Retrieved
     {
-        private readonly string _sname;
         private readonly string[] _header_want;
+        private readonly DateTime _qdate;
+        private readonly string _sname;
         private readonly string _table;
         private readonly string _uid;
-        private readonly DateTime _qdate;
 
         public VPN_Retrieved(string sname, string[] hw, string doc, string uid, DateTime qdate)
         {
@@ -1565,9 +1581,14 @@ namespace CompanioNc.View
             _qdate = qdate;
         }
 
-        public string SQL_Tablename
+        public string[] Header_Want
         {
-            get { return _sname; }
+            get { return _header_want; }
+        }
+
+        public DateTime QDate
+        {
+            get { return _qdate; }
         }
 
         public string Retrieved_Table
@@ -1575,19 +1596,14 @@ namespace CompanioNc.View
             get { return _table; }
         }
 
-        public string[] Header_Want
+        public string SQL_Tablename
         {
-            get { return _header_want; }
+            get { return _sname; }
         }
 
         public string UID
         {
             get { return _uid; }
-        }
-
-        public DateTime QDate
-        {
-            get { return _qdate; }
         }
     }
 }

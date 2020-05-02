@@ -156,7 +156,7 @@ namespace CompanioNc
             ///WebTEst部分不採MVVM
             using (Com_clDataContext dc =new Com_clDataContext())
             {
-                this.DGQuery.ItemsSource = dc.sp_querytable();
+                this.DGQuery.ItemsSource = dc.sp_querytable2();
             }
 
             // Create the hotkey manager.
@@ -202,7 +202,7 @@ namespace CompanioNc
             ///WebTEst部分不採MVVM
             using (Com_clDataContext dc = new Com_clDataContext())
             {
-                this.DGQuery.ItemsSource = dc.sp_querytable();
+                this.DGQuery.ItemsSource = dc.sp_querytable2();
             }
         }
         #endregion

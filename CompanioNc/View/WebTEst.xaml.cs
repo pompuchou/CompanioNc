@@ -305,13 +305,42 @@ namespace CompanioNc.View
                 List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
 
                 // 製作紀錄by rd
-                foreach (Response_DataModel rd in rds)
+                Com_clDataContext dc = new Com_clDataContext();
+                tbl_Query2 q = new tbl_Query2()
                 {
-                    Com_clDataContext dc = new Com_clDataContext();
-                    tbl_Query q = new tbl_Query();
-                    dc.tbl_Query.InsertOnSubmit(q);
-                    dc.SubmitChanges();
-                }
+                    uid = ListRetrieved.First().UID,
+                    QDATE = ListRetrieved.First().QDate
+                };
+                q.cloudmed_N = (short?)(from p1 in rds
+                                where p1.SQL_Tablename == "med"
+                               select p1.Count).Sum();
+                q.cloudlab_N = (short?)(from p1 in rds
+                                        where p1.SQL_Tablename == "lab"
+                                        select p1.Count).Sum();
+                q.schedule_N = (short?)(from p1 in rds
+                                        where p1.SQL_Tablename == "sch_up"
+                                        select p1.Count).Sum();
+                q.op_N = (short?)(from p1 in rds
+                                  where p1.SQL_Tablename == "op"
+                                  select p1.Count).Sum();
+                q.dental_N = (short?)(from p1 in rds
+                                      where p1.SQL_Tablename == "dental"
+                                      select p1.Count).Sum();
+                q.allergy_N = (short?)(from p1 in rds
+                                       where p1.SQL_Tablename == "all"
+                                       select p1.Count).Sum();
+                q.discharge_N = (short?)(from p1 in rds
+                                         where p1.SQL_Tablename == "dis"
+                                         select p1.Count).Sum();
+                q.rehab_N = (short?)(from p1 in rds
+                                     where p1.SQL_Tablename == "reh"
+                                     select p1.Count).Sum();
+                q.tcm_N = (short?)(from p1 in rds
+                                   where p1.SQL_Tablename == "tcm"
+                                   select p1.Count).Sum();
+                dc.tbl_Query2.InsertOnSubmit(q);
+                dc.SubmitChanges();
+
             }
             else
             {
@@ -406,6 +435,8 @@ namespace CompanioNc.View
             /// 依照杏翔有無, 資料庫有無, VPN有, 應該有四種情形
             /// VPN 有, 杏翔 有, 資料庫 有 => 理想狀況取的正確UID
             /// VPN 有, 杏翔 有, 資料庫 無 => 新個案, UID寫入資料庫tbl_patients, 取得正確UID
+            /// VPN 有, 杏翔 異, 資料庫 有 => 只有一筆, 直接取得UID; 若有多筆, 跳出視窗選擇正確UID
+            /// VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
             /// VPN 有, 杏翔 無, 資料庫 有 => 只有一筆, 直接取得UID; 若有多筆, 跳出視窗選擇正確UID
             /// VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
 
@@ -426,7 +457,7 @@ namespace CompanioNc.View
 
             if (!string.IsNullOrEmpty(thesisUID))
             {
-                // 第一, 第二種狀況
+                // 第一, 第二種狀況, 有杏翔
                 if ((thesisUID.Substring(0, 4) == vpnUID.Substring(0, 4)) &&
                                 (thesisUID.Substring(7, 3) == vpnUID.Substring(7, 3)))
                 {
@@ -465,6 +496,51 @@ namespace CompanioNc.View
                     }
                     // 無論第一或第二種狀況, 都是回傳thesisUID
                     o = thesisUID;
+                }
+                else
+                {
+                    // 如果沒有使用companion, 或是用別人的健保卡,單獨要查詢
+                    // 第三, 第四種狀況
+                    var q = from p in dc.tbl_patients
+                            where (p.uid.Substring(0, 4) == vpnUID.Substring(0, 4) &&
+                            p.uid.Substring(7, 3) == vpnUID.Substring(7, 3))
+                            select new { p.uid, p.cname };
+                    switch (q.Count())
+                    {
+                        case 0:
+                            // 這是第四種狀況
+                            // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
+                            o = string.Empty;
+                            break;
+
+                        case 1:
+                            // passed test
+                            // 這是第三種狀況(1/2)
+                            o = q.Single().uid;
+                            break;
+
+                        default:
+                            // 這是第三種狀況(2/2)
+                            string qu = "請選擇 \r\n";
+                            for (int i = 0; i < q.Count(); i++)
+                            {
+                                qu += $"{i + 1}. {q.ToList()[i].uid} {q.ToList()[i].cname} \r\n";
+                            }
+                            string answer = "0";
+                            while ((int.Parse(answer) < 1) || (int.Parse(answer) > q.Count()))
+                            {
+                                answer = Interaction.InputBox(qu);
+                                // 有逃脫機制了
+                                if (answer == "q")
+                                {
+                                    o = string.Empty;
+                                    return o;
+                                }
+                                if (!(int.TryParse(answer, out int result))) answer = "0";
+                            }
+                            o = q.ToList()[int.Parse(answer) - 1].uid;
+                            break;
+                    }
                 }
             }
             else

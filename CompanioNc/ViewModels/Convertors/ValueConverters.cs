@@ -6,16 +6,15 @@ using System.Windows.Media;
 
 namespace CompanioNc.ViewModels.Converters
 {
-    public class BooleanToForegroundConverter : IValueConverter
+    public class NumberToForegroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is string)
             {
-                bool b;
-                if (bool.TryParse((string)value, out b))
+                if (int.TryParse((string)value, out int i ))
                 {
-                    if (b == true) return Brushes.Red;
+                    if (i > 0) return Brushes.Red;
                 }
             }
             return Brushes.Black;

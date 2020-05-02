@@ -78,6 +78,9 @@ namespace CompanioNc.Models
     partial void Insertp_source(p_source instance);
     partial void Updatep_source(p_source instance);
     partial void Deletep_source(p_source instance);
+    partial void Inserttbl_Query2(tbl_Query2 instance);
+    partial void Updatetbl_Query2(tbl_Query2 instance);
+    partial void Deletetbl_Query2(tbl_Query2 instance);
     #endregion
 		
 		public Com_clDataContext() : 
@@ -238,6 +241,14 @@ namespace CompanioNc.Models
 			}
 		}
 		
+		public System.Data.Linq.Table<tbl_Query2> tbl_Query2
+		{
+			get
+			{
+				return this.GetTable<tbl_Query2>();
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_cloudALL_by_uid")]
 		public ISingleResult<sp_cloudALL_by_uidResult> sp_cloudALL_by_uid([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="NVarChar(50)")] string u)
 		{
@@ -376,6 +387,13 @@ namespace CompanioNc.Models
 		{
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), qDATE);
 			return ((int)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_querytable2")]
+		public ISingleResult<sp_querytable2Result> sp_querytable2()
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())));
+			return ((ISingleResult<sp_querytable2Result>)(result.ReturnValue));
 		}
 	}
 	
@@ -4707,6 +4725,332 @@ namespace CompanioNc.Models
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tbl_Query2")]
+	public partial class tbl_Query2 : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private long _Query_id;
+		
+		private string _uid;
+		
+		private System.DateTime _QDATE;
+		
+		private System.Nullable<short> _cloudmed_N;
+		
+		private System.Nullable<short> _schedule_N;
+		
+		private System.Nullable<short> _cloudlab_N;
+		
+		private System.Nullable<short> _op_N;
+		
+		private System.Nullable<short> _discharge_N;
+		
+		private System.Nullable<short> _rehab_N;
+		
+		private System.Nullable<short> _tcm_N;
+		
+		private System.Nullable<short> _dental_N;
+		
+		private System.Nullable<short> _allergy_N;
+		
+    #region 擴充性方法定義
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnQuery_idChanging(long value);
+    partial void OnQuery_idChanged();
+    partial void OnuidChanging(string value);
+    partial void OnuidChanged();
+    partial void OnQDATEChanging(System.DateTime value);
+    partial void OnQDATEChanged();
+    partial void Oncloudmed_NChanging(System.Nullable<short> value);
+    partial void Oncloudmed_NChanged();
+    partial void Onschedule_NChanging(System.Nullable<short> value);
+    partial void Onschedule_NChanged();
+    partial void Oncloudlab_NChanging(System.Nullable<short> value);
+    partial void Oncloudlab_NChanged();
+    partial void Onop_NChanging(System.Nullable<short> value);
+    partial void Onop_NChanged();
+    partial void Ondischarge_NChanging(System.Nullable<short> value);
+    partial void Ondischarge_NChanged();
+    partial void Onrehab_NChanging(System.Nullable<short> value);
+    partial void Onrehab_NChanged();
+    partial void Ontcm_NChanging(System.Nullable<short> value);
+    partial void Ontcm_NChanged();
+    partial void Ondental_NChanging(System.Nullable<short> value);
+    partial void Ondental_NChanged();
+    partial void Onallergy_NChanging(System.Nullable<short> value);
+    partial void Onallergy_NChanged();
+    #endregion
+		
+		public tbl_Query2()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Query_id", AutoSync=AutoSync.OnInsert, DbType="BigInt NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public long Query_id
+		{
+			get
+			{
+				return this._Query_id;
+			}
+			set
+			{
+				if ((this._Query_id != value))
+				{
+					this.OnQuery_idChanging(value);
+					this.SendPropertyChanging();
+					this._Query_id = value;
+					this.SendPropertyChanged("Query_id");
+					this.OnQuery_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_uid", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string uid
+		{
+			get
+			{
+				return this._uid;
+			}
+			set
+			{
+				if ((this._uid != value))
+				{
+					this.OnuidChanging(value);
+					this.SendPropertyChanging();
+					this._uid = value;
+					this.SendPropertyChanged("uid");
+					this.OnuidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_QDATE", DbType="DateTime NOT NULL")]
+		public System.DateTime QDATE
+		{
+			get
+			{
+				return this._QDATE;
+			}
+			set
+			{
+				if ((this._QDATE != value))
+				{
+					this.OnQDATEChanging(value);
+					this.SendPropertyChanging();
+					this._QDATE = value;
+					this.SendPropertyChanged("QDATE");
+					this.OnQDATEChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cloudmed_N", DbType="SmallInt")]
+		public System.Nullable<short> cloudmed_N
+		{
+			get
+			{
+				return this._cloudmed_N;
+			}
+			set
+			{
+				if ((this._cloudmed_N != value))
+				{
+					this.Oncloudmed_NChanging(value);
+					this.SendPropertyChanging();
+					this._cloudmed_N = value;
+					this.SendPropertyChanged("cloudmed_N");
+					this.Oncloudmed_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_schedule_N", DbType="SmallInt")]
+		public System.Nullable<short> schedule_N
+		{
+			get
+			{
+				return this._schedule_N;
+			}
+			set
+			{
+				if ((this._schedule_N != value))
+				{
+					this.Onschedule_NChanging(value);
+					this.SendPropertyChanging();
+					this._schedule_N = value;
+					this.SendPropertyChanged("schedule_N");
+					this.Onschedule_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cloudlab_N", DbType="SmallInt")]
+		public System.Nullable<short> cloudlab_N
+		{
+			get
+			{
+				return this._cloudlab_N;
+			}
+			set
+			{
+				if ((this._cloudlab_N != value))
+				{
+					this.Oncloudlab_NChanging(value);
+					this.SendPropertyChanging();
+					this._cloudlab_N = value;
+					this.SendPropertyChanged("cloudlab_N");
+					this.Oncloudlab_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_op_N", DbType="SmallInt")]
+		public System.Nullable<short> op_N
+		{
+			get
+			{
+				return this._op_N;
+			}
+			set
+			{
+				if ((this._op_N != value))
+				{
+					this.Onop_NChanging(value);
+					this.SendPropertyChanging();
+					this._op_N = value;
+					this.SendPropertyChanged("op_N");
+					this.Onop_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_discharge_N", DbType="SmallInt")]
+		public System.Nullable<short> discharge_N
+		{
+			get
+			{
+				return this._discharge_N;
+			}
+			set
+			{
+				if ((this._discharge_N != value))
+				{
+					this.Ondischarge_NChanging(value);
+					this.SendPropertyChanging();
+					this._discharge_N = value;
+					this.SendPropertyChanged("discharge_N");
+					this.Ondischarge_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_rehab_N", DbType="SmallInt")]
+		public System.Nullable<short> rehab_N
+		{
+			get
+			{
+				return this._rehab_N;
+			}
+			set
+			{
+				if ((this._rehab_N != value))
+				{
+					this.Onrehab_NChanging(value);
+					this.SendPropertyChanging();
+					this._rehab_N = value;
+					this.SendPropertyChanged("rehab_N");
+					this.Onrehab_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_tcm_N", DbType="SmallInt")]
+		public System.Nullable<short> tcm_N
+		{
+			get
+			{
+				return this._tcm_N;
+			}
+			set
+			{
+				if ((this._tcm_N != value))
+				{
+					this.Ontcm_NChanging(value);
+					this.SendPropertyChanging();
+					this._tcm_N = value;
+					this.SendPropertyChanged("tcm_N");
+					this.Ontcm_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dental_N", DbType="SmallInt")]
+		public System.Nullable<short> dental_N
+		{
+			get
+			{
+				return this._dental_N;
+			}
+			set
+			{
+				if ((this._dental_N != value))
+				{
+					this.Ondental_NChanging(value);
+					this.SendPropertyChanging();
+					this._dental_N = value;
+					this.SendPropertyChanged("dental_N");
+					this.Ondental_NChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_allergy_N", DbType="SmallInt")]
+		public System.Nullable<short> allergy_N
+		{
+			get
+			{
+				return this._allergy_N;
+			}
+			set
+			{
+				if ((this._allergy_N != value))
+				{
+					this.Onallergy_NChanging(value);
+					this.SendPropertyChanging();
+					this._allergy_N = value;
+					this.SendPropertyChanged("allergy_N");
+					this.Onallergy_NChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
 	public partial class sp_cloudALL_by_uidResult
 	{
 		
@@ -6388,6 +6732,248 @@ namespace CompanioNc.Models
 				if ((this._p04 != value))
 				{
 					this._p04 = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_querytable2Result
+	{
+		
+		private long _Query_id;
+		
+		private string _uid;
+		
+		private System.DateTime _QDATE;
+		
+		private System.Nullable<short> _cloudmed_N;
+		
+		private System.Nullable<short> _schedule_N;
+		
+		private System.Nullable<short> _cloudlab_N;
+		
+		private string _cname;
+		
+		private System.Nullable<short> _op_N;
+		
+		private System.Nullable<short> _discharge_N;
+		
+		private System.Nullable<short> _rehab_N;
+		
+		private System.Nullable<short> _TCM_N;
+		
+		private System.Nullable<short> _dental_N;
+		
+		private System.Nullable<short> _allergy_N;
+		
+		public sp_querytable2Result()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Query_id", DbType="BigInt NOT NULL")]
+		public long Query_id
+		{
+			get
+			{
+				return this._Query_id;
+			}
+			set
+			{
+				if ((this._Query_id != value))
+				{
+					this._Query_id = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_uid", DbType="NVarChar(20) NOT NULL", CanBeNull=false)]
+		public string uid
+		{
+			get
+			{
+				return this._uid;
+			}
+			set
+			{
+				if ((this._uid != value))
+				{
+					this._uid = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_QDATE", DbType="DateTime NOT NULL")]
+		public System.DateTime QDATE
+		{
+			get
+			{
+				return this._QDATE;
+			}
+			set
+			{
+				if ((this._QDATE != value))
+				{
+					this._QDATE = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cloudmed_N", DbType="SmallInt")]
+		public System.Nullable<short> cloudmed_N
+		{
+			get
+			{
+				return this._cloudmed_N;
+			}
+			set
+			{
+				if ((this._cloudmed_N != value))
+				{
+					this._cloudmed_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_schedule_N", DbType="SmallInt")]
+		public System.Nullable<short> schedule_N
+		{
+			get
+			{
+				return this._schedule_N;
+			}
+			set
+			{
+				if ((this._schedule_N != value))
+				{
+					this._schedule_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cloudlab_N", DbType="SmallInt")]
+		public System.Nullable<short> cloudlab_N
+		{
+			get
+			{
+				return this._cloudlab_N;
+			}
+			set
+			{
+				if ((this._cloudlab_N != value))
+				{
+					this._cloudlab_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cname", DbType="NVarChar(50)")]
+		public string cname
+		{
+			get
+			{
+				return this._cname;
+			}
+			set
+			{
+				if ((this._cname != value))
+				{
+					this._cname = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_op_N", DbType="SmallInt")]
+		public System.Nullable<short> op_N
+		{
+			get
+			{
+				return this._op_N;
+			}
+			set
+			{
+				if ((this._op_N != value))
+				{
+					this._op_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_discharge_N", DbType="SmallInt")]
+		public System.Nullable<short> discharge_N
+		{
+			get
+			{
+				return this._discharge_N;
+			}
+			set
+			{
+				if ((this._discharge_N != value))
+				{
+					this._discharge_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_rehab_N", DbType="SmallInt")]
+		public System.Nullable<short> rehab_N
+		{
+			get
+			{
+				return this._rehab_N;
+			}
+			set
+			{
+				if ((this._rehab_N != value))
+				{
+					this._rehab_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TCM_N", DbType="SmallInt")]
+		public System.Nullable<short> TCM_N
+		{
+			get
+			{
+				return this._TCM_N;
+			}
+			set
+			{
+				if ((this._TCM_N != value))
+				{
+					this._TCM_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dental_N", DbType="SmallInt")]
+		public System.Nullable<short> dental_N
+		{
+			get
+			{
+				return this._dental_N;
+			}
+			set
+			{
+				if ((this._dental_N != value))
+				{
+					this._dental_N = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_allergy_N", DbType="SmallInt")]
+		public System.Nullable<short> allergy_N
+		{
+			get
+			{
+				return this._allergy_N;
+			}
+			set
+			{
+				if ((this._allergy_N != value))
+				{
+					this._allergy_N = value;
 				}
 			}
 		}

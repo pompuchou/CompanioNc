@@ -98,5 +98,11 @@
         <elementListCompartment Id="86ef7cf3-b71a-43a5-bc65-cdcf567ff030" absoluteBounds="13.015, 9.835, 1.9700000000000002, 0.792510986328125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
+    <classShape Id="fc59ea10-272d-48dd-bae0-c6d03b887878" absoluteBounds="6, 3.125, 2, 3.0156579589843751">
+      <DataClassMoniker Name="/ComDataDataContext/tbl_Query2" />
+      <nestedChildShapes>
+        <elementListCompartment Id="c26ad28c-542a-4ba3-89b7-b858e6f53112" absoluteBounds="6.015, 3.585, 1.9700000000000002, 2.455657958984375" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
   </nestedChildShapes>
 </ordesignerObjectsDiagram>
