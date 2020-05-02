@@ -200,6 +200,12 @@ namespace CompanioNc
         private void WebTEst_refresh_Click(object sender, RoutedEventArgs e)
         {
             ///WebTEst部分不採MVVM
+            Web_refresh();
+        }
+
+        internal void Web_refresh()
+        {
+            ///WebTEst部分不採MVVM
             using (Com_clDataContext dc = new Com_clDataContext())
             {
                 this.DGQuery.ItemsSource = dc.sp_querytable2();

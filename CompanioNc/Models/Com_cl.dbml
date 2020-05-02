@@ -445,7 +445,7 @@
       <Column Name="op_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="discharge_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="rehab_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
-      <Column Name="TCM_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="tcm_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="dental_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
       <Column Name="allergy_N" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
     </ElementType>

@@ -385,13 +385,14 @@ namespace CompanioNc.View
                                           where p1.SQL_Tablename == "reh"
                                           select p1.Count).Sum(),
                        tcm_N = (short?)(from p1 in rds
-                                        where p1.SQL_Tablename == "tcm"
+                                        where p1.SQL_Tablename == "tcm_de"
                                         select p1.Count).Sum();
                 Com_clDataContext dc = new Com_clDataContext();
                 tbl_Query2 q = new tbl_Query2()
                 {
                     uid = ListRetrieved.First().UID,
                     QDATE = ListRetrieved.First().QDate,
+                    EDATE = DateTime.Now,
                     remark = _special_remark
                 };
                 q.cloudmed_N = med_N;
@@ -406,6 +407,11 @@ namespace CompanioNc.View
                 dc.tbl_Query2.InsertOnSubmit(q);
                 dc.SubmitChanges();
                 tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
+
+                string tempSTR = m.Label1.Text;
+                m.Label1.Text = string.Empty;
+                m.Label1.Text = tempSTR;
+                m.Web_refresh();
             }
             else
             {

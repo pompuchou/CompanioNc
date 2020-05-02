@@ -220,7 +220,7 @@ namespace CompanioNc.View
                     if ((ths == null) || (ths.Count < 4)) continue;
                     foreach (HtmlNode th in ths)
                     {
-                        string strT = th.InnerText.Replace("<br>", string.Empty).Replace(" ", string.Empty);
+                        string strT = th.InnerText.Replace(" ", string.Empty);
                         for (int i = 0; i < vr.Header_Want.Count(); i++)
                         {
                             // 這個版本可以用在排序後, 字會多一個上下的符號
@@ -293,7 +293,7 @@ namespace CompanioNc.View
         {
             Com_clDataContext dc = new Com_clDataContext();
             string[] s = temp_source.Replace("<br>", "|").Split('|');
-            string o_source = s[2].Replace("\n", string.Empty);
+            string o_source = s[2];
             var q1 = from p1 in dc.p_source
                      where p1.source_id == o_source
                      select p1;
@@ -301,8 +301,8 @@ namespace CompanioNc.View
             {
                 p_source new_source = new p_source()
                 {
-                    source_id = s[2].Replace("\n", string.Empty),
-                    @class = s[1].Replace("\n", string.Empty),
+                    source_id = s[2],
+                    @class = s[1],
                     source_name = s[0]
                 };
                 dc.p_source.InsertOnSubmit(new_source);
@@ -353,12 +353,12 @@ namespace CompanioNc.View
 
                         case 2:
                             // 上傳註記
-                            if (td.InnerText != string.Empty) o_remark = td.InnerText;
+                            o_remark = td.InnerText;
                             break;
 
                         case 3:
                             // 過敏藥物
-                            if (td.InnerText != string.Empty) o_drug_name = td.InnerText;
+                            o_drug_name = td.InnerText;
                             break;
                     }
                     order_n++;
@@ -422,22 +422,22 @@ namespace CompanioNc.View
 
                         case 1:
                             // 主診斷名稱
-                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
+                            o_diagnosis = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 2:
                             // 牙醫處置代碼
-                            if (td.InnerText != string.Empty) o_NHI_code = td.InnerText;
+                            o_NHI_code = td.InnerText;
                             break;
 
                         case 3:
                             // 牙醫處置名稱
-                            if (td.InnerText != string.Empty) o_op_name = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
+                            o_op_name = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 4:
                             // 診療部位
-                            if (td.InnerText != string.Empty) o_loca = td.InnerText;
+                            o_loca = td.InnerText;
                             break;
 
                         case 5:
@@ -528,12 +528,12 @@ namespace CompanioNc.View
 
                         case 1:
                             // 出院科別
-                            if (td.InnerText != string.Empty) o_dep = td.InnerText;
+                            o_dep = td.InnerText;
                             break;
 
                         case 2:
                             // 出院診斷
-                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText;
+                            o_diagnosis = td.InnerText;
                             break;
 
                         case 3:
@@ -615,35 +615,35 @@ namespace CompanioNc.View
                             break;
 
                         case 1:
-                            if (td.InnerText != string.Empty) newLab.source = td.InnerText;
+                            newLab.source = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 2:
-                            if (td.InnerText != string.Empty) newLab.dep = td.InnerText;
+                            newLab.dep = td.InnerText;
                             break;
 
                         case 3:
-                            if (td.InnerText != string.Empty) newLab.diagnosis = td.InnerText;
+                            newLab.diagnosis = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 4:
-                            if (td.InnerText != string.Empty) newLab.@class = td.InnerText;
+                            newLab.@class = td.InnerText;
                             break;
 
                         case 5:
-                            if (td.InnerText != string.Empty) newLab.order_name = td.InnerText;
+                            newLab.order_name = td.InnerText;
                             break;
 
                         case 6:
-                            if (td.InnerText != string.Empty) newLab.lab_item = td.InnerText;
+                            newLab.lab_item = td.InnerText;
                             break;
 
                         case 7:
-                            if (td.InnerText != string.Empty) newLab.result = td.InnerText;
+                            newLab.result = td.InnerText;
                             break;
 
                         case 8:
-                            if (td.InnerText != string.Empty) newLab.range = td.InnerText;
+                            newLab.range = td.InnerText;
                             break;
 
                         case 9:
@@ -653,7 +653,7 @@ namespace CompanioNc.View
                             break;
 
                         case 10:
-                            if (td.InnerText != string.Empty) newLab.NHI_code = td.InnerText;
+                            newLab.NHI_code = td.InnerText;
                             break;
                     }
                     order_n++;
@@ -685,7 +685,7 @@ namespace CompanioNc.View
                      select p.source).Distinct().ToList(); // this is a query
             for (int i = 0; i < r.Count(); i++)
             {
-                string[] s = r[i].Replace("<br>", "|").Split('|');
+                string[] s = r[i].Split(' ');
                 var qq = from pp in dc.p_source
                          where pp.source_id == s[2].Substring(1)
                          select pp;
@@ -733,43 +733,43 @@ namespace CompanioNc.View
                             break;
 
                         case 1:
-                            if (td.InnerText != string.Empty) newCloud.source = td.InnerText;
+                            newCloud.source = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 2:
-                            if (td.InnerText != string.Empty) newCloud.diagnosis = td.InnerText;
+                            newCloud.diagnosis = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 3:
-                            if (td.InnerText != string.Empty) newCloud.atc3 = td.InnerText;
+                            newCloud.atc3 = td.InnerText;
                             break;
 
                         case 4:
-                            if (td.InnerText != string.Empty) newCloud.atc5 = td.InnerText;
+                            newCloud.atc5 = td.InnerText;
                             break;
 
                         case 5:
-                            if (td.InnerText != string.Empty) newCloud.comp = td.InnerText;
+                            newCloud.comp = td.InnerText;
                             break;
 
                         case 6:
-                            if (td.InnerText != string.Empty) newCloud.NHI_code = td.InnerText;
+                            newCloud.NHI_code = td.InnerText;
                             break;
 
                         case 7:
-                            if (td.InnerText != string.Empty) newCloud.drug_name = td.InnerText;
+                            newCloud.drug_name = td.InnerText;
                             break;
 
                         case 8:
-                            if (td.InnerText != string.Empty) newCloud.dosing = td.InnerText;
+                            newCloud.dosing = td.InnerText;
                             break;
 
                         case 9:
-                            if (td.InnerText != string.Empty) newCloud.days = td.InnerText;
+                            newCloud.days = td.InnerText;
                             break;
 
                         case 10:
-                            if (td.InnerText != string.Empty) newCloud.amt = td.InnerText;
+                            newCloud.amt = td.InnerText;
                             break;
 
                         case 11:
@@ -791,7 +791,7 @@ namespace CompanioNc.View
                             break;
 
                         case 13:
-                            if (td.InnerText != string.Empty) newCloud.o_source = td.InnerText;
+                            newCloud.o_source = td.InnerText;
                             break;
                     }
                     order_n++;
@@ -825,7 +825,7 @@ namespace CompanioNc.View
                      select p.source).Distinct().ToList();  //this is a query
             for (int i = 0; i < r.Count(); i++)
             {
-                string[] s = r[i].Replace("<br>", "|").Split('|');
+                string[] s = r[i].Split(' ');
                 // source_id s(2).substring(1)
                 // class s(1).substring(1)
                 // source_name s(0)
@@ -879,27 +879,27 @@ namespace CompanioNc.View
 
                         case 1:
                             // 就醫科別
-                            if (td.InnerText != string.Empty) o_dep = td.InnerText;
+                            o_dep = td.InnerText;
                             break;
 
                         case 2:
                             // 主診斷名稱
-                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText;
+                            o_diagnosis = td.InnerText;
                             break;
 
                         case 3:
                             // 手術明細代碼
-                            if (td.InnerText != string.Empty) o_NHI_code = td.InnerText;
+                            o_NHI_code = td.InnerText;
                             break;
 
                         case 4:
                             // 手術明細名稱
-                            if (td.InnerText != string.Empty) o_op_name = td.InnerText;
+                            o_op_name = td.InnerText;
                             break;
 
                         case 5:
                             // 診療部位
-                            if (td.InnerText != string.Empty) o_loca = td.InnerText;
+                            o_loca = td.InnerText;
                             break;
 
                         case 6:
@@ -985,7 +985,7 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 診別
-                            if (td.InnerText != string.Empty) o_class = td.InnerText;
+                            o_class = td.InnerText;
                             break;
 
                         case 1:
@@ -993,7 +993,7 @@ namespace CompanioNc.View
                             if (td.InnerText != string.Empty)
                             {
                                 string[] s = td.InnerHtml.Replace("<br>", "|").Split('|');
-                                o_source = s[1].Replace("\n", string.Empty);
+                                o_source = s[1];
                                 var q1 = from p1 in dc.p_source
                                          where p1.source_id == o_source
                                          select p1;
@@ -1001,7 +1001,7 @@ namespace CompanioNc.View
                                 {
                                     p_source new_source = new p_source()
                                     {
-                                        source_id = s[1].Replace("\n", string.Empty),
+                                        source_id = s[1],
                                         source_name = s[0]
                                     };
                                     dc.p_source.InsertOnSubmit(new_source);
@@ -1012,17 +1012,17 @@ namespace CompanioNc.View
 
                         case 2:
                             // 主診斷碼
-                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText;
+                            o_diagnosis = td.InnerText;
                             break;
 
                         case 3:
                             // 治療類別
-                            if (td.InnerText != string.Empty) o_type = td.InnerText;
+                            o_type = td.InnerText;
                             break;
 
                         case 4:
                             // 強度
-                            if (td.InnerText != string.Empty) o_curegrade = td.InnerText;
+                            o_curegrade = td.InnerText;
                             break;
 
                         case 5:
@@ -1052,7 +1052,7 @@ namespace CompanioNc.View
 
                         case 8:
                             // 診療部位
-                            if (td.InnerText != string.Empty) o_loca = td.InnerText;
+                            o_loca = td.InnerText;
                             break;
 
                         case 9:
@@ -1148,7 +1148,7 @@ namespace CompanioNc.View
                     if ((order_n == 1) && int.Parse(td.GetAttributeValue("rowspan", "1")) > 1)
                     {
                         //' order_n=1 名義上第一輪成分名稱的位置
-                        if (td.InnerText != string.Empty) drug_name = td.InnerText.Replace("<br>", " ");
+                        drug_name = td.InnerHtml.Replace("<br>", " ");
                         row_n = int.Parse(td.GetAttributeValue("rowspan", "1"));
                         row_left = row_n;
                     }
@@ -1156,12 +1156,12 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 成分名稱
-                            if (td.InnerText != string.Empty) o_drug = td.InnerText.Replace("<br>", " ");
+                            o_drug = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 1:
                             // 就醫年月
-                            if (td.InnerText != string.Empty) o_YM = td.InnerText;
+                            o_YM = td.InnerText;
                             break;
 
                         case 2:
@@ -1253,7 +1253,7 @@ namespace CompanioNc.View
                     if ((order_n == 1) && int.Parse(td.GetAttributeValue("rowspan", "1")) > 1)
                     {
                         //' order_n=1 名義上第一輪成分名稱的位置
-                        if (td.InnerText != string.Empty) drug_name = td.InnerText.Replace("<br>", " ");
+                        drug_name = td.InnerHtml.Replace("<br>", " ");
                         row_n = int.Parse(td.GetAttributeValue("rowspan", "1"));
                         row_left = row_n;
                     }
@@ -1261,7 +1261,7 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 成分名稱
-                            if (td.InnerText != string.Empty) o_drug = td.InnerText.Replace("<br>", " ");
+                            o_drug = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 1:
@@ -1276,12 +1276,12 @@ namespace CompanioNc.View
 
                         case 2:
                             // 就診時間
-                            if (td.InnerText != string.Empty) o_STIME = td.InnerText;
+                            o_STIME = td.InnerText;
                             break;
 
                         case 3:
                             // 本院/他院
-                            if (td.InnerText != string.Empty) o_clinic = td.InnerText;
+                            o_clinic = td.InnerText;
                             break;
 
                         case 4:
@@ -1349,32 +1349,32 @@ namespace CompanioNc.View
                     {
                         case 0:
                             // 主診斷名稱
-                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
+                            o_diagnosis = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 1:
                             // 藥品代碼
-                            if (td.InnerText != string.Empty) o_NHI_code = td.InnerText;
+                            o_NHI_code = td.InnerText;
                             break;
 
                         case 2:
                             // 複方註記
-                            if (td.InnerText != string.Empty) o_complex = td.InnerText;
+                            o_complex = td.InnerText;
                             break;
 
                         case 3:
                             // 基準方名
-                            if (td.InnerText != string.Empty) o_base = td.InnerText;
+                            o_base = td.InnerText;
                             break;
 
                         case 4:
                             // 效能名稱
-                            if (td.InnerText != string.Empty) o_effect = td.InnerText;
+                            o_effect = td.InnerText;
                             break;
 
                         case 5:
                             // 用法用量
-                            if (td.InnerText != string.Empty) o_dosing = td.InnerText;
+                            o_dosing = td.InnerText;
                             break;
 
                         case 6:
@@ -1384,7 +1384,7 @@ namespace CompanioNc.View
 
                         case 7:
                             // 濟型
-                            if (td.InnerText != string.Empty) o_type = td.InnerText;
+                            o_type = td.InnerText;
                             break;
 
                         case 8:
@@ -1414,7 +1414,7 @@ namespace CompanioNc.View
 
                         case 11:
                             // 就醫序號
-                            if (td.InnerText != string.Empty) o_serial = td.InnerText;
+                            o_serial = td.InnerText;
                             break;
                     }
                     order_n++;
@@ -1485,7 +1485,7 @@ namespace CompanioNc.View
 
                         case 1:
                             // 主診斷
-                            if (td.InnerText != string.Empty) o_diagnosis = td.InnerText.Replace("<br>", string.Empty).Replace("\n", string.Empty);
+                            o_diagnosis = td.InnerHtml.Replace("<br>", " ");
                             break;
 
                         case 2:
@@ -1495,7 +1495,7 @@ namespace CompanioNc.View
 
                         case 3:
                             // 慢連箋
-                            if (td.InnerText != string.Empty) o_chronic = td.InnerText;
+                            o_chronic = td.InnerText;
                             break;
 
                         case 4:
@@ -1520,7 +1520,7 @@ namespace CompanioNc.View
 
                         case 6:
                             // 就醫序號
-                            if (td.InnerText != string.Empty) o_serial = td.InnerText;
+                            o_serial = td.InnerText;
                             break;
                     }
                     order_n++;

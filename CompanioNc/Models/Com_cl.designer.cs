@@ -6977,7 +6977,7 @@ namespace CompanioNc.Models
 		
 		private System.Nullable<short> _rehab_N;
 		
-		private System.Nullable<short> _TCM_N;
+		private System.Nullable<short> _tcm_N;
 		
 		private System.Nullable<short> _dental_N;
 		
@@ -7147,18 +7147,18 @@ namespace CompanioNc.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TCM_N", DbType="SmallInt")]
-		public System.Nullable<short> TCM_N
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_tcm_N", DbType="SmallInt")]
+		public System.Nullable<short> tcm_N
 		{
 			get
 			{
-				return this._TCM_N;
+				return this._tcm_N;
 			}
 			set
 			{
-				if ((this._TCM_N != value))
+				if ((this._tcm_N != value))
 				{
-					this._TCM_N = value;
+					this._tcm_N = value;
 				}
 			}
 		}
