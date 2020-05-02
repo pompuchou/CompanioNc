@@ -52,6 +52,8 @@ namespace CompanioNc.View
 
         #endregion FLAGS
 
+        #region Constructor, Loaded, and Closed
+        
         public WebTEst(MainWindow mw)
         {
             // 把Caller傳遞過來
@@ -94,28 +96,12 @@ namespace CompanioNc.View
             {
                 throw;
             }
+            hotKeyManager.Dispose();
             m.VPNwindow.IsChecked = false;
             fm.Dispose();
         }
-
-        private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
-        {
-            if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
-            {
-                /// 目的: 更新雲端資料, 讀寫雲端資料
-                /// 現在可以合併兩個步驟為一個步驟
-                /// 想到一個複雜的方式, 不斷利用LoadCompleted
-                fm.FrameLoadComplete -= F_LoadCompleted;
-                fm.FrameLoadComplete += F_LoadCompleted;
-                this.g.Navigate(VPN_URL);
-            }
-            else if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
-            {
-                /// 目的: 取消讀取雲端藥歷
-                fm.FrameLoadComplete -= F_LoadCompleted;
-                this.g.Navigate(DEFAULT_URL);
-            }
-        }
+        
+        #endregion
 
         #region LoadCompleted methods
 
@@ -266,7 +252,8 @@ namespace CompanioNc.View
             else
             {
                 // 如果多頁, 轉換loadcomplete, 呼叫pager by click
-                p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").outerHTML);
+                // 20200502: outerHTML的XPATH="//selection/option", innerHTML的XPATH="//option"
+                p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").innerHTML);
                 HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
                 total_pages = o.Count;
                 // 轉軌
@@ -418,6 +405,27 @@ namespace CompanioNc.View
         }
 
         #endregion LoadCompleted methods
+
+        #region Hotkeys, Functions
+
+        private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
+        {
+            if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                /// 目的: 更新雲端資料, 讀寫雲端資料
+                /// 現在可以合併兩個步驟為一個步驟
+                /// 想到一個複雜的方式, 不斷利用LoadCompleted
+                fm.FrameLoadComplete -= F_LoadCompleted;
+                fm.FrameLoadComplete += F_LoadCompleted;
+                this.g.Navigate(VPN_URL);
+            }
+            else if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                /// 目的: 取消讀取雲端藥歷
+                fm.FrameLoadComplete -= F_LoadCompleted;
+                this.g.Navigate(DEFAULT_URL);
+            }
+        }
 
         private string MakeSure_UID(string vpnUID)
         {
@@ -590,5 +598,7 @@ namespace CompanioNc.View
             }
             return o;
         }
+
+        #endregion
     }
 }

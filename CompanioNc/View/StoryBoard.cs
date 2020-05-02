@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace CompanioNc.View
 {
@@ -217,9 +216,9 @@ namespace CompanioNc.View
                     // 20200502 發現錯誤, 第二次SelectNodes仍會從整個Document的XPATH去找
                     HtmlDocument h_ = new HtmlDocument();
                     h_.LoadHtml(tr.InnerHtml);
-                    HtmlNodeCollection a = h_.DocumentNode.SelectNodes("//th");
-                    if ((a == null) || (a.Count < 4)) continue;
-                    foreach (HtmlNode th in h_.DocumentNode.SelectNodes("//th"))
+                    HtmlNodeCollection ths = h_.DocumentNode.SelectNodes("//th");
+                    if ((ths == null) || (ths.Count < 4)) continue;
+                    foreach (HtmlNode th in ths)
                     {
                         string strT = th.InnerText.Replace("<br>", string.Empty).Replace(" ", string.Empty);
                         for (int i = 0; i < vr.Header_Want.Count(); i++)
@@ -313,6 +312,7 @@ namespace CompanioNc.View
         }
 
         #region Write Part
+
         private static int Write_all(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
             Com_clDataContext dc = new Com_clDataContext();
@@ -325,11 +325,11 @@ namespace CompanioNc.View
             {
                 HtmlDocument h_ = new HtmlDocument();
                 h_.LoadHtml(tr.InnerHtml);
-                HtmlNodeCollection a = h_.DocumentNode.SelectNodes("//td");
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
-                if ((a == null)||(a.Count == 0)) continue;
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -402,9 +402,13 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -504,9 +508,13 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -585,7 +593,11 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 tbl_cloudlab_temp newLab = new tbl_cloudlab_temp()
                 {
                     uid = strUID,
@@ -593,7 +605,7 @@ namespace CompanioNc.View
                 };
 
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -699,15 +711,19 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
-                tbl_cloudmed_temp newCloud = new tbl_cloudmed_temp()
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
+                    tbl_cloudmed_temp newCloud = new tbl_cloudmed_temp()
                 {
                     uid = strUID,
                     QDATE = current_date
                 };
 
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -843,9 +859,13 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -953,9 +973,13 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -1096,10 +1120,14 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 if (row_left > 0) row_left--;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     //' header(order_n)是資料表的位置與實際table的對照
                     //' order_n是table的位置, header(order_n)的值是資料表的位置
@@ -1197,10 +1225,14 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 if (row_left > 0) row_left--;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     // header(order_n)是資料表的位置與實際table的對照
                     // order_n是table的位置, header(order_n)的值是資料表的位置
@@ -1305,9 +1337,13 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -1429,9 +1465,13 @@ namespace CompanioNc.View
             // 寫入資料庫
             foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                if (tr.SelectNodes("//td").Count == 0) continue;
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                if ((tds == null) || (tds.Count == 0)) continue;
                 int order_n = 0;
-                foreach (HtmlNode td in tr.SelectNodes("//td"))
+                foreach (HtmlNode td in tds)
                 {
                     switch (header_order[order_n])
                     {
@@ -1514,7 +1554,7 @@ namespace CompanioNc.View
             return count;
         }
 
-#endregion
+        #endregion Write Part
     }
 
     internal class VPN_Operation

@@ -47,10 +47,10 @@ namespace CompanioNc.View
                         rSTATE = f.readyState;
                         OnFrameLoadComplete(args);
                     }
-                    Debug.WriteLine($"before rSTATE={rSTATE}");
+                    //Debug.WriteLine($"before rSTATE={rSTATE}");
                     rSTATE = f.readyState;
-                    Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
-                    Debug.WriteLine($"after rSTATE={rSTATE}");
+                    //Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
+                    //Debug.WriteLine($"after rSTATE={rSTATE}");
                 }
                 catch (Exception ex)
                 {
