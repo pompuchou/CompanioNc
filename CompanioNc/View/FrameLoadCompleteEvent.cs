@@ -14,9 +14,9 @@ namespace CompanioNc.View
     {
         // Flag: Has Dispose already been called?
         bool disposed = false;
-        private int _interval;
-        private WebTEst w;
-        private System.Timers.Timer _timer2;
+        private readonly int _interval;
+        private readonly WebTEst w;
+        private readonly System.Timers.Timer _timer2;
         private string rSTATE;
 
         public FrameMonitor(WebTEst webTEst, int Interval)
@@ -24,13 +24,15 @@ namespace CompanioNc.View
             w = webTEst;
             _interval = Interval;
 
-            this._timer2 = new System.Timers.Timer();
-            this._timer2.Interval = _interval;
-            this._timer2.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
+            this._timer2 = new System.Timers.Timer
+            {
+                Interval = _interval
+            };
+            this._timer2.Elapsed += new System.Timers.ElapsedEventHandler(TimersTimer_Elapsed);
             _timer2.Start();
         }
 
-        private void _TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             w.Dispatcher.Invoke((Action)(() =>
             {
@@ -42,8 +44,10 @@ namespace CompanioNc.View
                     HTMLDocument f = d.frames.item(0).document.body.document;
                     if ((rSTATE == "loading" || rSTATE == "interactive") && (f.readyState == "complete"))
                     {
-                        FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs();
-                        args.MyProperty = 0;
+                        FrameLoadCompleteEventArgs args = new FrameLoadCompleteEventArgs
+                        {
+                            MyProperty = 0
+                        };
                         rSTATE = f.readyState;
                         OnFrameLoadComplete(args);
                     }
@@ -63,11 +67,13 @@ namespace CompanioNc.View
 
         protected virtual void OnFrameLoadComplete(FrameLoadCompleteEventArgs e)
         {
-            FrameLoadCompleteEventHandler handler = FrameLoadComplete;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            FrameLoadComplete?.Invoke(this, e);
+            // 原本是
+            //FrameLoadCompleteEventHandler handler = FrameLoadComplete;
+            //if (handler != null)
+            //{
+            //    handler(this, e);
+            //}
         }
 
         // Public implementation of Dispose pattern callable by consumers.

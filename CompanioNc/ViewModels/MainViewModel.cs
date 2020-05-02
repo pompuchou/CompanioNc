@@ -12,14 +12,15 @@ namespace CompanioNc.ViewModels
 {
     public class MainVM : INotifyPropertyChanged
     {
-        private System.Timers.Timer _timer1;
-        private string strSDATE = string.Empty;
+        private readonly System.Timers.Timer _timer1;
 
         public MainVM() //constructor
         {
-            this._timer1 = new System.Timers.Timer();
-            this._timer1.Interval = 500;
-            this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(_TimersTimer_Elapsed);
+            this._timer1 = new System.Timers.Timer
+            {
+                Interval = 500
+            };
+            this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(TimersTimer_Elapsed);
             _timer1.Start();
 
             if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
@@ -45,7 +46,7 @@ namespace CompanioNc.ViewModels
             }
         }
 
-        private void _TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try
             {
@@ -89,7 +90,6 @@ namespace CompanioNc.ViewModels
                         return;
                     }
                     StrUID = s[7].Substring(1, 10);  // Propertychanged
-                    strSDATE = s[0];
                     dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], true);
                 }
             }
@@ -109,7 +109,6 @@ namespace CompanioNc.ViewModels
                     dc.sp_insert_access(DateTime.Parse(s[0]), s[1], byte.Parse(s[2]), byte.Parse(s[4]), strUID, s[8], false);
                     StrID = tempID;
                     StrUID = string.Empty;  // Propertychanged
-                    strSDATE = string.Empty;
                 }
                 else
                 {
@@ -127,7 +126,7 @@ namespace CompanioNc.ViewModels
             }
         }
 
-        private void _Update_Data(string sUID)
+        private void Update_Data(string sUID)
         {
             if (sUID == string.Empty)
             {
@@ -176,7 +175,7 @@ namespace CompanioNc.ViewModels
             set
             {
                 strUID = value;
-                _Update_Data(value);
+                Update_Data(value);
                 OnPropertyChanged("StrUID");
             }
         }
@@ -388,68 +387,59 @@ namespace CompanioNc.ViewModels
 
     public class CurrentPatient
     {
-        private string _uid;
+        private readonly string _uid;
+        private readonly long _cid;
+        private readonly string _cname;
+        private readonly DateTime _bd;
+        private readonly string _mf;
+        private readonly string _p01;
+        private readonly string _p02;
+        private readonly string _p03;
+        private readonly string _p04;
 
         public string UID  // 身分證字號
         {
             get { return _uid; }
         }
 
-        private long _cid;
-
         public long CID  // 病歷號
         {
             get { return _cid; }
         }
-
-        private string _cname;
 
         public string CNAME  // 姓名
         {
             get { return _cname; }
         }
 
-        private DateTime _bd;
-
         public DateTime BD  // 生日
         {
             get { return _bd; }
         }
-
-        private string _mf;
 
         public string MF  // 性別
         {
             get { return _mf; }
         }
 
-        private string _p01;
-
         public string P01  // 家中電話
         {
             get { return _p01; }
         }
-
-        private string _p02;
 
         public string P02  // 手機
         {
             get { return _p02; }
         }
 
-        private string _p03;
-
         public string P03  // 地址
         {
             get { return _p03; }
         }
 
-        private string _p04;
-
         public string P04  // 註記
         {
             get { return _p04; }
-            set { _p04 = value; }
         }
 
         public CurrentPatient(string StrUID)

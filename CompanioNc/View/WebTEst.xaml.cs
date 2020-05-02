@@ -53,7 +53,7 @@ namespace CompanioNc.View
         #endregion FLAGS
 
         #region Constructor, Loaded, and Closed
-        
+
         public WebTEst(MainWindow mw)
         {
             // 把Caller傳遞過來
@@ -100,8 +100,8 @@ namespace CompanioNc.View
             m.VPNwindow.IsChecked = false;
             fm.Dispose();
         }
-        
-        #endregion
+
+        #endregion Constructor, Loaded, and Closed
 
         #region LoadCompleted methods
 
@@ -144,7 +144,7 @@ namespace CompanioNc.View
 
                     /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
 
-                    #region 準備
+                    #region 準備 - 製造QueueOperation
 
                     // Initialization
                     QueueOperation.Clear();
@@ -156,20 +156,24 @@ namespace CompanioNc.View
                     // 20200429 tested successful
                     IHTMLElement List_under_investigation = d.getElementById("ContentPlaceHolder1_tab");
                     // li 之下就是 a
+                    string BalloonTip = string.Empty;
                     foreach (IHTMLElement hTML in List_under_investigation.all)
                     {
                         if (tab_id_wanted.Contains(hTML.id))
                         {
-                            QueueOperation.Enqueue(VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now));
+                            VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
+                            QueueOperation.Enqueue(vOP);
+                            BalloonTip += $"{vOP.Short_Name}\r\n";
                         }
                     }
 
-                    #endregion 準備
+                    #endregion 準備 - 製造QueueOperation
 
                     #region 執行
 
                     if (QueueOperation.Count > 0)
                     {
+                        tb.ShowBalloonTip("開始讀取", BalloonTip, BalloonIcon.Info);
                         // 流程控制, fm = framemonitor
                         // 換軌
                         fm.FrameLoadComplete -= F_LoadCompleted;
@@ -200,7 +204,27 @@ namespace CompanioNc.View
                     }
                     else
                     {
-                        /// ToDo: 做個紀錄吧!
+                        /// 做個紀錄
+                        /// 一個都沒有
+                        tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
+                        // 製作紀錄by rd
+                        Com_clDataContext dc = new Com_clDataContext();
+                        tbl_Query2 q = new tbl_Query2()
+                        {
+                            uid = strUID,
+                            QDATE = DateTime.Now,
+                            cloudmed_N = 0,
+                            cloudlab_N = 0,
+                            schedule_N = 0,
+                            op_N = 0,
+                            dental_N = 0,
+                            allergy_N = 0,
+                            discharge_N = 0,
+                            rehab_N = 0,
+                            tcm_N = 0
+                        };
+                        dc.tbl_Query2.InsertOnSubmit(q);
+                        dc.SubmitChanges();
                     }
 
                     #endregion 執行
@@ -278,6 +302,7 @@ namespace CompanioNc.View
             // 判斷是否最後一tab
             if (QueueOperation.Count == 0)
             {
+                tb.ShowBalloonTip("讀取完成", "開始解析與寫入資料庫", BalloonIcon.Info);
                 // Count = 0 代表最後一個 tab
                 fm.FrameLoadComplete -= F_LoadCompleted;
 
@@ -292,42 +317,51 @@ namespace CompanioNc.View
                 List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
 
                 // 製作紀錄by rd
+                short? med_N = (short?)(from p1 in rds
+                                        where p1.SQL_Tablename == "med"
+                                        select p1.Count).Sum(),
+                       lab_N = (short?)(from p1 in rds
+                                        where p1.SQL_Tablename == "lab"
+                                        select p1.Count).Sum(),
+                       schedule_N = (short?)(from p1 in rds
+                                             where p1.SQL_Tablename == "sch_up"
+                                             select p1.Count).Sum(),
+                       op_N = (short?)(from p1 in rds
+                                       where p1.SQL_Tablename == "op"
+                                       select p1.Count).Sum(),
+                       dental_N = (short?)(from p1 in rds
+                                           where p1.SQL_Tablename == "dental"
+                                           select p1.Count).Sum(),
+                       allergy_N = (short?)(from p1 in rds
+                                            where p1.SQL_Tablename == "all"
+                                            select p1.Count).Sum(),
+                       discharge_N = (short?)(from p1 in rds
+                                              where p1.SQL_Tablename == "dis"
+                                              select p1.Count).Sum(),
+                       rehab_N = (short?)(from p1 in rds
+                                          where p1.SQL_Tablename == "reh"
+                                          select p1.Count).Sum(),
+                       tcm_N = (short?)(from p1 in rds
+                                        where p1.SQL_Tablename == "tcm"
+                                        select p1.Count).Sum();
                 Com_clDataContext dc = new Com_clDataContext();
                 tbl_Query2 q = new tbl_Query2()
                 {
                     uid = ListRetrieved.First().UID,
                     QDATE = ListRetrieved.First().QDate
                 };
-                q.cloudmed_N = (short?)(from p1 in rds
-                                where p1.SQL_Tablename == "med"
-                               select p1.Count).Sum();
-                q.cloudlab_N = (short?)(from p1 in rds
-                                        where p1.SQL_Tablename == "lab"
-                                        select p1.Count).Sum();
-                q.schedule_N = (short?)(from p1 in rds
-                                        where p1.SQL_Tablename == "sch_up"
-                                        select p1.Count).Sum();
-                q.op_N = (short?)(from p1 in rds
-                                  where p1.SQL_Tablename == "op"
-                                  select p1.Count).Sum();
-                q.dental_N = (short?)(from p1 in rds
-                                      where p1.SQL_Tablename == "dental"
-                                      select p1.Count).Sum();
-                q.allergy_N = (short?)(from p1 in rds
-                                       where p1.SQL_Tablename == "all"
-                                       select p1.Count).Sum();
-                q.discharge_N = (short?)(from p1 in rds
-                                         where p1.SQL_Tablename == "dis"
-                                         select p1.Count).Sum();
-                q.rehab_N = (short?)(from p1 in rds
-                                     where p1.SQL_Tablename == "reh"
-                                     select p1.Count).Sum();
-                q.tcm_N = (short?)(from p1 in rds
-                                   where p1.SQL_Tablename == "tcm"
-                                   select p1.Count).Sum();
+                q.cloudmed_N = med_N;
+                q.cloudlab_N = lab_N;
+                q.schedule_N = schedule_N;
+                q.op_N = op_N;
+                q.dental_N = dental_N;
+                q.allergy_N = allergy_N;
+                q.discharge_N = discharge_N;
+                q.rehab_N = rehab_N;
+                q.tcm_N = tcm_N;
                 dc.tbl_Query2.InsertOnSubmit(q);
                 dc.SubmitChanges();
-
+                tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
             }
             else
             {
@@ -599,6 +633,6 @@ namespace CompanioNc.View
             return o;
         }
 
-        #endregion
+        #endregion Hotkeys, Functions
     }
 }
