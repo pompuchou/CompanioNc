@@ -3,6 +3,7 @@ using CompanioNc.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Timers;
 
@@ -160,7 +161,8 @@ namespace CompanioNc.ViewModels
                 DGQ08 = dc.sp_cloudALL_by_uid(sUID).ToList<sp_cloudALL_by_uidResult>();
                 DGQ09 = dc.sp_cloudSCH_R_by_uid(sUID).ToList<sp_cloudSCH_R_by_uidResult>();
                 DGQ10 = dc.sp_cloudSCH_U_by_uid(sUID).ToList<sp_cloudSCH_U_by_uidResult>();
-                if (unPlug) StrID = $"({_currentPatient.CID}) {_currentPatient.CNAME}";
+                // StrID: "2020/04/25 上午 02 診 015 號 - (H223505857) 陳俞潔"
+                if (unPlug) StrID = $"{DateTime.Now.ToString("g", CultureInfo.CurrentUICulture)} - ({_currentPatient.CID}) {_currentPatient.CNAME}";
             }
         }
 

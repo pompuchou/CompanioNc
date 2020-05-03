@@ -40,4 +40,18 @@ namespace CompanioNc.ViewModels.Converters
         }
     }
 
+    public class StringToThicknessConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (string.IsNullOrEmpty((string)value)) return "0";
+            return "1";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

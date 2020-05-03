@@ -14,6 +14,7 @@
         <sltr:MyDataTemplateSelector x:Key="TemplateSelector" />
         <cnvtr:NumberToForegroundConverter x:Key="NumberToForegroundConverter" />
         <cnvtr:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <cnvtr:StringToThicknessConverter x:Key="StringToThicknessConverter" />
         <Style x:Key="RoundCorner" TargetType="{x:Type Button}">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -115,7 +116,7 @@
         </DataTemplate>
     </Window.Resources>
     <TabControl>
-        <TabItem Header="個案紀錄" Width="300">
+        <TabItem Header="個案紀錄" Width="350">
             <Grid DataContext="{StaticResource mvm}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
@@ -133,7 +134,7 @@
                     </actb:AutoCompleteTextBox.InputBindings>
                 </actb:AutoCompleteTextBox>
                 <TextBox x:Name="Label1" FontSize="16" Text="{Binding StrUID, Mode=TwoWay}" HorizontalAlignment="Right" Margin="6,6,420,6" IsReadOnly="True"
-               VerticalAlignment="Center" Grid.Row="0" TextChanged="Label1_TextChanged" />
+               VerticalAlignment="Center" Grid.Row="0" TextChanged="Label1_TextChanged" BorderThickness="{Binding StrUID, Converter={StaticResource StringToThicknessConverter}}" />
                 <Label x:Name="strID" FontSize="16" Content="{Binding StrID}" HorizontalAlignment="Right" VerticalAlignment="Center"
                Margin="6,6,6,6" Grid.Row="0" />
                 <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
@@ -472,7 +473,7 @@
                 </TabControl>
             </Grid>
         </TabItem>
-        <TabItem Header="雲端查詢" Width="300">
+        <TabItem Header="雲端查詢" Width="350">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
