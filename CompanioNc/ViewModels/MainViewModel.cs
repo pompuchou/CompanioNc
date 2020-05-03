@@ -7,12 +7,16 @@ using System.Globalization;
 using System.Linq;
 using System.Timers;
 
-// 20200419 與MainWindow Binding 用的
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
+// 20200419 與MainWindow Binding 用的
+// 20200503 add logging
 namespace CompanioNc.ViewModels
 {
     public class MainVM : INotifyPropertyChanged
     {
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
         private readonly System.Timers.Timer _timer1;
 
         public MainVM() //constructor
@@ -28,6 +32,9 @@ namespace CompanioNc.ViewModels
             {
                 StrUID = "A123871035";
             }
+
+            log.Info("logged in");
+            log.Info("timer1 for monitoring Thesis started.");
 
             // initially not unplug
             UnPlug = false;
@@ -178,6 +185,7 @@ namespace CompanioNc.ViewModels
             {
                 strUID = value;
                 Update_Data(value);
+                if (!string.IsNullOrEmpty(value)) log.Info($"{value} is being displayed.");
                 OnPropertyChanged("StrUID");
             }
         }
@@ -194,6 +202,7 @@ namespace CompanioNc.ViewModels
                 {
                     // true, which means UNPLUG
                     this._timer1.Stop();
+                    log.Info("timer1 for monitoring Thesis stopped.");
                     StrUID = string.Empty;
                     StrID = string.Empty;
                 }
@@ -202,6 +211,7 @@ namespace CompanioNc.ViewModels
                     // false, default value
                     StrUID = string.Empty;
                     StrID = string.Empty;
+                    log.Info("timer1 for monitoring Thesis started.");
                     this._timer1.Start();
                 }
                 OnPropertyChanged("UnPlug");
@@ -384,6 +394,8 @@ namespace CompanioNc.ViewModels
         ~MainVM()  // destructor
         {
             _timer1.Stop();
+            log.Info("timer1 for monitoring Thesis stopped.");
+
         }
     }
 

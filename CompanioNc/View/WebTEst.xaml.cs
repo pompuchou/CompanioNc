@@ -1,4 +1,5 @@
 ﻿using CompanioNc.Models;
+using CompanioNc.ViewModels;
 using GlobalHotKey;
 using Hardcodet.Wpf.TaskbarNotification;
 using HtmlAgilityPack;
@@ -30,6 +31,8 @@ namespace CompanioNc.View
     /// </summary>
     public partial class WebTEst : Window
     {
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
         #region FLAGS
 
         private HotKeyManager hotKeyManager;
@@ -130,6 +133,7 @@ namespace CompanioNc.View
                     /// 表示讀卡成功
                     /// show balloon with built-in icon
                     tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
+                    log.Info($" Successful NHI card read, VPN id: {strUID}.");
 
                     /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
 

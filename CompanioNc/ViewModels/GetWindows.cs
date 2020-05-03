@@ -13,8 +13,8 @@ namespace CompanioNc
 
     internal class GetWindow
     {
-        private string _key = string.Empty;
-        private string _type = string.Empty;
+        private readonly string _key = string.Empty;
+        private readonly string _type = string.Empty;
 
         //枚举所有屏幕上的顶层窗口，并将窗口句柄传送给应用程序定义的回调函数,lpEnumFunc回调函数的指针。
         [DllImport("user32.dll")]
