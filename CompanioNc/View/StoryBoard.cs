@@ -304,7 +304,7 @@ namespace CompanioNc.View
             return output;
         }
 
-        private static string MakeSure_source(string temp_source)
+        private static string MakeSure_source_3_lines(string temp_source)
         {
             Com_clDataContext dc = new Com_clDataContext();
             string[] s = temp_source.Replace("<br>", "|").Split('|');
@@ -318,6 +318,27 @@ namespace CompanioNc.View
                 {
                     source_id = s[2],
                     @class = s[1],
+                    source_name = s[0]
+                };
+                dc.p_source.InsertOnSubmit(new_source);
+                dc.SubmitChanges();
+            }
+            return o_source;
+        }
+
+        private static string MakeSure_source_2_lines(string temp_source)
+        {
+            Com_clDataContext dc = new Com_clDataContext();
+            string[] s = temp_source.Replace("<br>", "|").Split('|');
+            string o_source = s[1];
+            var q1 = from p1 in dc.p_source
+                     where p1.source_id == o_source
+                     select p1;
+            if (q1.Count() == 0)
+            {
+                p_source new_source = new p_source()
+                {
+                    source_id = s[1],
                     source_name = s[0]
                 };
                 dc.p_source.InsertOnSubmit(new_source);
@@ -362,10 +383,9 @@ namespace CompanioNc.View
 
                             case 1:
                                 // 醫療院所
-                                if (td.InnerText != string.Empty)
-                                {
-                                    o_source = MakeSure_source(td.InnerHtml);
-                                }
+                                // 20200504: 發現是兩行的不是三行的
+                                // 來源, 與別人有所不同, 只有兩行
+                                if (td.InnerText != string.Empty) o_source = MakeSure_source_2_lines(td.InnerHtml);
                                 break;
 
                             case 2:
@@ -439,10 +459,7 @@ namespace CompanioNc.View
                         {
                             case 0:
                                 // 來源
-                                if (td.InnerText != string.Empty)
-                                {
-                                    o_source = MakeSure_source(td.InnerHtml);
-                                }
+                                if (td.InnerText != string.Empty) o_source = MakeSure_source_3_lines(td.InnerHtml);
                                 break;
 
                             case 1:
@@ -555,7 +572,7 @@ namespace CompanioNc.View
                                 // 來源
                                 if (td.InnerText != string.Empty)
                                 {
-                                    o_source = MakeSure_source(td.InnerHtml);
+                                    o_source = MakeSure_source_2_lines(td.InnerHtml);
                                 }
                                 break;
 
@@ -928,10 +945,7 @@ namespace CompanioNc.View
                         {
                             case 0:
                                 // 來源
-                                if (td.InnerText != string.Empty)
-                                {
-                                    o_source = MakeSure_source(td.InnerHtml);
-                                }
+                                if (td.InnerText != string.Empty) o_source = MakeSure_source_3_lines(td.InnerHtml);
                                 break;
 
                             case 1:
@@ -1055,24 +1069,7 @@ namespace CompanioNc.View
 
                             case 1:
                                 // 來源, 與別人有所不同, 只有兩行
-                                if (td.InnerText != string.Empty)
-                                {
-                                    string[] s = td.InnerHtml.Replace("<br>", "|").Split('|');
-                                    o_source = s[1];
-                                    var q1 = from p1 in dc.p_source
-                                             where p1.source_id == o_source
-                                             select p1;
-                                    if (q1.Count() == 0)
-                                    {
-                                        p_source new_source = new p_source()
-                                        {
-                                            source_id = s[1],
-                                            source_name = s[0]
-                                        };
-                                        dc.p_source.InsertOnSubmit(new_source);
-                                        dc.SubmitChanges();
-                                    }
-                                }
+                                if (td.InnerText != string.Empty) o_source = MakeSure_source_2_lines(td.InnerHtml);
                                 break;
 
                             case 2:
@@ -1574,10 +1571,7 @@ namespace CompanioNc.View
                         {
                             case 0:
                                 // 來源
-                                if (td.InnerText != string.Empty)
-                                {
-                                    o_source = MakeSure_source(td.InnerHtml);
-                                }
+                                if (td.InnerText != string.Empty) o_source = MakeSure_source_3_lines(td.InnerHtml);
                                 break;
 
                             case 1:
