@@ -57,11 +57,12 @@ namespace CompanioNc.View
                     //Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
                     //Debug.WriteLine($"after rSTATE={rSTATE}");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Do nothing
                     // System.Windows.Forms.MessageBox.Show(ex.Message);
-                    Debug.WriteLine(ex.Message);
+                    // log.Error(ex.Message);
+                    // Debug.WriteLine(ex.Message);
                 }
             }));
         }

@@ -26,6 +26,8 @@ namespace CompanioNc
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
         private HotKeyManager hotKeyManager;
         private WebTEst w;
 
@@ -36,6 +38,7 @@ namespace CompanioNc
 
         private void Label1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            log.Info("StrUID label changed.");
             Refresh();
         }
 
@@ -167,6 +170,8 @@ namespace CompanioNc
             hotKeyManager.Register(Key.F2, ModifierKeys.Control);
             // Handle hotkey presses.
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
+            log.Info("Hotkey F2 registered.");
+
 
             Refresh();
 
@@ -193,6 +198,7 @@ namespace CompanioNc
             // Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
             hotKeyManager.Register(Key.Y, ModifierKeys.Control);
             hotKeyManager.Register(Key.G, ModifierKeys.Control);
+            log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
             w.Show();
         }
 
@@ -200,6 +206,7 @@ namespace CompanioNc
         {
             hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
             hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
             w.Close();
             w = null;
         }
@@ -208,6 +215,7 @@ namespace CompanioNc
         {
             ///WebTEst部分不採MVVM
             Web_refresh();
+            log.Info("WebTEst table refreshed.");
         }
 
         internal void Web_refresh()
@@ -224,6 +232,8 @@ namespace CompanioNc
         {
             if ((e.HotKey.Key == Key.F2) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
+                log.Info("Hotkey Ctrl-F2 pressed.");
+
                 List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
                         "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
                         "Maintenance phase.", "Nothing particular."};
@@ -243,11 +253,15 @@ namespace CompanioNc
             }
             if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
+                log.Info("Hotkey Ctrl-Y pressed.");
+
                 //更新雲端資料
                 w.HotKey_Ctrl_Y();
             }
             if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
+                log.Info("Hotkey Ctrl-G pressed.");
+
                 //讀寫雲端資料
                 w.HotKey_Ctrl_G();
             }

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 
 namespace CompanioNc.View
 {
@@ -68,11 +67,14 @@ namespace CompanioNc.View
             // 漏了 +=, 難怪不fire
             fm.FrameLoadComplete -= F_LoadCompleted;
             fm.FrameLoadComplete += F_LoadCompleted;
+
+            log.Info($"Start to load {VPN_URL} not by hotkey.");
             this.g.Navigate(VPN_URL);
         }
 
         private void WebTEst_Closed(object sender, EventArgs e)
         {
+            log.Info($"WebTEst is being closed.");
             m.VPNwindow.IsChecked = false;
             fm.Dispose();
         }
@@ -89,6 +91,7 @@ namespace CompanioNc.View
             /// 這段程式的目的:
             /// 1. 取得身分證字號
             /// 2. 讀取有哪些tab
+            log.Info($"Entered F_LoadCompleted");
 
             HTMLDocument d = (HTMLDocument)g.Document;
             if (d?.getElementById("ContentPlaceHolder1_lbluserID") != null)
@@ -99,6 +102,7 @@ namespace CompanioNc.View
                 if (strUID == string.Empty)
                 {
                     tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
+                    log.Info($"Exit F_LoadCompleted -1. No such person.");
                     return;
                 }
                 else
@@ -162,6 +166,7 @@ namespace CompanioNc.View
                     QueueOperation?.Clear();
                     ListRetrieved?.Clear();
                     current_page = total_pages = 0;
+                    log.Info("讀網頁資料, 初始化成功");
 
                     // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
                     // IHTMLElement 無法轉型為 HTMLDocument
@@ -175,6 +180,7 @@ namespace CompanioNc.View
                         {
                             VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
                             QueueOperation.Enqueue(vOP);
+                            log.Info($"讀入operation: {vOP.Short_Name}");
                             BalloonTip += $"{vOP.Short_Name}\r\n";
                         }
                     }
@@ -191,8 +197,11 @@ namespace CompanioNc.View
                         fm.FrameLoadComplete -= F_LoadCompleted;
                         fm.FrameLoadComplete -= F_Data_LoadCompleted;
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
+                        log.Info($"delete delegate F_LoadCompleted.");
+                        log.Info($"add delegate F_Data_LoadCompleted.");
 
                         // 載入第一個operation
+                        log.Info($"First operation loaded.");
                         current_op = QueueOperation.Dequeue();
 
                         // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
@@ -201,12 +210,18 @@ namespace CompanioNc.View
                         if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                         {
                             // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
+                            log.Info($"Goto F_Data_LoadCompleted.");
                             F_Data_LoadCompleted(this, EventArgs.Empty);
+                            log.Info($"Exit F_LoadCompleted-2. Go to next tab by direct call.");
+                            return;
                         }
                         else
                         {
                             // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
+                            log.Info($"Push TAB {current_op.TAB_ID} Button.");
                             d.getElementById(current_op.TAB_ID).click();
+                            log.Info($"Exit F_LoadCompleted-3. Go to next tab by pushing tab button.");
+                            return;
                         }
                         // 這段程式到此結束
                     }
@@ -214,6 +229,7 @@ namespace CompanioNc.View
                     {
                         /// 做個紀錄
                         /// 一個都沒有
+                        log.Info($"No record at all.");
                         tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
                         // 製作紀錄by rd
                         tbl_Query2 q = new tbl_Query2()
@@ -235,15 +251,22 @@ namespace CompanioNc.View
                             dc.tbl_Query2.InsertOnSubmit(q);
                             dc.SubmitChanges();
                         };
+                        log.Info($"Exit F_LoadCompleted-4. Completey no data.");
                     }
 
                     #endregion 執行
                 }
             }
+            else
+            {
+                log.Info($"HTMLdocument is null, Exit F_LoadCompleted -5.");
+            }
         }
 
         private async void F_Data_LoadCompleted(object sender, EventArgs e)
         {
+            log.Info($"Entered F_Data_LoadCompleted");
+
             // 這時候已經確保是 active
             // 每當刷新後都要重新讀一次
             // d 是parent HTML document
@@ -256,23 +279,30 @@ namespace CompanioNc.View
             ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done, 不用再管排序
             ///     3-2. 都放在記憶體裡, 快速, in the LIST
 
-            // 讀取資料, 存入記憶體
+            #region 讀取資料, 存入記憶體
+
             if (current_op != null)
             {
+                log.Info($"Reading operation: {current_op.Short_Name}");
+
                 foreach (Target_Table tt in current_op.Target)
                 {
                     // 是否有多tables, 端看tt.Children, 除了管制藥物外, 其餘都不用
                     if (tt.Children == null)
                     {
+                        log.Info($"Read {tt.TargetID}");
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
                     }
                     else
                     {
+                        log.Info($"Read {tt.TargetID}, child {tt.Children}");
                         // 有多個table, 使用情形僅有管制藥物
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML, current_op.UID, current_op.QDate));
                     }
                 }
             }
+
+            #endregion 讀取資料, 存入記憶體
 
             #region 判斷多頁
 
@@ -281,6 +311,7 @@ namespace CompanioNc.View
             HtmlDocument p = new HtmlDocument();
             if (f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input") == null)
             {
+                log.Info($"Only one page detected.");
                 total_pages = 1;
             }
             else
@@ -290,10 +321,12 @@ namespace CompanioNc.View
                 p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").innerHTML);
                 HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
                 total_pages = o.Count;
+                log.Info($"{total_pages} pages detected.");
                 // 轉軌
                 fm.FrameLoadComplete -= F_Data_LoadCompleted;
                 fm.FrameLoadComplete -= F_Pager_LoadCompleted;
                 fm.FrameLoadComplete += F_Pager_LoadCompleted;
+                log.Info($"delete delegate F_Data_LoadCompleted, add delegate F_Pager_LoadCompleted.");
 
                 // 剛剛已經讀了第一頁了, 從下一頁開始
                 current_page = 2;
@@ -306,6 +339,7 @@ namespace CompanioNc.View
                         // 20200504 發現這裡執行完後還會執行後面的程序, 造成兩個程序的衝突
                         // 此段程式的一個出口點
                         log.Info("按了下一頁.");
+                        log.Info($"Exit F_Data_LoadCompleted-1. Multipage, go to next page.");
                         return;
                     }
                 }
@@ -317,8 +351,11 @@ namespace CompanioNc.View
             if (QueueOperation.Count == 0)
             {
                 tb.ShowBalloonTip("讀取完成", "開始解析與寫入資料庫", BalloonIcon.Info);
+                log.Info($"All datatable loaded into memory. Start to analyze.");
+
                 // Count = 0 代表最後一個 tab
                 fm.FrameLoadComplete -= F_LoadCompleted;
+                log.Info($"delete delegate F_LoadComplated.");
 
                 /// 確定是最後一個tab這段程式到此結束
                 /// 4. Parsing & Saving to SQL: async
@@ -337,63 +374,76 @@ namespace CompanioNc.View
                 string _special_remark = Special_remark?.innerText;
 
                 // 製作紀錄by rd
-                short? med_N = (short?)(from p1 in rds
-                                        where p1.SQL_Tablename == "med"
-                                        select p1.Count).Sum(),
-                       lab_N = (short?)(from p1 in rds
-                                        where p1.SQL_Tablename == "lab"
-                                        select p1.Count).Sum(),
-                       schedule_N = (short?)(from p1 in rds
-                                             where p1.SQL_Tablename == "sch_up"
-                                             select p1.Count).Sum(),
-                       op_N = (short?)(from p1 in rds
-                                       where p1.SQL_Tablename == "op"
-                                       select p1.Count).Sum(),
-                       dental_N = (short?)(from p1 in rds
-                                           where p1.SQL_Tablename == "dental"
-                                           select p1.Count).Sum(),
-                       allergy_N = (short?)(from p1 in rds
-                                            where p1.SQL_Tablename == "all"
-                                            select p1.Count).Sum(),
-                       discharge_N = (short?)(from p1 in rds
-                                              where p1.SQL_Tablename == "dis"
-                                              select p1.Count).Sum(),
-                       rehab_N = (short?)(from p1 in rds
-                                          where p1.SQL_Tablename == "reh"
-                                          select p1.Count).Sum(),
-                       tcm_N = (short?)(from p1 in rds
-                                        where p1.SQL_Tablename == "tcm_de"
-                                        select p1.Count).Sum();
-                Com_clDataContext dc = new Com_clDataContext();
-                tbl_Query2 q = new tbl_Query2()
+                try
                 {
-                    uid = ListRetrieved.First().UID,
-                    QDATE = ListRetrieved.First().QDate,
-                    EDATE = DateTime.Now,
-                    remark = _special_remark
-                };
-                q.cloudmed_N = med_N;
-                q.cloudlab_N = lab_N;
-                q.schedule_N = schedule_N;
-                q.op_N = op_N;
-                q.dental_N = dental_N;
-                q.allergy_N = allergy_N;
-                q.discharge_N = discharge_N;
-                q.rehab_N = rehab_N;
-                q.tcm_N = tcm_N;
-                dc.tbl_Query2.InsertOnSubmit(q);
-                dc.SubmitChanges();
-                tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
+                    short? med_N = (short?)(from p1 in rds
+                                            where p1.SQL_Tablename == "med"
+                                            select p1.Count).Sum(),
+                           lab_N = (short?)(from p1 in rds
+                                            where p1.SQL_Tablename == "lab"
+                                            select p1.Count).Sum(),
+                           schedule_N = (short?)(from p1 in rds
+                                                 where p1.SQL_Tablename == "sch_up"
+                                                 select p1.Count).Sum(),
+                           op_N = (short?)(from p1 in rds
+                                           where p1.SQL_Tablename == "op"
+                                           select p1.Count).Sum(),
+                           dental_N = (short?)(from p1 in rds
+                                               where p1.SQL_Tablename == "dental"
+                                               select p1.Count).Sum(),
+                           allergy_N = (short?)(from p1 in rds
+                                                where p1.SQL_Tablename == "all"
+                                                select p1.Count).Sum(),
+                           discharge_N = (short?)(from p1 in rds
+                                                  where p1.SQL_Tablename == "dis"
+                                                  select p1.Count).Sum(),
+                           rehab_N = (short?)(from p1 in rds
+                                              where p1.SQL_Tablename == "reh"
+                                              select p1.Count).Sum(),
+                           tcm_N = (short?)(from p1 in rds
+                                            where p1.SQL_Tablename == "tcm_de"
+                                            select p1.Count).Sum();
+                    Com_clDataContext dc = new Com_clDataContext();
+                    tbl_Query2 q = new tbl_Query2()
+                    {
+                        uid = ListRetrieved.First().UID,
+                        QDATE = ListRetrieved.First().QDate,
+                        EDATE = DateTime.Now,
+                        remark = _special_remark
+                    };
+                    q.cloudmed_N = med_N;
+                    q.cloudlab_N = lab_N;
+                    q.schedule_N = schedule_N;
+                    q.op_N = op_N;
+                    q.dental_N = dental_N;
+                    q.allergy_N = allergy_N;
+                    q.discharge_N = discharge_N;
+                    q.rehab_N = rehab_N;
+                    q.tcm_N = tcm_N;
+                    dc.tbl_Query2.InsertOnSubmit(q);
+                    dc.SubmitChanges();
+                    log.Info("Successfully write into SQL database.");
+                    tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex.Message);
+                }
 
+                // 更新顯示資料
                 string tempSTR = m.Label1.Text;
                 m.Label1.Text = string.Empty;
                 m.Label1.Text = tempSTR;
                 m.Web_refresh();
+
+                log.Info("Exit F_Data_LoadCompleted-2. After All tab Read, and write into SQL server.");
             }
             else
             {
                 // 下一個tab
                 current_op = QueueOperation.Dequeue();
+                log.Info($"{current_op.TAB_ID} tab key pressed.");
+                log.Info($"Exit F_Data_LoadCompleted-3. Go to next tab. {QueueOperation.Count + 1} tabs to go.");
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
             }
@@ -401,6 +451,8 @@ namespace CompanioNc.View
 
         private void F_Pager_LoadCompleted(object sender, EventArgs e)
         {
+            log.Info($"Entered F_Pager_LoadCompleted");
+
             // 每當刷新後都要重新讀一次
             // d 是parent HTML document
             HTMLDocument d = (HTMLDocument)g.Document;
@@ -413,6 +465,7 @@ namespace CompanioNc.View
                 // 這裡不用管多table, 因為多table只發生在管制藥那裏
                 ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
             }
+            log.Info($"{current_op.Short_Name}, page: {current_page}/{total_pages}.");
 
             // 判斷是否最後一頁, 最後一tab
             if ((current_page == total_pages) && (QueueOperation.Count == 0))
@@ -424,13 +477,17 @@ namespace CompanioNc.View
                 fm.FrameLoadComplete -= F_Pager_LoadCompleted;
                 fm.FrameLoadComplete -= F_Data_LoadCompleted;
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
+                log.Info("delete delegate F_Pager_LoadCompleted.");
+                log.Info("add delegate F_Data_LoadCompleted.");
 
                 // current_op 歸零
                 current_op = null;
 
+                log.Info("Exit F_Pager_LoadCompleted-1. last page, last tab, go back directly.");
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
                 F_Data_LoadCompleted(this, EventArgs.Empty);
                 // 此段程式的一個出口點
+                return;
             }
             else if (current_page == total_pages)
             {
@@ -441,11 +498,15 @@ namespace CompanioNc.View
                 fm.FrameLoadComplete -= F_Pager_LoadCompleted;
                 fm.FrameLoadComplete -= F_Data_LoadCompleted;
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
+                log.Info("delete delegate F_Pager_LoadCompleted.");
+                log.Info("add delegate F_Data_LoadCompleted.");
 
                 // 下一個tab
+                log.Info("Exit F_Pager_LoadCompleted-2. last page, go to next tab by clicking.");
                 current_op = QueueOperation.Dequeue();
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
+                return;
             }
             else
             {
@@ -454,14 +515,17 @@ namespace CompanioNc.View
                 // HOW TO ?????????????????????????????????????????
                 // 如何下一頁, 可能要用invokescript
                 // 按鈕機制
+                log.Info("Exit F_Pager_LoadCompleted-3. go to next page by clicking.");
                 foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
                 {
                     if (a.innerText == ">")
                     {
+                        log.Info("下一頁按下去了.(多頁)");
                         a.click();
                     }
                 }
                 // 此段程式的一個出口點
+                return;
             }
         }
 
@@ -476,6 +540,9 @@ namespace CompanioNc.View
             /// 想到一個複雜的方式, 不斷利用LoadCompleted
             fm.FrameLoadComplete -= F_LoadCompleted;
             fm.FrameLoadComplete += F_LoadCompleted;
+            log.Info("add delegate F_LoadCompleted.");
+
+            log.Info($"start to load {VPN_URL}");
             this.g.Navigate(VPN_URL);
         }
 
@@ -483,11 +550,16 @@ namespace CompanioNc.View
         {
             /// 目的: 取消讀取雲端藥歷
             fm.FrameLoadComplete -= F_LoadCompleted;
+            log.Info("delete delegate F_LoadCompleted.");
+
+            log.Info($"start to load {DEFAULT_URL}");
             this.g.Navigate(DEFAULT_URL);
         }
 
         private string MakeSure_UID(string vpnUID)
         {
+            log.Info($"Begin to check UID: {vpnUID}");
+
             string thesisUID = string.Empty;
             string thesisNAME = string.Empty;
             string o = string.Empty;
@@ -514,9 +586,11 @@ namespace CompanioNc.View
                 // 身分證字號在[7], 還要去掉括弧
                 thesisUID = vs[7].Substring(1, (vs[7].Length - 2));
                 thesisNAME = vs[8];
+                log.Info($"杏翔系統目前UID: {thesisUID}");
             }
             catch (Exception)
             {
+                //log.Error(ex.Message);
                 /// 杏翔沒開, 或是沒連動, 反正就是抓不到
                 /// thesisUID = string.Empty;
                 /// thesisNAME = string.Empty;
@@ -538,12 +612,14 @@ namespace CompanioNc.View
                         string sqlUID = (from p in dc.tbl_patients
                                          where p.uid == thesisUID
                                          select p.uid).Single();
+                        log.Info($"資料庫裏面也也有: {sqlUID}");
                         // 如果沒有錯誤發生
                         // 此時為第一種狀況
                         /// VPN 有, 杏翔 有, 資料庫 有 => 理想狀況取的正確UID
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        log.Error($"{ex.Message}: 資料庫裡沒有這個病人, 新加入tbl_patients.");
                         // Single() returns the item, throws an exception if there are 0 or more than one item in the sequence.
                         // 因為uid是primary key, 如果有錯誤只可能是沒有此uid
                         // 此時為第二種狀況
@@ -578,11 +654,13 @@ namespace CompanioNc.View
                             // 這是第四種狀況
                             // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
                             o = string.Empty;
+                            log.Info("VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
                             break;
 
                         case 1:
                             // passed test
                             // 這是第三種狀況(1/2)
+                            log.Info("VPN 有, 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
                             o = q.Single().uid;
                             break;
 
@@ -605,6 +683,7 @@ namespace CompanioNc.View
                                 }
                                 if (!(int.TryParse(answer, out int result))) answer = "0";
                             }
+                            log.Info("VPN 有, 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
                             o = q.ToList()[int.Parse(answer) - 1].uid;
                             break;
                     }
@@ -623,12 +702,14 @@ namespace CompanioNc.View
                     case 0:
                         // 這是第四種狀況
                         // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
+                        log.Info("VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
                         o = string.Empty;
                         break;
 
                     case 1:
                         // passed test
                         // 這是第三種狀況(1/2)
+                        log.Info("VPN 有, 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
                         o = q.Single().uid;
                         break;
 
@@ -651,6 +732,7 @@ namespace CompanioNc.View
                             }
                             if (!(int.TryParse(answer, out int result))) answer = "0";
                         }
+                        log.Info("VPN 有, 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
                         o = q.ToList()[int.Parse(answer) - 1].uid;
                         break;
                 }
