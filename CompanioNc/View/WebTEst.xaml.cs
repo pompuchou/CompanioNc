@@ -210,9 +210,9 @@ namespace CompanioNc.View
                         if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                         {
                             // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
-                            log.Info($"Goto F_Data_LoadCompleted.");
+                            log.Info($"Goto F_Data_LoadCompleted. By direct call.");
                             F_Data_LoadCompleted(this, EventArgs.Empty);
-                            log.Info($"Exit F_LoadCompleted-2. Go to next tab by direct call.");
+                            log.Info($"Exit F_LoadCompleted-2. By direct call.");
                             return;
                         }
                         else
@@ -265,7 +265,7 @@ namespace CompanioNc.View
 
         private async void F_Data_LoadCompleted(object sender, EventArgs e)
         {
-            log.Info($"Entered F_Data_LoadCompleted");
+            log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} {current_op?.Short_Name}");
 
             // 這時候已經確保是 active
             // 每當刷新後都要重新讀一次
@@ -283,19 +283,19 @@ namespace CompanioNc.View
 
             if (current_op != null)
             {
-                log.Info($"Reading operation: {current_op.Short_Name}");
+                log.Info($"1. Reading operation: {current_op.Short_Name}, {current_op?.UID}");
 
                 foreach (Target_Table tt in current_op.Target)
                 {
                     // 是否有多tables, 端看tt.Children, 除了管制藥物外, 其餘都不用
                     if (tt.Children == null)
                     {
-                        log.Info($"Read {tt.TargetID}");
+                        log.Info($"Read {tt.TargetID}, {current_op?.UID} {current_op?.Short_Name}");
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
                     }
                     else
                     {
-                        log.Info($"Read {tt.TargetID}, child {tt.Children}");
+                        log.Info($"Read {tt.TargetID}, child {tt.Children}, {current_op?.UID} {current_op?.Short_Name}");
                         // 有多個table, 使用情形僅有管制藥物
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML, current_op.UID, current_op.QDate));
                     }
@@ -311,7 +311,7 @@ namespace CompanioNc.View
             HtmlDocument p = new HtmlDocument();
             if (f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input") == null)
             {
-                log.Info($"Only one page detected.");
+                log.Info($"Only one page detected, {current_op?.UID} {current_op?.Short_Name}.");
                 total_pages = 1;
             }
             else
@@ -321,7 +321,7 @@ namespace CompanioNc.View
                 p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").innerHTML);
                 HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
                 total_pages = o.Count;
-                log.Info($"{total_pages} pages detected.");
+                log.Info($"{total_pages} pages detected, {current_op?.UID} {current_op?.Short_Name}");
                 // 轉軌
                 fm.FrameLoadComplete -= F_Data_LoadCompleted;
                 fm.FrameLoadComplete -= F_Pager_LoadCompleted;
@@ -364,8 +364,9 @@ namespace CompanioNc.View
                 ///     4-3. 存入SQL
                 ///     4-4. 製作Query
                 /// 查核機制?
-
+                log.Info($"Started async process, {current_op?.UID} {current_op?.Short_Name}");
                 List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
+                log.Info($"Finished async process, {current_op?.UID} {current_op?.Short_Name}");
 
                 /// 1. 讀取特殊註記, 如果有的話
                 ///    這是在ContentPlaceHolder1_tab02
@@ -422,12 +423,12 @@ namespace CompanioNc.View
                     q.tcm_N = tcm_N;
                     dc.tbl_Query2.InsertOnSubmit(q);
                     dc.SubmitChanges();
-                    log.Info("Successfully write into SQL database.");
+                    log.Info($"Successfully write into tbl_Query2. \r\n From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
                     tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
                 }
                 catch (Exception ex)
                 {
-                    log.Error(ex.Message);
+                    log.Error($"Failed to write into tbl_Querry2. \r\n From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] \r\n Error: {ex.Message}");
                 }
 
                 // 更新顯示資料
@@ -437,6 +438,7 @@ namespace CompanioNc.View
                 m.Web_refresh();
 
                 log.Info("Exit F_Data_LoadCompleted-2. After All tab Read, and write into SQL server.");
+                return;
             }
             else
             {
@@ -446,6 +448,7 @@ namespace CompanioNc.View
                 log.Info($"Exit F_Data_LoadCompleted-3. Go to next tab. {QueueOperation.Count + 1} tabs to go.");
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
+                return;
             }
         }
 

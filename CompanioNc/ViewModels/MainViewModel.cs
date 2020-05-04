@@ -26,7 +26,7 @@ namespace CompanioNc.ViewModels
                 Interval = 500
             };
             this._timer1.Elapsed += new System.Timers.ElapsedEventHandler(TimersTimer_Elapsed);
-            _timer1.Start();
+            //_timer1.Start();
 
             if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
             {
@@ -34,7 +34,7 @@ namespace CompanioNc.ViewModels
             }
 
             log.Info("logged in");
-            log.Info("timer1 for monitoring Thesis started.");
+            //log.Info("timer1 for monitoring Thesis started. by constructor.");
 
             // initially not unplug
             UnPlug = false;
@@ -211,7 +211,7 @@ namespace CompanioNc.ViewModels
                     // false, default value
                     StrUID = string.Empty;
                     StrID = string.Empty;
-                    log.Info("timer1 for monitoring Thesis started.");
+                    log.Info("timer1 for monitoring Thesis started by unPlug checkbox.");
                     this._timer1.Start();
                 }
                 OnPropertyChanged("UnPlug");
