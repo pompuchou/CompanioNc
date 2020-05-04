@@ -354,8 +354,9 @@ namespace CompanioNc.View
                 log.Info($"All datatable loaded into memory. Start to analyze.");
 
                 // Count = 0 代表最後一個 tab
-                fm.FrameLoadComplete -= F_LoadCompleted;
-                log.Info($"delete delegate F_LoadComplated.");
+                // 20200504 這裡一個BUG, 漏了把F_DATA_Loadcompleted刪掉,以至於不斷重複多次. ******
+                fm.FrameLoadComplete -= F_Data_LoadCompleted;
+                log.Info($"delete delegate F_Data_LoadComplated.");
 
                 /// 確定是最後一個tab這段程式到此結束
                 /// 4. Parsing & Saving to SQL: async
