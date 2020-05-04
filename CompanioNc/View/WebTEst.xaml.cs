@@ -1,6 +1,5 @@
 ﻿using CompanioNc.Models;
 using CompanioNc.ViewModels;
-using GlobalHotKey;
 using Hardcodet.Wpf.TaskbarNotification;
 using HtmlAgilityPack;
 using Microsoft.VisualBasic;
@@ -35,7 +34,6 @@ namespace CompanioNc.View
 
         #region FLAGS
 
-        private HotKeyManager hotKeyManager;
         private const string VPN_URL = @"https://medcloud.nhi.gov.tw/imme0008/IMME0008S01.aspx";
         private const string DEFAULT_URL = @"https://www.googl.com";
 
@@ -67,39 +65,14 @@ namespace CompanioNc.View
 
         private void WebTEst_Loaded(object sender, RoutedEventArgs e)
         {
-            // Create the hotkey manager.
-            hotKeyManager = new HotKeyManager();
-            // Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
-            try
-            {
-                hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                hotKeyManager.Register(Key.G, ModifierKeys.Control);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
             // 漏了 +=, 難怪不fire
             fm.FrameLoadComplete -= F_LoadCompleted;
             fm.FrameLoadComplete += F_LoadCompleted;
             this.g.Navigate(VPN_URL);
-
-            // Handle hotkey presses.
-            hotKeyManager.KeyPressed += HotKeyManagerPressed;
         }
 
         private void WebTEst_Closed(object sender, EventArgs e)
         {
-            try
-            {
-                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            hotKeyManager.Dispose();
             m.VPNwindow.IsChecked = false;
             fm.Dispose();
         }
@@ -496,23 +469,21 @@ namespace CompanioNc.View
 
         #region Hotkeys, Functions
 
-        private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
+        public void HotKey_Ctrl_Y()
         {
-            if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
-            {
-                /// 目的: 更新雲端資料, 讀寫雲端資料
-                /// 現在可以合併兩個步驟為一個步驟
-                /// 想到一個複雜的方式, 不斷利用LoadCompleted
-                fm.FrameLoadComplete -= F_LoadCompleted;
-                fm.FrameLoadComplete += F_LoadCompleted;
-                this.g.Navigate(VPN_URL);
-            }
-            else if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
-            {
-                /// 目的: 取消讀取雲端藥歷
-                fm.FrameLoadComplete -= F_LoadCompleted;
-                this.g.Navigate(DEFAULT_URL);
-            }
+            /// 目的: 更新雲端資料, 讀寫雲端資料
+            /// 現在可以合併兩個步驟為一個步驟
+            /// 想到一個複雜的方式, 不斷利用LoadCompleted
+            fm.FrameLoadComplete -= F_LoadCompleted;
+            fm.FrameLoadComplete += F_LoadCompleted;
+            this.g.Navigate(VPN_URL);
+        }
+
+        public void HotKey_Ctrl_G()
+        {
+            /// 目的: 取消讀取雲端藥歷
+            fm.FrameLoadComplete -= F_LoadCompleted;
+            this.g.Navigate(DEFAULT_URL);
         }
 
         private string MakeSure_UID(string vpnUID)

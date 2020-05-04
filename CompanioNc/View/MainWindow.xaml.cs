@@ -6,6 +6,8 @@ using System;
 using System.Deployment.Application;
 using System.Windows;
 using System.Windows.Input;
+using System.Collections.Generic;
+using WindowsInput;
 
 namespace CompanioNc
 {
@@ -164,7 +166,7 @@ namespace CompanioNc
             // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
             hotKeyManager.Register(Key.F2, ModifierKeys.Control);
             // Handle hotkey presses.
-            hotKeyManager.KeyPressed += Hkp.HotKeyManagerPressed;
+            hotKeyManager.KeyPressed += HotKeyManagerPressed;
 
             Refresh();
 
@@ -188,11 +190,16 @@ namespace CompanioNc
         private void VPNwindow_Checked(object sender, RoutedEventArgs e)
         {
             if (w is null) w = new WebTEst(this);
+            // Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
+            hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+            hotKeyManager.Register(Key.G, ModifierKeys.Control);
             w.Show();
         }
 
         private void VPNwindow_Unchecked(object sender, RoutedEventArgs e)
         {
+            hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+            hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
             w.Close();
             w = null;
         }
@@ -212,5 +219,39 @@ namespace CompanioNc
             }
         }
         #endregion
+
+        public void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
+        {
+            if ((e.HotKey.Key == Key.F2) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
+                        "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
+                        "Maintenance phase.", "Nothing particular."};
+                // 先決定一句還是兩句
+                Random crandom = new Random();
+                int n = crandom.Next(2) + 1;
+                int chosen = crandom.Next(10);
+                string output = strAnswer[chosen];
+                if (n == 2)
+                {
+                    strAnswer.Remove(output);
+                    output += " " + strAnswer[crandom.Next(9)];
+                }
+                output = DateTime.Now.ToShortDateString() + ": " + output + "\n";
+                InputSimulator sim = new InputSimulator();
+                sim.Keyboard.TextEntry(output);
+            }
+            if ((e.HotKey.Key == Key.Y) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                //更新雲端資料
+                w.HotKey_Ctrl_Y();
+            }
+            if ((e.HotKey.Key == Key.G) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                //讀寫雲端資料
+                w.HotKey_Ctrl_G();
+            }
+        }
+
     }
 }
