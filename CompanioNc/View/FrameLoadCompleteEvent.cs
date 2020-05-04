@@ -1,4 +1,5 @@
-﻿using mshtml;
+﻿using CompanioNc.ViewModels;
+using mshtml;
 using System;
 using System.Diagnostics;
 using System.Timers;
@@ -13,6 +14,8 @@ namespace CompanioNc.View
     public class FrameMonitor : IDisposable
     {
         // Flag: Has Dispose already been called?
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
         bool disposed = false;
         private readonly int _interval;
         private readonly WebTEst w;
@@ -30,6 +33,8 @@ namespace CompanioNc.View
             };
             this._timer2.Elapsed += new System.Timers.ElapsedEventHandler(TimersTimer_Elapsed);
             _timer2.Start();
+            log.Info("timer2 for monitoring VPN started.");
+
         }
 
         private void TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -93,6 +98,7 @@ namespace CompanioNc.View
                 //
                 _timer2.Stop();
                 _timer2.Dispose();
+                log.Info("timer2 for monitoring VPN stopped.");
             }
 
             disposed = true;

@@ -330,6 +330,10 @@ namespace CompanioNc.View
                     if (a.innerText == ">")
                     {
                         a.click();
+                        // 20200504 發現這裡執行完後還會執行後面的程序, 造成兩個程序的衝突
+                        // 此段程式的一個出口點
+                        log.Info("按了下一頁.");
+                        return;
                     }
                 }
             }
@@ -418,6 +422,7 @@ namespace CompanioNc.View
                 // 下一個tab
                 current_op = QueueOperation.Dequeue();
                 d.getElementById(current_op.TAB_ID).click();
+                // 此段程式的一個出口點
             }
         }
 
@@ -452,6 +457,7 @@ namespace CompanioNc.View
 
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
                 F_Data_LoadCompleted(this, EventArgs.Empty);
+                // 此段程式的一個出口點
             }
             else if (current_page == total_pages)
             {
@@ -466,6 +472,7 @@ namespace CompanioNc.View
                 // 下一個tab
                 current_op = QueueOperation.Dequeue();
                 d.getElementById(current_op.TAB_ID).click();
+                // 此段程式的一個出口點
             }
             else
             {
@@ -481,6 +488,7 @@ namespace CompanioNc.View
                         a.click();
                     }
                 }
+                // 此段程式的一個出口點
             }
         }
 
