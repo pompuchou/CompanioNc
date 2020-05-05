@@ -202,7 +202,7 @@ namespace CompanioNc.ViewModels
                 {
                     // true, which means UNPLUG
                     this._timer1.Stop();
-                    log.Info("timer1 for monitoring Thesis stopped.");
+                    //log.Info("timer1 for monitoring Thesis stopped.");
                     StrUID = string.Empty;
                     StrID = string.Empty;
                 }
@@ -211,7 +211,7 @@ namespace CompanioNc.ViewModels
                     // false, default value
                     StrUID = string.Empty;
                     StrID = string.Empty;
-                    log.Info("timer1 for monitoring Thesis started by unPlug checkbox.");
+                    //log.Info("timer1 for monitoring Thesis started by unPlug checkbox.");
                     this._timer1.Start();
                 }
                 OnPropertyChanged("UnPlug");
@@ -394,7 +394,7 @@ namespace CompanioNc.ViewModels
         ~MainVM()  // destructor
         {
             _timer1.Stop();
-            log.Info("timer1 for monitoring Thesis stopped.");
+            //log.Info("timer1 for monitoring Thesis stopped.");
 
         }
     }

@@ -184,24 +184,24 @@ namespace CompanioNc.View
 
         public static async Task<List<Response_DataModel>> RunWriteSQL_Async(List<VPN_Retrieved> vrs)
         {
-            log.Info($"Enter RunWriteSQL_Async. Current ID: {vrs[0].UID}. \r\n Number of tables: {vrs.Count}");
+            //log.Info($"Enter RunWriteSQL_Async. Current ID: {vrs[0].UID}. \r\n Number of tables: {vrs.Count}");
 
             List<Task<Response_DataModel>> tasks = new List<Task<Response_DataModel>>();
 
             foreach (VPN_Retrieved vr in vrs)
             {
-                log.Info($"Task {vr.SQL_Tablename} of {vr.UID} added");
+                //log.Info($"Task {vr.SQL_Tablename} of {vr.UID} added");
                 tasks.Add(WriteSQL_Async(vr));
             }
             var output = await Task.WhenAll(tasks);
 
-            log.Info($"Exit RunWriteSQL_Async.Current ID: {vrs[0].UID}. \r\n Number of tables: {vrs.Count}");
+            //log.Info($"Exit RunWriteSQL_Async.Current ID: {vrs[0].UID}. \r\n Number of tables: {vrs.Count}");
             return new List<Response_DataModel>(output);
         }
 
         public static async Task<Response_DataModel> WriteSQL_Async(VPN_Retrieved vr)
         {
-            log.Info($"{vr.SQL_Tablename} writing.");
+            //log.Info($"{vr.SQL_Tablename} writing.");
             Response_DataModel output = new Response_DataModel();
             int _count = 0;
 
@@ -293,7 +293,7 @@ namespace CompanioNc.View
                             _count = 0;
                             break;
                     }
-                    log.Info($"Successfully write {vr.SQL_Tablename} into SQL database.");
+                    //log.Info($"Successfully write {vr.SQL_Tablename} into SQL database.");
                 }
                 catch (Exception ex)
                 {
