@@ -279,7 +279,6 @@ namespace CompanioNc.View
             ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done, 不用再管排序
             ///     3-2. 都放在記憶體裡, 快速, in the LIST
 
-
             if (current_op != null)
             {
                 log.Info($"1. Reading operation: {current_op.Short_Name}, {current_op?.UID}");
@@ -293,12 +292,52 @@ namespace CompanioNc.View
                     {
                         log.Info($"2. Read {tt.TargetID}, {current_op?.UID} {current_op?.Short_Name}");
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
+
+                        #region 儲存HTML檔
+
+                        // 製作自動檔名
+                        string temp_filepath = @"C:\vpn\html";
+                        // 存放目錄,不存在就要建立一個
+                        if (!System.IO.Directory.Exists(temp_filepath))
+                        {
+                            System.IO.Directory.CreateDirectory(temp_filepath);
+                        }
+                        // 自動產生名字
+                        temp_filepath += $"\\{tt.Short_Name}_{current_op.UID}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
+                        temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
+
+                        // 製作html檔 writing to html
+                        System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
+                        sw.Write(f.getElementById(tt.TargetID).outerHTML);
+                        sw.Close();
+
+                        #endregion 儲存HTML檔
                     }
                     else
                     {
                         log.Info($"2. Read {tt.TargetID}, child {tt.Children}, {current_op?.UID} {current_op?.Short_Name}");
                         // 有多個table, 使用情形僅有管制藥物
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML, current_op.UID, current_op.QDate));
+
+                        #region 儲存HTML檔
+
+                        // 製作自動檔名
+                        string temp_filepath = @"C:\vpn\html";
+                        // 存放目錄,不存在就要建立一個
+                        if (!System.IO.Directory.Exists(temp_filepath))
+                        {
+                            System.IO.Directory.CreateDirectory(temp_filepath);
+                        }
+                        // 自動產生名字
+                        temp_filepath += $"\\{tt.Short_Name}_{tt.Children}_{current_op.UID}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
+                        temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
+
+                        // 製作html檔 writing to html
+                        System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
+                        sw.Write(f.getElementById(tt.TargetID).outerHTML);
+                        sw.Close();
+
+                        #endregion 儲存HTML檔
                     }
                 }
 
@@ -344,7 +383,6 @@ namespace CompanioNc.View
                 }
 
                 #endregion 判斷多頁
-
             }
 
             // 判斷是否最後一tab
@@ -469,6 +507,27 @@ namespace CompanioNc.View
             {
                 // 這裡不用管多table, 因為多table只發生在管制藥那裏
                 ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
+
+                #region 儲存HTML檔
+
+                // 製作自動檔名
+                string temp_filepath = @"C:\vpn\html";
+                // 存放目錄,不存在就要建立一個
+                if (!System.IO.Directory.Exists(temp_filepath))
+                {
+                    System.IO.Directory.CreateDirectory(temp_filepath);
+                }
+                // 自動產生名字
+                temp_filepath += $"\\{tt.Short_Name}_{current_op.UID}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
+                temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
+
+                // 製作html檔 writing to html
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
+                sw.Write(f.getElementById(tt.TargetID).outerHTML);
+                sw.Close();
+
+                #endregion 儲存HTML檔
+
             }
             log.Info($"{current_op.Short_Name}, page: {current_page}/{total_pages}. [{current_op.UID}]");
 
