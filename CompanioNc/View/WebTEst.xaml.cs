@@ -181,7 +181,7 @@ namespace CompanioNc.View
                         {
                             VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
                             QueueOperation.Enqueue(vOP);
-                            log.Info($"讀入operation: {vOP.Short_Name}");
+                            log.Info($"讀入operation: {vOP.Short_Name}, [{strUID}]");
                             BalloonTip += $"{vOP.Short_Name}\r\n";
                         }
                     }
@@ -265,7 +265,7 @@ namespace CompanioNc.View
             fm.FrameLoadComplete -= F_Data_LoadCompleted;
 
             log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} {current_op?.Short_Name}");
-            log.Info($"delete delegate F_Data_LoadComplated.");
+            log.Info($"delete delegate F_Data_LoadComplated. [{current_op?.UID}]");
 
             // 這時候已經確保是 active
             // 每當刷新後都要重新讀一次
@@ -334,7 +334,7 @@ namespace CompanioNc.View
                         if (a.innerText == ">")
                         {
                             log.Info("按了下一頁.");
-                            log.Info($"Exit F_Data_LoadCompleted-1. Multipage, go to next page.");
+                            log.Info($"Exit F_Data_LoadCompleted-1/3. Multipage, go to next page.");
                             a.click();
                             // 20200504 發現這裡執行完後還會執行後面的程序, 造成兩個程序的衝突
                             // 此段程式的一個出口點
@@ -351,7 +351,7 @@ namespace CompanioNc.View
             if (QueueOperation.Count == 0)
             {
                 tb.ShowBalloonTip("讀取完成", "開始解析與寫入資料庫", BalloonIcon.Info);
-                log.Info($"All datatable loaded into memory. Start to analyze.");
+                log.Info($"3. All datatable loaded into memory. Start to analyze. [{current_op.UID}]");
 
                 // Count = 0 代表最後一個 tab
                 // 20200504 這裡一個BUG, 漏了把F_DATA_Loadcompleted刪掉,以至於不斷重複多次. ******
@@ -422,12 +422,12 @@ namespace CompanioNc.View
                     q.tcm_N = tcm_N;
                     dc.tbl_Query2.InsertOnSubmit(q);
                     dc.SubmitChanges();
-                    log.Info($"Successfully write into tbl_Query2. \r\n From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
+                    log.Info($"4. Successfully write into tbl_Query2. \r\n From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
                     tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"Failed to write into tbl_Querry2. \r\n From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] \r\n Error: {ex.Message}");
+                    log.Error($"4. Failed to write into tbl_Querry2. \r\n From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] \r\n Error: {ex.Message}");
                 }
 
                 // 更新顯示資料
@@ -436,15 +436,16 @@ namespace CompanioNc.View
                 m.Label1.Text = tempSTR;
                 m.Web_refresh();
 
-                log.Info("Exit F_Data_LoadCompleted-2. After All tab Read, and write into SQL server.");
+                log.Info($"5. Exit F_Data_LoadCompleted-2/3. The REAL END! [{current_op.UID}]");
                 return;
             }
             else
             {
                 // 下一個tab
                 current_op = QueueOperation.Dequeue();
-                log.Info($"{current_op.TAB_ID} tab key pressed.");
-                log.Info($"Exit F_Data_LoadCompleted-3. Go to next tab. {QueueOperation.Count + 1} tabs to go.");
+                log.Info($"{current_op.TAB_ID} tab key pressed. [{current_op.UID}]");
+                log.Info($"add delegate F_Data_LoadCompleted. [{current_op.UID}]");
+                log.Info($"Exit F_Data_LoadCompleted-3/3. Go to next tab. {QueueOperation.Count + 1} tabs to go.. [{current_op.UID}]");
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
@@ -469,7 +470,7 @@ namespace CompanioNc.View
                 // 這裡不用管多table, 因為多table只發生在管制藥那裏
                 ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
             }
-            log.Info($"{current_op.Short_Name}, page: {current_page}/{total_pages}.");
+            log.Info($"{current_op.Short_Name}, page: {current_page}/{total_pages}. [{current_op.UID}]");
 
             // 判斷是否最後一頁, 最後一tab
             if ((current_page == total_pages) && (QueueOperation.Count == 0))
@@ -479,10 +480,17 @@ namespace CompanioNc.View
                 current_page = total_pages = 0;
                 log.Info("current_page = 0, total_pages = 0, current_op = 0.");
 
-                // current_op 歸零
-                current_op = null;
+                try
+                {
+                    // current_op 歸零
+                    current_op = null;
+                }
+                catch (Exception ex)
+                {
+                    log.Error($"Accidentally stopped, error: {ex.Message}");
+                }
 
-                log.Info("Exit F_Pager_LoadCompleted-1. last page, last tab, go back directly.");
+                log.Info($"Exit F_Pager_LoadCompleted-1. last page, last tab, go back directly. [{current_op.UID}]");
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
                 F_Data_LoadCompleted(this, EventArgs.Empty);
                 // 此段程式的一個出口點
@@ -495,11 +503,10 @@ namespace CompanioNc.View
                 current_page = total_pages = 0;
                 // 轉軌
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
-                log.Info("delete delegate F_Pager_LoadCompleted.");
-                log.Info("add delegate F_Data_LoadCompleted.");
+                log.Info($"add delegate F_Data_LoadCompleted. [{current_op.UID}]");
 
                 // 下一個tab
-                log.Info("Exit F_Pager_LoadCompleted-2. last page, go to next tab by clicking.");
+                log.Info($"Exit F_Pager_LoadCompleted-2. last page, go to next tab by clicking. [{current_op.UID}]");
                 current_op = QueueOperation.Dequeue();
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
@@ -512,13 +519,14 @@ namespace CompanioNc.View
                 // HOW TO ?????????????????????????????????????????
                 // 如何下一頁, 可能要用invokescript
                 // 按鈕機制
-                log.Info("Exit F_Pager_LoadCompleted-3. go to next page by clicking.");
+                log.Info($"Exit F_Pager_LoadCompleted-3. go to next page by clicking. [{current_op.UID}]");
+                log.Info($"add delegate F_Pager_LoadCompleted. [{current_op.UID}]");
                 fm.FrameLoadComplete += F_Pager_LoadCompleted;
                 foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
                 {
                     if (a.innerText == ">")
                     {
-                        log.Info("下一頁按下去了.(多頁)");
+                        log.Info("下一頁按下去了.(多頁) [{current_op.UID}]");
                         a.click();
                     }
                 }
@@ -580,7 +588,7 @@ namespace CompanioNc.View
             try
             {
                 string[] vs = this.m.strID.Content.ToString().Split(' ');
-                log.Info($"[{this.m.strID.Content.ToString()}] being processed.");
+                log.Info($"[{this.m.strID.Content}] being processed.");
                 // 身分證字號在[7], 還要去掉括弧
                 thesisUID = vs[7].Substring(1, (vs[7].Length - 2));
                 thesisNAME = vs[8];

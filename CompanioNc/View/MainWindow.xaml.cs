@@ -38,7 +38,6 @@ namespace CompanioNc
 
         private void Label1_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            log.Info("StrUID label changed.");
             Refresh();
         }
 

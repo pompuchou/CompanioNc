@@ -351,12 +351,14 @@ namespace CompanioNc.View
 
         private static int Write_all(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_source = string.Empty, o_remark = string.Empty, o_drug_name = string.Empty;
+            DateTime o_SDATE = new DateTime();
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_source = string.Empty, o_remark = string.Empty, o_drug_name = string.Empty;
-                DateTime o_SDATE = new DateTime();
 
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
@@ -366,7 +368,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -416,7 +418,6 @@ namespace CompanioNc.View
                             remark = o_remark,
                             drug_name = o_drug_name
                         };
-
                         // 存檔
 
                         dc.tbl_cloudALL.InsertOnSubmit(newALL);
@@ -429,20 +430,24 @@ namespace CompanioNc.View
             catch (Exception ex)
             {
                 log.Error($"Allergy of {strUID}, Error: {ex.Message}");
-                return 0;
+                log.Error($"Count: {count}; Order: {order_n}, [{o_drug_name}]");
+                return -1;
             }
         }
 
         private static int Write_dental(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_source = string.Empty, o_diagnosis = string.Empty, o_NHI_code = string.Empty;
+            string o_op_name = string.Empty, o_loca = string.Empty;
+            int o_amt = 0;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_source = string.Empty, o_diagnosis = string.Empty, o_NHI_code = string.Empty;
-                string o_op_name = string.Empty, o_loca = string.Empty;
-                int o_amt = 0;
-                DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
@@ -452,7 +457,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -541,20 +546,23 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"Dental of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_op_name}]");
                 return 0;
             }
         }
 
         private static int Write_dis(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
-                DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
-
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
@@ -563,7 +571,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -637,17 +645,19 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"Discharge of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_diagnosis}]");
                 return 0;
             }
         }
 
         private static int Write_lab(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            int count = 0, order_n = 0;
             try
             {
                 Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
+                count = 0;
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
@@ -662,7 +672,7 @@ namespace CompanioNc.View
                         QDATE = current_date
                     };
 
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -763,17 +773,19 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"lab of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}]");
                 return 0;
             }
         }
 
         private static int Write_med(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            int count = 0, order_n = 0;
             try
             {
                 Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
+                count = 0;
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
@@ -788,7 +800,7 @@ namespace CompanioNc.View
                         QDATE = current_date
                     };
 
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -914,22 +926,24 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"med of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}]");
                 return 0;
             }
         }
 
         private static int Write_op(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
+            string o_NHI_code = string.Empty, o_op_name = string.Empty, o_loca = string.Empty;
+            int o_amt = 0;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
-                string o_NHI_code = string.Empty, o_op_name = string.Empty, o_loca = string.Empty;
-                int o_amt = 0;
-                DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
-
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
@@ -938,7 +952,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -1033,21 +1047,25 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"op of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_op_name}]");
                 return 0;
             }
         }
 
         private static int Write_reh(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_class = string.Empty, o_source = string.Empty, o_diagnosis = string.Empty, o_type = string.Empty;
+            string o_curegrade = string.Empty, o_loca = string.Empty;
+            int o_amt = 0;
+            DateTime o_begin_date = new DateTime(), o_end_date = new DateTime(), o_SDATE = new DateTime(), o_EDATE = new DateTime();
+
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_class = string.Empty, o_source = string.Empty, o_diagnosis = string.Empty, o_type = string.Empty;
-                string o_curegrade = string.Empty, o_loca = string.Empty;
-                int o_amt = 0;
-                DateTime o_begin_date = new DateTime(), o_end_date = new DateTime(), o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
@@ -1057,7 +1075,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -1173,19 +1191,22 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"REH of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_diagnosis}]");
                 return 0;
             }
         }
 
         private static int Write_sch_re(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_drug = string.Empty, o_YM = string.Empty, drug_name = string.Empty;
+            int o_visit_n = 0, o_clinic_n = 0, o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_drug = string.Empty, o_YM = string.Empty, drug_name = string.Empty;
-                int o_visit_n = 0, o_clinic_n = 0, o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
 
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
@@ -1196,7 +1217,7 @@ namespace CompanioNc.View
 
                     if ((tds == null) || (tds.Count == 0)) continue;
                     if (row_left > 0) row_left--;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         //' header(order_n)是資料表的位置與實際table的對照
@@ -1285,20 +1306,23 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"SCH_RE of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_drug}]");
                 return 0;
             }
         }
 
         private static int Write_sch_up(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_drug = string.Empty, drug_name = string.Empty, o_STIME = string.Empty, o_clinic = string.Empty;
+            int o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
+            DateTime o_SDATE = new DateTime();
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_drug = string.Empty, drug_name = string.Empty, o_STIME = string.Empty, o_clinic = string.Empty;
-                int o_t_dose = 0, o_t_DDD = 0, row_left = 0, row_n = 0;
-                DateTime o_SDATE = new DateTime();
 
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
@@ -1309,7 +1333,7 @@ namespace CompanioNc.View
 
                     if ((tds == null) || (tds.Count == 0)) continue;
                     if (row_left > 0) row_left--;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         // header(order_n)是資料表的位置與實際table的對照
@@ -1403,23 +1427,25 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"SCH_UP of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_drug}]");
                 return 0;
             }
         }
 
         private static int Write_tcm_de(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_diagnosis = string.Empty, o_NHI_code = string.Empty, o_complex = string.Empty;
+            string o_base = string.Empty, o_effect = string.Empty, o_dosing = string.Empty;
+            string o_type = string.Empty, o_serial = string.Empty;
+            int o_days = 0, o_amt = 0;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+
+            int order_n = 0;
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_diagnosis = string.Empty, o_NHI_code = string.Empty, o_complex = string.Empty;
-                string o_base = string.Empty, o_effect = string.Empty, o_dosing = string.Empty;
-                string o_type = string.Empty, o_serial = string.Empty;
-                int o_days = 0, o_amt = 0;
-                DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
-
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
@@ -1428,7 +1454,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -1541,21 +1567,24 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"TCM_DE of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_diagnosis}]");
                 return 0;
             }
         }
 
         private static int Write_tcm_gr(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
+            Com_clDataContext dc = new Com_clDataContext();
+            int count = 0;
+            string o_source = string.Empty, o_diagnosis = string.Empty, o_chronic = string.Empty, o_serial = string.Empty;
+            int o_days = 0;
+            DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
+
+            int order_n = 0;
+
             try
             {
-                Com_clDataContext dc = new Com_clDataContext();
-                int count = 0;
-                string o_source = string.Empty, o_diagnosis = string.Empty, o_chronic = string.Empty, o_serial = string.Empty;
-                int o_days = 0;
-                DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
-
                 // 寫入資料庫
                 foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
                 {
@@ -1564,7 +1593,7 @@ namespace CompanioNc.View
                     HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
                     if ((tds == null) || (tds.Count == 0)) continue;
-                    int order_n = 0;
+                    order_n = 0;
                     foreach (HtmlNode td in tds)
                     {
                         switch (header_order[order_n])
@@ -1646,7 +1675,8 @@ namespace CompanioNc.View
             }
             catch (Exception ex)
             {
-                log.Error($"Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"TCM_GR of {strUID}, Error: {ex.Message}");
+                log.Error($"Count: {count}; Order: {order_n}, [{o_diagnosis}]");
                 return 0;
             }
         }

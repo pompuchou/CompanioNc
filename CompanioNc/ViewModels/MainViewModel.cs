@@ -3,6 +3,7 @@ using CompanioNc.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Deployment.Application;
 using System.Globalization;
 using System.Linq;
 using System.Timers;
@@ -33,7 +34,20 @@ namespace CompanioNc.ViewModels
                 StrUID = "A123871035";
             }
 
-            log.Info("logged in");
+            string version = null;
+            try
+            {
+                //// get deployment version
+                version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+            }
+            catch (InvalidDeploymentException)
+            {
+                //// you cannot read publish version when app isn't installed 
+                //// (e.g. during debug)
+                version = "debugging, not installed";
+            }
+
+            log.Info($"CompanioNc log in, version: {version}.");
 
             // initially not unplug
             UnPlug = false;
