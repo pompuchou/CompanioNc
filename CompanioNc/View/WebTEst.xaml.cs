@@ -192,12 +192,12 @@ namespace CompanioNc.View
 
                     if (QueueOperation.Count > 0)
                     {
-                        tb.ShowBalloonTip("開始讀取", BalloonTip, BalloonIcon.Info);
                         // 流程控制, fm = framemonitor
 
                         // 載入第一個operation
                         log.Info($"  First operation loaded.");
                         current_op = QueueOperation.Dequeue();
+                        tb.ShowBalloonTip($"開始讀取 [{current_op.UID}]", BalloonTip, BalloonIcon.Info);
 
                         // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
                         // 不active就要按鍵
@@ -390,7 +390,7 @@ namespace CompanioNc.View
             // 判斷是否最後一tab
             if (QueueOperation.Count == 0)
             {
-                tb.ShowBalloonTip("讀取完成", "開始解析與寫入資料庫", BalloonIcon.Info);
+                tb.ShowBalloonTip($"讀取完成 [{current_op?.UID}]", "開始解析與寫入資料庫", BalloonIcon.Info);
                 log.Info($"  F. All datatable loaded into memory. Start to analyze. [{current_op?.UID}]");
                 
                 // Count = 0 代表最後一個 tab
@@ -463,7 +463,7 @@ namespace CompanioNc.View
                     dc.tbl_Query2.InsertOnSubmit(q);
                     dc.SubmitChanges();
                     log.Info($"  4. Successfully write into tbl_Query2. \r\n From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
-                    tb.ShowBalloonTip("寫入完成", "已寫入資料庫", BalloonIcon.Info);
+                    tb.ShowBalloonTip($"寫入完成 [{current_op?.UID}]", "已寫入資料庫", BalloonIcon.Info);
                 }
                 catch (Exception ex)
                 {

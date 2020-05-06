@@ -8,6 +8,9 @@ using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
 using WindowsInput;
+using Hardcodet.Wpf.TaskbarNotification;
+using System.Data.Linq;
+using System.Linq;
 
 namespace CompanioNc
 {
@@ -28,6 +31,7 @@ namespace CompanioNc
     {
         private static readonly log4net.ILog log = LogHelper.GetLogger();
 
+        private readonly TaskbarIcon tb = new TaskbarIcon();
         private HotKeyManager hotKeyManager;
         private WebTEst w;
 
@@ -167,6 +171,7 @@ namespace CompanioNc
             hotKeyManager = new HotKeyManager();
             // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
             hotKeyManager.Register(Key.F2, ModifierKeys.Control);
+            hotKeyManager.Register(Key.T, ModifierKeys.Control);
             // Handle hotkey presses.
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
             log.Info("Hotkey F2 registered.");
@@ -181,6 +186,7 @@ namespace CompanioNc
         {
             // Unregister Ctrl+Alt+F2 hotkey.
             hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);
+            hotKeyManager.Unregister(Key.T, ModifierKeys.Control);
             // Dispose the hotkey manager.
             hotKeyManager.Dispose();
 
@@ -197,7 +203,7 @@ namespace CompanioNc
             // Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
             hotKeyManager.Register(Key.Y, ModifierKeys.Control);
             hotKeyManager.Register(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+            log.Info("Hotkey Ctrl-Y, Ctrl-G, Ctrl-T registered.");
             w.Show();
         }
 
@@ -205,7 +211,7 @@ namespace CompanioNc
         {
             hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
             hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            log.Info("Hotkey Ctrl-Y, Ctrl-G, Ctrl-T unregistered.");
             w.Close();
             w = null;
         }
@@ -263,6 +269,24 @@ namespace CompanioNc
 
                 //讀寫雲端資料
                 w.HotKey_Ctrl_G();
+            }
+            if ((e.HotKey.Key == Key.T) && (e.HotKey.Modifiers == ModifierKeys.Control))
+            {
+                log.Info("Hotkey Ctrl-T pressed.");
+
+                //讀寫雲端資料
+                Com_clDataContext dc = new Com_clDataContext();
+                var list_vpn = dc.sp_querytable2();
+                string show_list = string.Empty;
+                int order = 0;
+                foreach (var a in list_vpn)
+                {
+                    if (order > 3) break;
+                    show_list += $"[{a.uid}] {a.cname} \r\n";
+                    order++;
+                }
+                tb.ShowBalloonTip("最近四人", show_list, BalloonIcon.Info);
+
             }
         }
 
