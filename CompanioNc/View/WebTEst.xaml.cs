@@ -656,7 +656,7 @@ namespace CompanioNc.View
                 /// 杏翔沒開, 或是沒連動, 反正就是抓不到
                 /// thesisUID = string.Empty;
                 /// thesisNAME = string.Empty;
-                log.Info($"杏翔系統無法取得UID: [{thesisUID}], ERROR:{ex.Message}");
+                log.Error($"杏翔系統無法取得UID: [{thesisUID}], ERROR:{ex.Message}");
             }
 
             if (!string.IsNullOrEmpty(thesisUID))

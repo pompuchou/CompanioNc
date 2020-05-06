@@ -749,6 +749,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
+                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
+                    log.Error($"    Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 try
@@ -757,6 +759,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
+                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
+                    log.Error($"    Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 // 處理source
@@ -901,6 +905,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
+                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
+                    log.Error($"    Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 try
@@ -909,6 +915,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
+                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
+                    log.Error($"    Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 // 這裡原本多了一次沒有try包覆的insert_p_cloudmed, 一但p_cloudmed有錯誤就沒辦法處理source

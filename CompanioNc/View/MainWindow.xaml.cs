@@ -1,16 +1,14 @@
-﻿using CompanioNc.View;
+﻿using CompanioNc.Models;
+using CompanioNc.View;
 using CompanioNc.ViewModels;
-using CompanioNc.Models;
 using GlobalHotKey;
+using Hardcodet.Wpf.TaskbarNotification;
 using System;
+using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Windows;
 using System.Windows.Input;
-using System.Collections.Generic;
 using WindowsInput;
-using Hardcodet.Wpf.TaskbarNotification;
-using System.Data.Linq;
-using System.Linq;
 
 namespace CompanioNc
 {
@@ -159,7 +157,7 @@ namespace CompanioNc
                 //// (e.g. during debug)
                 version = "debugging, not installed";
             }
-            this.Title += $" {version}";
+            this.Title += $" v.{version}";
 
             ///WebTEst部分不採MVVM
             using (Com_clDataContext dc =new Com_clDataContext())
