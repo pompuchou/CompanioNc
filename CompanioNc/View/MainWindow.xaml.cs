@@ -167,12 +167,22 @@ namespace CompanioNc
 
             // Create the hotkey manager.
             hotKeyManager = new HotKeyManager();
+
             // Register Ctrl+F2 hotkey. Save this variable somewhere for the further unregistering.
-            hotKeyManager.Register(Key.F2, ModifierKeys.Control);
-            hotKeyManager.Register(Key.T, ModifierKeys.Control);
+            try
+            {
+                hotKeyManager.Register(Key.F2, ModifierKeys.Control);
+                hotKeyManager.Register(Key.T, ModifierKeys.Control);
+                log.Info("Hotkey F2, Ctrl-T registered.");
+            }
+            catch (Exception ex)
+            {
+                tb.ShowBalloonTip("危險!", "重複註冊Ctrl-F2, Ctrl-T", BalloonIcon.Warning);
+                log.Fatal($"Double Register Ctrl-F2, Ctrl-T. Fatal. Error: {ex.Message}");
+            }
+
             // Handle hotkey presses.
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
-            log.Info("Hotkey F2, Ctrl-T registered.");
 
 
             Refresh();
@@ -183,11 +193,20 @@ namespace CompanioNc
         private void Window_Closed(object sender, EventArgs e)
         {
             // Unregister Ctrl+Alt+F2 hotkey.
-            hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);
-            hotKeyManager.Unregister(Key.T, ModifierKeys.Control);
+            try
+            {
+                hotKeyManager.Unregister(Key.F2, ModifierKeys.Control);
+                hotKeyManager.Unregister(Key.T, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-F2, Ctrl-T unregistered.");
+            }
+            catch (Exception ex)
+            {
+                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-F2, Ctrl-T", BalloonIcon.Warning);
+                log.Fatal($"Double Unregister Ctrl-F2, Ctrl-T. Fatal. Error: {ex.Message}");
+            }
+
             // Dispose the hotkey manager.
             hotKeyManager.Dispose();
-            log.Info("Hotkey F2, Ctrl-T unregistered.");
 
             // Close all windows at once, convenient
             if (w != null) w.Close();
