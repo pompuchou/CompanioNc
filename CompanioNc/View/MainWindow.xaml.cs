@@ -199,18 +199,29 @@ namespace CompanioNc
         private void VPNwindow_Checked(object sender, RoutedEventArgs e)
         {
             if (w is null) w = new WebTEst(this);
-            // Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
-            hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-            hotKeyManager.Register(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+            // 20200508 因為不反應的功能, 這裡不可以register; 會先完成一輪, 造成重複register就會當機
+            // 因此全部remark, 
+            //// Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
+            //hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+            //hotKeyManager.Register(Key.G, ModifierKeys.Control);
+            //log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
             w.Show();
         }
 
         private void VPNwindow_Unchecked(object sender, RoutedEventArgs e)
         {
-            hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-            hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            // 20200508 加上不反應期的功能
+            try
+            {
+                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            }
+            catch (Exception ex)
+            {
+                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
+            }
             w.Close();
             w = null;
         }

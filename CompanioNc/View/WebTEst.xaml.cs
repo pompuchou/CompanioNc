@@ -104,6 +104,19 @@ namespace CompanioNc.View
                 if (strUID == string.Empty)
                 {
                     tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
+
+                    // 20200508 已經完成了, 又開始可以有反應了
+                    try
+                    {
+                        m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                        m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                        log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+                    }
+                    catch (Exception ex)
+                    {
+                        tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                        log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
+                    }
                     log.Info($"Exit F_LoadCompleted -1. No such person.");
                     return;
                 }
@@ -221,7 +234,6 @@ namespace CompanioNc.View
                             d.getElementById(current_op.TAB_ID).click();
                             return;
                         }
-                        // 這段程式到此結束
                     }
                     else
                     {
@@ -249,6 +261,19 @@ namespace CompanioNc.View
                             dc.tbl_Query2.InsertOnSubmit(q);
                             dc.SubmitChanges();
                         };
+
+                        // 20200508 已經完成了, 又開始可以有反應了
+                        try
+                        {
+                            m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                            m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                            log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+                        }
+                        catch (Exception ex)
+                        {
+                            tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                            log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 2 Fatal. Error: {ex.Message}");
+                        }
                         log.Info($"Exit F_LoadCompleted-4. Completey no data.");
                     }
 
@@ -257,6 +282,18 @@ namespace CompanioNc.View
             }
             else
             {
+                // 20200508 已經完成了, 又開始可以有反應了
+                try
+                {
+                    m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                    m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                    log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+                }
+                catch (Exception ex)
+                {
+                    tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                    log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
+                }
                 log.Info($"Exit F_LoadCompleted -5. HTMLdocument is null.");
             }
         }
@@ -478,9 +515,17 @@ namespace CompanioNc.View
                 m.Web_refresh();
 
                 // 20200508 已經完成了, 又開始可以有反應了
-                m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+                try
+                {
+                    m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                    m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                    log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+                }
+                catch (Exception ex)
+                {
+                    tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                    log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 4 Fatal. Error: {ex.Message}");
+                }
 
                 log.Info($"Exit F_Data_LoadCompleted-2/3. The REAL END! [{current_op.UID}]");
                 return;
@@ -610,19 +655,37 @@ namespace CompanioNc.View
             log.Info("add delegate F_LoadCompleted.");
 
             log.Info($"start to load {VPN_URL}");
+
             // 20200508 加上不反應期的功能
-            m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-            m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            try
+            {
+                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            }
+            catch (Exception ex)
+            {
+                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
+            }
+
             this.g.Navigate(VPN_URL);
         }
 
         public void HotKey_Ctrl_G()
         {
             // 20200508 加上不反應期的功能
-            m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-            m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            try
+            {
+                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
+            }
+            catch (Exception ex)
+            {
+                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
+                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 2 Fatal. Error: {ex.Message}");
+            }
 
             //this.g.Navigate(DEFAULT_URL);
             F_LoadCompleted(this, EventArgs.Empty);
