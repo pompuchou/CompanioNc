@@ -68,12 +68,35 @@ namespace CompanioNc.View
             // 漏了 +=, 難怪不fire
             fm.FrameLoadComplete += F_LoadCompleted;
 
+            // 20200508 加上此段, 因為如果沒有健保卡, 根本不會觸發F_LoadCompleted.
+            try
+            {
+                m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+            }
+            catch (Exception ex)
+            {
+                log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 0 Fatal. Error: {ex.Message}");
+            }
+
             log.Info($"Start to load {VPN_URL} not by hotkey.");
             this.g.Navigate(VPN_URL);
         }
 
         private void WebTEst_Closed(object sender, EventArgs e)
         {
+            // 20200508 加上不反應期的功能
+            try
+            {
+                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G 0 unregistered.");
+            }
+            catch (Exception ex)
+            {
+                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
+            }
             log.Info($"WebTEst is being closed.");
             m.VPNwindow.IsChecked = false;
             fm.Dispose();
@@ -95,6 +118,18 @@ namespace CompanioNc.View
             log.Info($"Entered F_LoadCompleted");
             log.Info($"  delete delegate F_LoadCompleted.");
 
+            // 20200508 加上不反應期的功能
+            try
+            {
+                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G 1 unregistered.");
+            }
+            catch (Exception ex)
+            {
+                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
+            }
+
             HTMLDocument d = (HTMLDocument)g.Document;
             if (d?.getElementById("ContentPlaceHolder1_lbluserID") != null)
             {
@@ -114,7 +149,6 @@ namespace CompanioNc.View
                     }
                     catch (Exception ex)
                     {
-                        tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
                         log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
                     }
                     log.Info($"Exit F_LoadCompleted -1. No such person.");
@@ -271,7 +305,6 @@ namespace CompanioNc.View
                         }
                         catch (Exception ex)
                         {
-                            tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
                             log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 2 Fatal. Error: {ex.Message}");
                         }
                         log.Info($"Exit F_LoadCompleted-4. Completey no data.");
@@ -291,7 +324,6 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
                     log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
                 }
                 log.Info($"Exit F_LoadCompleted -5. HTMLdocument is null.");
@@ -523,7 +555,6 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    tb.ShowBalloonTip("危險!", "重複註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
                     log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 4 Fatal. Error: {ex.Message}");
                 }
 
@@ -656,37 +687,11 @@ namespace CompanioNc.View
 
             log.Info($"start to load {VPN_URL}");
 
-            // 20200508 加上不反應期的功能
-            try
-            {
-                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
-            }
-            catch (Exception ex)
-            {
-                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
-                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
-            }
-
             this.g.Navigate(VPN_URL);
         }
 
         public void HotKey_Ctrl_G()
         {
-            // 20200508 加上不反應期的功能
-            try
-            {
-                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
-            }
-            catch (Exception ex)
-            {
-                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
-                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 2 Fatal. Error: {ex.Message}");
-            }
-
             //this.g.Navigate(DEFAULT_URL);
             F_LoadCompleted(this, EventArgs.Empty);
         }

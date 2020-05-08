@@ -177,7 +177,6 @@ namespace CompanioNc
             }
             catch (Exception ex)
             {
-                tb.ShowBalloonTip("危險!", "重複註冊Ctrl-F2, Ctrl-T", BalloonIcon.Warning);
                 log.Fatal($"Double Register Ctrl-F2, Ctrl-T. Fatal. Error: {ex.Message}");
                 this.Close();
             }
@@ -202,7 +201,6 @@ namespace CompanioNc
             }
             catch (Exception ex)
             {
-                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-F2, Ctrl-T", BalloonIcon.Warning);
                 log.Fatal($"Double Unregister Ctrl-F2, Ctrl-T. Fatal. Error: {ex.Message}");
             }
 
@@ -230,18 +228,6 @@ namespace CompanioNc
 
         private void VPNwindow_Unchecked(object sender, RoutedEventArgs e)
         {
-            // 20200508 加上不反應期的功能
-            try
-            {
-                hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
-            }
-            catch (Exception ex)
-            {
-                tb.ShowBalloonTip("危險!", "重複去註冊Ctrl-Y, Ctrl-G", BalloonIcon.Warning);
-                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
-            }
             w.Close();
             w = null;
         }
