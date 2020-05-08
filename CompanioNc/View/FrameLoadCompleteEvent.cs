@@ -47,8 +47,9 @@ namespace CompanioNc.View
                     // readyState 是可以讀的
                     // 加event handler
                     HTMLDocument d = (HTMLDocument)w.g.Document;
-                    HTMLDocument f = d.frames?.item(0)?.document.body.document;
-                    if ((fSTATE == "loading" || fSTATE == "interactive") && (f?.readyState == "complete"))
+                    HTMLDocument f = new HTMLDocument();
+                    if (d.frames.length != 0) f = d.frames.item(0).document.body.document;
+                    if ((fSTATE == "loading" || fSTATE == "interactive") && (f.readyState == "complete"))
                     {
                         fSTATE = f?.readyState;
                         // f is becoming ready
@@ -58,7 +59,7 @@ namespace CompanioNc.View
                         };
                         OnFrameLoadComplete(ex);
                     }
-                    else if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
+                    if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
                     {
                         // f is not becoming ready, but d is becoming ready
                         // this is like the situation of no NHI card
@@ -68,18 +69,18 @@ namespace CompanioNc.View
                         };
                         OnFrameLoadComplete(ex);
                     }
-                    //Debug.WriteLine($"before rSTATE={rSTATE}");
+                    //Debug.WriteLine($"before fSTATE={fSTATE}");
                     dSTATE = d.readyState;
                     fSTATE = f.readyState;
                     //Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
-                    //Debug.WriteLine($"after rSTATE={rSTATE}");
+                    //Debug.WriteLine($"after fSTATE={fSTATE}");
                 }
                 catch (Exception)
                 {
                     // Do nothing
                     // System.Windows.Forms.MessageBox.Show(ex.Message);
                     // log.Error(ex.Message);
-                    // Debug.WriteLine(ex.Message);
+                    //Debug.WriteLine(ex.Message);
                 }
             }));
         }
