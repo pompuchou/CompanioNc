@@ -30,7 +30,7 @@ namespace CompanioNc
         private static readonly log4net.ILog log = LogHelper.GetLogger();
 
         private readonly TaskbarIcon tb = new TaskbarIcon();
-        private HotKeyManager hotKeyManager;
+        public HotKeyManager hotKeyManager;
         private WebTEst w;
 
         public MainWindow()
@@ -172,7 +172,7 @@ namespace CompanioNc
             hotKeyManager.Register(Key.T, ModifierKeys.Control);
             // Handle hotkey presses.
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
-            log.Info("Hotkey F2 registered.");
+            log.Info("Hotkey F2, Ctrl-T registered.");
 
 
             Refresh();
@@ -187,6 +187,7 @@ namespace CompanioNc
             hotKeyManager.Unregister(Key.T, ModifierKeys.Control);
             // Dispose the hotkey manager.
             hotKeyManager.Dispose();
+            log.Info("Hotkey F2, Ctrl-T unregistered.");
 
             // Close all windows at once, convenient
             if (w != null) w.Close();
@@ -201,7 +202,7 @@ namespace CompanioNc
             // Register Ctrl+Y, Ctrl+G hotkey. Save this variable somewhere for the further unregistering.
             hotKeyManager.Register(Key.Y, ModifierKeys.Control);
             hotKeyManager.Register(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G, Ctrl-T registered.");
+            log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
             w.Show();
         }
 
@@ -209,7 +210,7 @@ namespace CompanioNc
         {
             hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
             hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-            log.Info("Hotkey Ctrl-Y, Ctrl-G, Ctrl-T unregistered.");
+            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
             w.Close();
             w = null;
         }

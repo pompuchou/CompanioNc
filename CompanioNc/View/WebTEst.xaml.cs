@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CompanioNc.View
 {
@@ -387,7 +388,7 @@ namespace CompanioNc.View
                 #endregion 判斷多頁
             }
 
-            // 判斷是否最後一tab
+            // 判斷是否最後一tab, 程序群的出口
             if (QueueOperation.Count == 0)
             {
                 tb.ShowBalloonTip($"讀取完成 [{current_op?.UID}]", "開始解析與寫入資料庫", BalloonIcon.Info);
@@ -475,6 +476,11 @@ namespace CompanioNc.View
                 m.Label1.Text = string.Empty;
                 m.Label1.Text = tempSTR;
                 m.Web_refresh();
+
+                // 20200508 已經完成了, 又開始可以有反應了
+                m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
 
                 log.Info($"Exit F_Data_LoadCompleted-2/3. The REAL END! [{current_op.UID}]");
                 return;
@@ -604,15 +610,20 @@ namespace CompanioNc.View
             log.Info("add delegate F_LoadCompleted.");
 
             log.Info($"start to load {VPN_URL}");
+            // 20200508 加上不反應期的功能
+            m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+            m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
             this.g.Navigate(VPN_URL);
         }
 
         public void HotKey_Ctrl_G()
         {
-            /// 目的: 取消讀取雲端藥歷
-            log.Info("delete delegate F_LoadCompleted.");
+            // 20200508 加上不反應期的功能
+            m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+            m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+            log.Info("Hotkey Ctrl-Y, Ctrl-G unregistered.");
 
-            log.Info($"start to load {DEFAULT_URL}");
             //this.g.Navigate(DEFAULT_URL);
             F_LoadCompleted(this, EventArgs.Empty);
         }
