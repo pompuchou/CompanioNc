@@ -108,13 +108,8 @@ namespace CompanioNc.View
                 // 沒有lbluserID, 例如沒插健保卡
                 // activate hotkeys 1
                 Activate_Hotkeys();
-                log.Info($"Exit F_LoadCompleted -1. No NHI card inserted.");
+                log.Info($"Exit F_LoadCompleted (1/5). No NHI card inserted.");
                 return;
-            }
-            else
-            {
-                // deactivate hotkeys 2
-                Deactivate_Hotkeys();
             }
 
             HTMLDocument d = (HTMLDocument)g.Document;
@@ -127,7 +122,7 @@ namespace CompanioNc.View
 
                 // activate hotkeys 2
                 Activate_Hotkeys();
-                log.Info($"Exit F_LoadCompleted -1. NHI card inserted but no such person.");
+                log.Info($"Exit F_LoadCompleted (2/5). NHI card inserted but no such person.");
                 return;
             }
             else
@@ -238,7 +233,7 @@ namespace CompanioNc.View
                             Message = FrameLoadStates.DirectCall
                         };
                         F_Data_LoadCompleted(this, ex);
-                        log.Info($"Exit F_LoadCompleted-2. By direct call.");
+                        log.Info($"Exit F_LoadCompleted (3/5). By direct call.");
                         return;
                     }
                     else
@@ -247,7 +242,7 @@ namespace CompanioNc.View
                         log.Info($"  Push TAB {current_op.TAB_ID} Button.");
                         log.Info($"  add delegate F_Data_LoadCompleted.");
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
-                        log.Info($"Exit F_LoadCompleted-3. Go to next tab by pushing tab button.");
+                        log.Info($"Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
                         d.getElementById(current_op.TAB_ID).click();
                         return;
                     }
@@ -281,7 +276,7 @@ namespace CompanioNc.View
 
                     // activate hotkeys 3
                     Activate_Hotkeys();
-                    log.Info($"Exit F_LoadCompleted-4. NHI inserted and verified but completey no data.");
+                    log.Info($"Exit F_LoadCompleted (5/5). NHI inserted and verified but completey no data.");
                 }
 
                 #endregion 執行
@@ -403,7 +398,7 @@ namespace CompanioNc.View
                         if (a.innerText == ">")
                         {
                             log.Info("按了下一頁.");
-                            log.Info($"Exit F_Data_LoadCompleted-1/3. Multipage, go to next page.");
+                            log.Info($"Exit F_Data_LoadCompleted (1/3). Multipage, go to next page.");
                             a.click();
                             // 20200504 發現這裡執行完後還會執行後面的程序, 造成兩個程序的衝突
                             // 此段程式的一個出口點
@@ -507,7 +502,7 @@ namespace CompanioNc.View
                 // activate hotkeys 4
                 Activate_Hotkeys();
 
-                log.Info($"Exit F_Data_LoadCompleted-2/3. The REAL END! [{current_op.UID}]");
+                log.Info($"Exit F_Data_LoadCompleted (2/3). The REAL END! [{current_op.UID}]");
                 return;
             }
             else
@@ -516,7 +511,7 @@ namespace CompanioNc.View
                 current_op = QueueOperation.Dequeue();
                 log.Info($"  {current_op.TAB_ID} tab key pressed. [{current_op.UID}]");
                 log.Info($"  add delegate F_Data_LoadCompleted. [{current_op.UID}]");
-                log.Info($"Exit F_Data_LoadCompleted-3/3. Go to next tab. {QueueOperation.Count + 1} tabs to go.. [{current_op.UID}]");
+                log.Info($"Exit F_Data_LoadCompleted (3/3). Go to next tab. {QueueOperation.Count + 1} tabs to go.. [{current_op.UID}]");
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
@@ -576,7 +571,7 @@ namespace CompanioNc.View
                 //current_op = null;
                 current_op.QDate = DateTime.Parse("1901/01/01");
 
-                log.Info($"Exit F_Pager_LoadCompleted-1. last page, last tab, go to finalization directly. [{current_op.UID}]");
+                log.Info($"Exit F_Pager_LoadCompleted (1/3). last page, last tab, go to finalization directly. [{current_op.UID}]");
 
                 // 這是沒有用的add delegate, 但是為了平衡, 避免可能的錯誤
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
@@ -601,7 +596,7 @@ namespace CompanioNc.View
                 log.Info($"  add delegate F_Data_LoadCompleted. [{current_op.UID}]");
 
                 // 下一個tab
-                log.Info($"Exit F_Pager_LoadCompleted-2. last page, go to next tab by clicking. [{current_op.UID}]");
+                log.Info($"Exit F_Pager_LoadCompleted (2/3). last page, go to next tab by clicking. [{current_op.UID}]");
                 current_op = QueueOperation.Dequeue();
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
@@ -615,7 +610,7 @@ namespace CompanioNc.View
                 // 如何下一頁, 可能要用invokescript
                 // 按鈕機制
                 log.Info($"  add delegate F_Pager_LoadCompleted. [{current_op.UID}]");
-                log.Info($"Exit F_Pager_LoadCompleted-3. go to next page by clicking. [{current_op.UID}]");
+                log.Info($"Exit F_Pager_LoadCompleted (3/3). go to next page by clicking. [{current_op.UID}]");
                 fm.FrameLoadComplete += F_Pager_LoadCompleted;
                 foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
                 {
@@ -642,6 +637,9 @@ namespace CompanioNc.View
             fm.FrameLoadComplete += F_LoadCompleted;
             log.Info("add delegate F_LoadCompleted.");
 
+            // deactivate hotkeys 2
+            Deactivate_Hotkeys();
+
             log.Info($"start to load {VPN_URL}");
 
             this.g.Navigate(VPN_URL);
@@ -652,6 +650,10 @@ namespace CompanioNc.View
             fm.FrameLoadComplete += F_LoadCompleted;
             log.Info("add delegate F_LoadCompleted.");
             //this.g.Navigate(DEFAULT_URL);
+
+            // deactivate hotkeys 2
+            Deactivate_Hotkeys();
+
             FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
             {
                 Message = FrameLoadStates.DirectCall
