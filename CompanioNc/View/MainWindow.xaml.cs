@@ -179,6 +179,7 @@ namespace CompanioNc
             {
                 tb.ShowBalloonTip("危險!", "重複註冊Ctrl-F2, Ctrl-T", BalloonIcon.Warning);
                 log.Fatal($"Double Register Ctrl-F2, Ctrl-T. Fatal. Error: {ex.Message}");
+                this.Close();
             }
 
             // Handle hotkey presses.
