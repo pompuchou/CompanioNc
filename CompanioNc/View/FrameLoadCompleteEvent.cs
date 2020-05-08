@@ -20,7 +20,8 @@ namespace CompanioNc.View
         private readonly int _interval;
         private readonly WebTEst w;
         private readonly System.Timers.Timer _timer2;
-        private string rSTATE;
+        private string fSTATE; // the readyState of frame(0)
+        private string dSTATE; // the readyState of upmost document 
 
         public FrameMonitor(WebTEst webTEst, int Interval)
         {
@@ -46,14 +47,30 @@ namespace CompanioNc.View
                     // readyState 是可以讀的
                     // 加event handler
                     HTMLDocument d = (HTMLDocument)w.g.Document;
-                    HTMLDocument f = d.frames.item(0).document.body.document;
-                    if ((rSTATE == "loading" || rSTATE == "interactive") && (f.readyState == "complete"))
+                    HTMLDocument f = d.frames?.item(0)?.document.body.document;
+                    if ((fSTATE == "loading" || fSTATE == "interactive") && (f?.readyState == "complete"))
                     {
-                        rSTATE = f.readyState;
-                        OnFrameLoadComplete(EventArgs.Empty);
+                        fSTATE = f?.readyState;
+                        // f is becoming ready
+                        FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                        {
+                            Message = FrameLoadStates.FrameLoadCompleted
+                        };
+                        OnFrameLoadComplete(ex);
+                    }
+                    else if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
+                    {
+                        // f is not becoming ready, but d is becoming ready
+                        // this is like the situation of no NHI card
+                        FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                        {
+                            Message = FrameLoadStates.DocumentLoadCompletedButNotFrame
+                        };
+                        OnFrameLoadComplete(ex);
                     }
                     //Debug.WriteLine($"before rSTATE={rSTATE}");
-                    rSTATE = f.readyState;
+                    dSTATE = d.readyState;
+                    fSTATE = f.readyState;
                     //Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
                     //Debug.WriteLine($"after rSTATE={rSTATE}");
                 }
@@ -67,7 +84,7 @@ namespace CompanioNc.View
             }));
         }
 
-        protected virtual void OnFrameLoadComplete(EventArgs e)
+        protected virtual void OnFrameLoadComplete(FrameLoadCompleteEventArgs e)
         {
             FrameLoadComplete?.Invoke(this, e);
             // 原本是
@@ -109,5 +126,6 @@ namespace CompanioNc.View
 
     }
 
-    public delegate void FrameLoadCompleteEventHandler(Object sender, EventArgs e);
+    public delegate void FrameLoadCompleteEventHandler(Object sender, FrameLoadCompleteEventArgs e);
+
 }

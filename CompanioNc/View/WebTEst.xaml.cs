@@ -69,16 +69,9 @@ namespace CompanioNc.View
             fm.FrameLoadComplete += F_LoadCompleted;
 
             // 20200508 加上此段, 因為如果沒有健保卡, 根本不會觸發F_LoadCompleted.
-            try
-            {
-                m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
-            }
-            catch (Exception ex)
-            {
-                log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 0 Fatal. Error: {ex.Message}");
-            }
+            // activate hotkeys 0
+            // 如果我讓它可以觸發的話, 就不用activate hotkeys了
+            // Activate_Hotkeys();
 
             log.Info($"Start to load {VPN_URL} not by hotkey.");
             this.g.Navigate(VPN_URL);
@@ -86,17 +79,8 @@ namespace CompanioNc.View
 
         private void WebTEst_Closed(object sender, EventArgs e)
         {
-            // 20200508 加上不反應期的功能
-            try
-            {
-                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G 0 unregistered.");
-            }
-            catch (Exception ex)
-            {
-                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
-            }
+            // deactivate hotkeys 1
+            Deactivate_Hotkeys();
             log.Info($"WebTEst is being closed.");
             m.VPNwindow.IsChecked = false;
             fm.Dispose();
@@ -106,231 +90,205 @@ namespace CompanioNc.View
 
         #region LoadCompleted methods
 
-        private void F_LoadCompleted(object sender, EventArgs e)
+        private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
             fm.FrameLoadComplete -= F_LoadCompleted;
             /// 會有兩次
             /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
-            /// 第二次如果認證OK, 會再透過javascript下載個案雲端資料
+            /// 如果認證OK, 會再透過javascript下載個案雲端資料, 觸發第二次
             /// 這段程式的目的:
             /// 1. 取得身分證字號
             /// 2. 讀取有哪些tab
+
             log.Info($"Entered F_LoadCompleted");
             log.Info($"  delete delegate F_LoadCompleted.");
 
-            // 20200508 加上不反應期的功能
-            try
+            if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame)
             {
-                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
-                log.Info("Hotkey Ctrl-Y, Ctrl-G 1 unregistered.");
-            }
-            catch (Exception ex)
-            {
-                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
-            }
-
-            HTMLDocument d = (HTMLDocument)g.Document;
-            if (d?.getElementById("ContentPlaceHolder1_lbluserID") != null)
-            {
-                // 確定身分證字號
-                string strUID = MakeSure_UID(d.getElementById("ContentPlaceHolder1_lbluserID").innerText);
-                // if (strUID = string.Empty) 離開
-                if (strUID == string.Empty)
-                {
-                    tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
-
-                    // 20200508 已經完成了, 又開始可以有反應了
-                    try
-                    {
-                        m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                        m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
-                        log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 1 Fatal. Error: {ex.Message}");
-                    }
-                    log.Info($"Exit F_LoadCompleted -1. No such person.");
-                    return;
-                }
-                else
-                {
-                    /// 表示讀卡成功
-                    /// show balloon with built-in icon
-                    tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
-                    log.Info($"  Successful NHI card read, VPN id: {strUID}.");
-
-                    /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
-
-                    /// 2. 讀取提醒, 如果有的話
-                    ///    這是在ContentPlaceHolder1_GV
-                    ///    也是個table
-                    IHTMLElement List_NHI_lab_reminder = d?.getElementById("ContentPlaceHolder1_GV");
-                    if (List_NHI_lab_reminder != null)
-                    {
-                        HtmlDocument Html_NHI_lab_reminder = new HtmlDocument();
-                        Html_NHI_lab_reminder.LoadHtml(List_NHI_lab_reminder?.outerHTML);
-
-                        // 寫入資料庫
-                        foreach (HtmlNode tr in Html_NHI_lab_reminder.DocumentNode.SelectNodes("//table/tbody/tr"))
-                        {
-                            HtmlDocument h_ = new HtmlDocument();
-                            h_.LoadHtml(tr.InnerHtml);
-                            HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
-
-                            if ((tds == null) || (tds.Count == 0)) continue;
-                            string Lab_Name = string.Empty, Last_Date = string.Empty;
-                            // tds[0] 是檢查(驗)項目類別名稱
-                            Lab_Name = tds[0]?.InnerText;
-                            // tds[1] 是最近1次檢查日期
-                            Last_Date = tds[1]?.InnerText;
-
-                            using (Com_clDataContext dc = new Com_clDataContext())
-                            {
-                                var q1 = from p1 in dc.tbl_NHI_lab_reminder
-                                         where (p1.uid == strUID) && (p1.lab_name == Lab_Name) && (p1.last_date == Last_Date)
-                                         select p1;
-                                if (q1.Count() == 0)
-                                {
-                                    tbl_NHI_lab_reminder newReminder = new tbl_NHI_lab_reminder()
-                                    {
-                                        uid = strUID,
-                                        QDATE = DateTime.Now,
-                                        lab_name = Lab_Name,
-                                        last_date = Last_Date
-                                    };
-                                    dc.tbl_NHI_lab_reminder.InsertOnSubmit(newReminder);
-                                    dc.SubmitChanges();
-                                }
-                            };
-                        }
-                    }
-
-                    /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
-
-                    #region 準備 - 製造QueueOperation
-
-                    // Initialization
-                    QueueOperation?.Clear();
-                    ListRetrieved?.Clear();
-                    current_page = total_pages = 0;
-                    log.Info("  讀網頁資料, 初始化成功");
-
-                    // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
-                    // IHTMLElement 無法轉型為 HTMLDocument
-                    // 20200429 tested successful
-                    IHTMLElement List_under_investigation = d?.getElementById("ContentPlaceHolder1_tab");
-                    // li 之下就是 a
-                    string BalloonTip = string.Empty;
-                    foreach (IHTMLElement hTML in List_under_investigation?.all)
-                    {
-                        if (tab_id_wanted.Contains(hTML.id))
-                        {
-                            VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
-                            QueueOperation.Enqueue(vOP);
-                            log.Info($"  讀入operation: {vOP.Short_Name}, [{strUID}]");
-                            BalloonTip += $"{vOP.Short_Name}\r\n";
-                        }
-                    }
-
-                    #endregion 準備 - 製造QueueOperation
-
-                    #region 執行
-
-                    if (QueueOperation.Count > 0)
-                    {
-                        // 流程控制, fm = framemonitor
-
-                        // 載入第一個operation
-                        log.Info($"  First operation loaded.");
-                        current_op = QueueOperation.Dequeue();
-                        tb.ShowBalloonTip($"開始讀取 [{current_op.UID}]", BalloonTip, BalloonIcon.Info);
-
-                        // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
-                        // 不active就要按鍵
-                        // 要注意class這個attribute是在上一層li層, 需把它改過來
-                        if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
-                        {
-                            // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
-                            log.Info($"  Goto F_Data_LoadCompleted. By direct call.");
-                            F_Data_LoadCompleted(this, EventArgs.Empty);
-                            log.Info($"Exit F_LoadCompleted-2. By direct call.");
-                            return;
-                        }
-                        else
-                        {
-                            // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
-                            log.Info($"  Push TAB {current_op.TAB_ID} Button.");
-                            log.Info($"  add delegate F_Data_LoadCompleted.");
-                            fm.FrameLoadComplete += F_Data_LoadCompleted;
-                            log.Info($"Exit F_LoadCompleted-3. Go to next tab by pushing tab button.");
-                            d.getElementById(current_op.TAB_ID).click();
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        /// 做個紀錄
-                        /// 一個都沒有
-                        log.Info($"  No record at all.");
-                        tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
-                        // 製作紀錄by rd
-                        tbl_Query2 q = new tbl_Query2()
-                        {
-                            uid = strUID,
-                            QDATE = DateTime.Now,
-                            cloudmed_N = 0,
-                            cloudlab_N = 0,
-                            schedule_N = 0,
-                            op_N = 0,
-                            dental_N = 0,
-                            allergy_N = 0,
-                            discharge_N = 0,
-                            rehab_N = 0,
-                            tcm_N = 0
-                        };
-                        using (Com_clDataContext dc = new Com_clDataContext())
-                        {
-                            dc.tbl_Query2.InsertOnSubmit(q);
-                            dc.SubmitChanges();
-                        };
-
-                        // 20200508 已經完成了, 又開始可以有反應了
-                        try
-                        {
-                            m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                            m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
-                            log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 2 Fatal. Error: {ex.Message}");
-                        }
-                        log.Info($"Exit F_LoadCompleted-4. Completey no data.");
-                    }
-
-                    #endregion 執行
-                }
+                // 沒有lbluserID, 例如沒插健保卡
+                // activate hotkeys 1
+                Activate_Hotkeys();
+                log.Info($"Exit F_LoadCompleted -1. No NHI card inserted.");
+                return;
             }
             else
             {
-                // 20200508 已經完成了, 又開始可以有反應了
-                try
+                // deactivate hotkeys 2
+                Deactivate_Hotkeys();
+            }
+
+            HTMLDocument d = (HTMLDocument)g.Document;
+            // 確定身分證字號
+            string strUID = MakeSure_UID(d.getElementById("ContentPlaceHolder1_lbluserID").innerText);
+            // if (strUID = string.Empty) 離開
+            if (strUID == string.Empty)
+            {
+                tb.ShowBalloonTip("醫療系統資料庫查無此人", "請與杏翔系統連動, 或放棄操作", BalloonIcon.Warning);
+
+                // activate hotkeys 2
+                Activate_Hotkeys();
+                log.Info($"Exit F_LoadCompleted -1. NHI card inserted but no such person.");
+                return;
+            }
+            else
+            {
+                /// 表示讀卡成功
+                /// show balloon with built-in icon
+                tb.ShowBalloonTip("讀卡成功", $"身分證號: {strUID}", BalloonIcon.Info);
+                log.Info($"  Successful NHI card read, VPN id: {strUID}.");
+
+                /// 讀卡成功後做三件事: 讀特殊註記, 讀提醒, 開始準備讀所有資料
+
+                /// 2. 讀取提醒, 如果有的話
+                ///    這是在ContentPlaceHolder1_GV
+                ///    也是個table
+                IHTMLElement List_NHI_lab_reminder = d?.getElementById("ContentPlaceHolder1_GV");
+                if (List_NHI_lab_reminder != null)
                 {
-                    m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                    m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
-                    log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+                    HtmlDocument Html_NHI_lab_reminder = new HtmlDocument();
+                    Html_NHI_lab_reminder.LoadHtml(List_NHI_lab_reminder?.outerHTML);
+
+                    // 寫入資料庫
+                    foreach (HtmlNode tr in Html_NHI_lab_reminder.DocumentNode.SelectNodes("//table/tbody/tr"))
+                    {
+                        HtmlDocument h_ = new HtmlDocument();
+                        h_.LoadHtml(tr.InnerHtml);
+                        HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+
+                        if ((tds == null) || (tds.Count == 0)) continue;
+                        string Lab_Name = string.Empty, Last_Date = string.Empty;
+                        // tds[0] 是檢查(驗)項目類別名稱
+                        Lab_Name = tds[0]?.InnerText;
+                        // tds[1] 是最近1次檢查日期
+                        Last_Date = tds[1]?.InnerText;
+
+                        using (Com_clDataContext dc = new Com_clDataContext())
+                        {
+                            var q1 = from p1 in dc.tbl_NHI_lab_reminder
+                                     where (p1.uid == strUID) && (p1.lab_name == Lab_Name) && (p1.last_date == Last_Date)
+                                     select p1;
+                            if (q1.Count() == 0)
+                            {
+                                tbl_NHI_lab_reminder newReminder = new tbl_NHI_lab_reminder()
+                                {
+                                    uid = strUID,
+                                    QDATE = DateTime.Now,
+                                    lab_name = Lab_Name,
+                                    last_date = Last_Date
+                                };
+                                dc.tbl_NHI_lab_reminder.InsertOnSubmit(newReminder);
+                                dc.SubmitChanges();
+                            }
+                        };
+                    }
                 }
-                catch (Exception ex)
+
+                /// 準備: 初始化, 欄位基礎資料/位置, 可在windows生成時就完成
+
+                #region 準備 - 製造QueueOperation
+
+                // Initialization
+                QueueOperation?.Clear();
+                ListRetrieved?.Clear();
+                current_page = total_pages = 0;
+
+                log.Info($"  Start reading Operation(s).");
+                // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
+                // IHTMLElement 無法轉型為 HTMLDocument
+                // 20200429 tested successful
+                IHTMLElement List_under_investigation = d?.getElementById("ContentPlaceHolder1_tab");
+                // li 之下就是 a
+                string BalloonTip = string.Empty;
+                foreach (IHTMLElement hTML in List_under_investigation?.all)
                 {
-                    log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 3 Fatal. Error: {ex.Message}");
+                    if (tab_id_wanted.Contains(hTML.id))
+                    {
+                        VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
+                        QueueOperation.Enqueue(vOP);
+                        log.Info($"    讀入operation: {vOP.Short_Name}, [{strUID}]");
+                        BalloonTip += $"{vOP.Short_Name}\r\n";
+                    }
                 }
-                log.Info($"Exit F_LoadCompleted -5. HTMLdocument is null.");
+                log.Info($"  End of Reading Operation(s), 共{QueueOperation?.Count}個Operation(s).");
+
+                #endregion 準備 - 製造QueueOperation
+
+                #region 執行
+
+                if (QueueOperation.Count > 0)
+                {
+                    // 流程控制, fm = framemonitor
+
+                    // 載入第一個operation
+                    log.Info($"  First operation loaded.");
+                    current_op = QueueOperation.Dequeue();
+                    tb.ShowBalloonTip($"開始讀取 [{current_op.UID}]", BalloonTip, BalloonIcon.Info);
+
+                    // 判斷第一個operation是否active, (小心起見, 其實應該不可能不active)
+                    // 不active就要按鍵
+                    // 要注意class這個attribute是在上一層li層, 需把它改過來
+                    if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
+                    {
+                        // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
+                        log.Info($"  Goto F_Data_LoadCompleted. By direct call.");
+                        log.Info($"  add delegate F_Data_LoadCompleted.");
+                        fm.FrameLoadComplete += F_Data_LoadCompleted;
+                        FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                        {
+                            Message = FrameLoadStates.DirectCall
+                        };
+                        F_Data_LoadCompleted(this, ex);
+                        log.Info($"Exit F_LoadCompleted-2. By direct call.");
+                        return;
+                    }
+                    else
+                    {
+                        // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
+                        log.Info($"  Push TAB {current_op.TAB_ID} Button.");
+                        log.Info($"  add delegate F_Data_LoadCompleted.");
+                        fm.FrameLoadComplete += F_Data_LoadCompleted;
+                        log.Info($"Exit F_LoadCompleted-3. Go to next tab by pushing tab button.");
+                        d.getElementById(current_op.TAB_ID).click();
+                        return;
+                    }
+                }
+                else
+                {
+                    /// 做個紀錄
+                    /// 一個都沒有
+                    log.Info($"  No record at all.");
+                    tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
+                    // 製作紀錄by rd
+                    tbl_Query2 q = new tbl_Query2()
+                    {
+                        uid = strUID,
+                        QDATE = DateTime.Now,
+                        cloudmed_N = 0,
+                        cloudlab_N = 0,
+                        schedule_N = 0,
+                        op_N = 0,
+                        dental_N = 0,
+                        allergy_N = 0,
+                        discharge_N = 0,
+                        rehab_N = 0,
+                        tcm_N = 0
+                    };
+                    using (Com_clDataContext dc = new Com_clDataContext())
+                    {
+                        dc.tbl_Query2.InsertOnSubmit(q);
+                        dc.SubmitChanges();
+                    };
+
+                    // activate hotkeys 3
+                    Activate_Hotkeys();
+                    log.Info($"Exit F_LoadCompleted-4. NHI inserted and verified but completey no data.");
+                }
+
+                #endregion 執行
             }
         }
 
-        private async void F_Data_LoadCompleted(object sender, EventArgs e)
+        private async void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
             fm.FrameLoadComplete -= F_Data_LoadCompleted;
 
@@ -348,7 +306,7 @@ namespace CompanioNc.View
             ///     3-1. 判斷分頁, 有幾頁, 現在在第幾頁, 換頁不會觸發LoadCompleted; 疑問會不會來不及? -done
             ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done, 不用再管排序
             ///     3-2. 都放在記憶體裡, 快速, in the LIST
-            ///     
+            ///
             // special remark: current_op.QDate set to null 是表示來自多頁結束那裏
 
             if ((current_op != null) && (current_op?.QDate != DateTime.Parse("1901/01/01")))
@@ -422,7 +380,7 @@ namespace CompanioNc.View
                 HtmlDocument p = new HtmlDocument();
                 if (f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input") == null)
                 {
-                    log.Info($"3. Only one page detected, {current_op?.UID} {current_op?.Short_Name}.");
+                    log.Info($"  3. Only one page detected, {current_op?.UID} {current_op?.Short_Name}.");
                     total_pages = 1;
                 }
                 else
@@ -432,7 +390,7 @@ namespace CompanioNc.View
                     p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").innerHTML);
                     HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
                     total_pages = o.Count;
-                    log.Info($"3. {total_pages} pages detected, {current_op?.UID} {current_op?.Short_Name}");
+                    log.Info($"  3. {total_pages} pages detected, {current_op?.UID} {current_op?.Short_Name}");
 
                     // 剛剛已經讀了第一頁了, 從下一頁開始
                     current_page = 2;
@@ -462,7 +420,7 @@ namespace CompanioNc.View
             {
                 tb.ShowBalloonTip($"讀取完成 [{current_op?.UID}]", "開始解析與寫入資料庫", BalloonIcon.Info);
                 log.Info($"  F. All datatable loaded into memory. Start to analyze. [{current_op?.UID}]");
-                
+
                 // Count = 0 代表最後一個 tab
                 // 20200504 這裡一個BUG, 漏了把F_DATA_Loadcompleted刪掉,以至於不斷重複多次. ******
 
@@ -537,7 +495,7 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"  4. Failed to write into tbl_Querry2. \r\n From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] \r\n Error: {ex.Message}");
+                    log.Error($"  4. Failed to write into tbl_Querry2. \r\n From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] Error: {ex.Message}");
                 }
 
                 // 更新顯示資料
@@ -546,17 +504,8 @@ namespace CompanioNc.View
                 m.Label1.Text = tempSTR;
                 m.Web_refresh();
 
-                // 20200508 已經完成了, 又開始可以有反應了
-                try
-                {
-                    m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                    m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
-                    log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
-                }
-                catch (Exception ex)
-                {
-                    log.Fatal($"Double Register Ctrl-Y, Ctrl-G. 4 Fatal. Error: {ex.Message}");
-                }
+                // activate hotkeys 4
+                Activate_Hotkeys();
 
                 log.Info($"Exit F_Data_LoadCompleted-2/3. The REAL END! [{current_op.UID}]");
                 return;
@@ -575,7 +524,7 @@ namespace CompanioNc.View
             }
         }
 
-        private void F_Pager_LoadCompleted(object sender, EventArgs e)
+        private void F_Pager_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
             fm.FrameLoadComplete -= F_Pager_LoadCompleted;
             log.Info($"Entered F_Pager_LoadCompleted");
@@ -612,7 +561,6 @@ namespace CompanioNc.View
                 sw.Close();
 
                 #endregion 儲存HTML檔
-
             }
             log.Info($"  {current_op.Short_Name}, page: {current_page}/{total_pages}. [{current_op.UID}]");
 
@@ -629,8 +577,17 @@ namespace CompanioNc.View
                 current_op.QDate = DateTime.Parse("1901/01/01");
 
                 log.Info($"Exit F_Pager_LoadCompleted-1. last page, last tab, go to finalization directly. [{current_op.UID}]");
+
+                // 這是沒有用的add delegate, 但是為了平衡, 避免可能的錯誤
+                fm.FrameLoadComplete += F_Data_LoadCompleted;
+                log.Info("add delegate F_Data_LoadCompleted.");
+
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
-                F_Data_LoadCompleted(this, EventArgs.Empty);
+                FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                {
+                    Message = FrameLoadStates.DirectCall
+                };
+                F_Data_LoadCompleted(this, ex);
                 // 此段程式的一個出口點
                 return;
             }
@@ -664,7 +621,7 @@ namespace CompanioNc.View
                 {
                     if (a.innerText == ">")
                     {
-                        log.Info("下一頁按下去了.(多頁) [{current_op.UID}]");
+                        log.Info($"下一頁按下去了.(多頁) [{current_op.UID}]");
                         a.click();
                     }
                 }
@@ -692,8 +649,14 @@ namespace CompanioNc.View
 
         public void HotKey_Ctrl_G()
         {
+            fm.FrameLoadComplete += F_LoadCompleted;
+            log.Info("add delegate F_LoadCompleted.");
             //this.g.Navigate(DEFAULT_URL);
-            F_LoadCompleted(this, EventArgs.Empty);
+            FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+            {
+                Message = FrameLoadStates.DirectCall
+            };
+            F_LoadCompleted(this, ex);
         }
 
         private string MakeSure_UID(string vpnUID)
@@ -880,6 +843,36 @@ namespace CompanioNc.View
                 }
             }
             return o;
+        }
+
+        private void Activate_Hotkeys()
+        {
+            // 20200508 已經完成了, 又開始可以有反應了
+            try
+            {
+                m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
+            }
+            catch (Exception ex)
+            {
+                log.Fatal($"Double Register Ctrl-Y, Ctrl-G. Fatal. Error: {ex.Message}");
+            }
+        }
+
+        private void Deactivate_Hotkeys()
+        {
+            // 20200508 加上不反應期的功能
+            try
+            {
+                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                log.Info("Hotkey Ctrl-Y, Ctrl-G 1 unregistered.");
+            }
+            catch (Exception ex)
+            {
+                log.Fatal($"Double Unregister Ctrl-Y, Ctrl-G. Fatal. Error: {ex.Message}");
+            }
         }
 
         #endregion Hotkeys, Functions

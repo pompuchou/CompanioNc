@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>26</ApplicationRevision>
+    <ApplicationRevision>27</ApplicationRevision>
     <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -119,6 +119,8 @@
     <Compile Include="ViewModels\LogHelper.cs" />
     <Compile Include="View\FrameLoadCompleteEvent.cs" />
     <Compile Include="ViewModels\Autocomplete_ViewModel.cs" />
+    <Compile Include="View\FrameLoadCompleteEventArgs.cs" />
+    <Compile Include="View\FrameLoadStates.cs" />
     <Compile Include="View\Response_DataModel.cs" />
     <Compile Include="View\SQLTableName.cs" />
     <Compile Include="View\VPN_Dictionary.cs" />

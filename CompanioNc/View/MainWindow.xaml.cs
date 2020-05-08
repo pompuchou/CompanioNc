@@ -216,6 +216,7 @@ namespace CompanioNc
         #region WebTEst PART, NO MVVM used
         private void VPNwindow_Checked(object sender, RoutedEventArgs e)
         {
+            log.Info("WebTEst checkbox checked.");
             if (w is null) w = new WebTEst(this);
             // 20200508 因為不反應的功能, 這裡不可以register; 會先完成一輪, 造成重複register就會當機
             // 因此全部remark, 
@@ -228,6 +229,7 @@ namespace CompanioNc
 
         private void VPNwindow_Unchecked(object sender, RoutedEventArgs e)
         {
+            log.Info("WebTEst checkbox unchecked.");
             w.Close();
             w = null;
         }
