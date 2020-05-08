@@ -417,31 +417,31 @@ namespace CompanioNc.View
                 try
                 {
                     short? med_N = (short?)(from p1 in rds
-                                            where p1.SQL_Tablename == "med"
+                                            where p1.SQL_Tablename == SQLTableName.Medicine
                                             select p1.Count).Sum(),
                            lab_N = (short?)(from p1 in rds
-                                            where p1.SQL_Tablename == "lab"
+                                            where p1.SQL_Tablename == SQLTableName.Laboratory
                                             select p1.Count).Sum(),
                            schedule_N = (short?)(from p1 in rds
-                                                 where p1.SQL_Tablename == "sch_up"
+                                                 where p1.SQL_Tablename == SQLTableName.Schedule_report
                                                  select p1.Count).Sum(),
                            op_N = (short?)(from p1 in rds
-                                           where p1.SQL_Tablename == "op"
+                                           where p1.SQL_Tablename == SQLTableName.Operations
                                            select p1.Count).Sum(),
                            dental_N = (short?)(from p1 in rds
-                                               where p1.SQL_Tablename == "dental"
+                                               where p1.SQL_Tablename == SQLTableName.Dental
                                                select p1.Count).Sum(),
                            allergy_N = (short?)(from p1 in rds
-                                                where p1.SQL_Tablename == "all"
+                                                where p1.SQL_Tablename == SQLTableName.Allergy
                                                 select p1.Count).Sum(),
                            discharge_N = (short?)(from p1 in rds
-                                                  where p1.SQL_Tablename == "dis"
+                                                  where p1.SQL_Tablename == SQLTableName.Discharge
                                                   select p1.Count).Sum(),
                            rehab_N = (short?)(from p1 in rds
-                                              where p1.SQL_Tablename == "reh"
+                                              where p1.SQL_Tablename == SQLTableName.Rehabilitation
                                               select p1.Count).Sum(),
                            tcm_N = (short?)(from p1 in rds
-                                            where p1.SQL_Tablename == "tcm_de"
+                                            where p1.SQL_Tablename == SQLTableName.TraditionalChineseMedicine_detail
                                             select p1.Count).Sum();
                     Com_clDataContext dc = new Com_clDataContext();
                     tbl_Query2 q = new tbl_Query2()

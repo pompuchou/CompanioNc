@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>18</ApplicationRevision>
+    <ApplicationRevision>19</ApplicationRevision>
     <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -115,10 +115,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModels\CurrentPatient.cs" />
     <Compile Include="ViewModels\LogHelper.cs" />
     <Compile Include="View\FrameLoadCompleteEvent.cs" />
     <Compile Include="ViewModels\Autocomplete_ViewModel.cs" />
-    <Compile Include="View\StoryBoard.cs" />
+    <Compile Include="View\Response_DataModel.cs" />
+    <Compile Include="View\SQLTableName.cs" />
+    <Compile Include="View\VPN_Dictionary.cs" />
+    <Compile Include="View\Target_Table.cs" />
+    <Compile Include="View\VPN_Operation.cs" />
+    <Compile Include="View\VPN_Retrieved.cs" />
     <Compile Include="View\WebTEst.xaml.cs">
       <DependentUpon>WebTEst.xaml</DependentUpon>
     </Compile>
