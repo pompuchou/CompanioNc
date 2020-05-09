@@ -16,7 +16,8 @@ namespace CompanioNc.ViewModels
 {
     public class MainVM : INotifyPropertyChanged
     {
-        private static readonly log4net.ILog log = LogHelper.GetLogger();
+        //private static readonly log4net.ILog log = LogHelper.GetLogger();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly System.Timers.Timer _timer1;
 

@@ -1,5 +1,4 @@
 ﻿using CompanioNc.Models;
-using CompanioNc.ViewModels;
 using Hardcodet.Wpf.TaskbarNotification;
 using HtmlAgilityPack;
 using Microsoft.VisualBasic;
@@ -30,12 +29,15 @@ namespace CompanioNc.View
     /// </summary>
     public partial class WebTEst : Window
     {
-        private static readonly log4net.ILog log = LogHelper.GetLogger();
 
         #region FLAGS
 
+        //private static readonly log4net.ILog log = LogHelper.GetLogger();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private const string VPN_URL = @"https://medcloud.nhi.gov.tw/imme0008/IMME0008S01.aspx";
         private const string DEFAULT_URL = @"https://www.googl.com";
+        private const string HTML_DIRECTORY = @"C:\vpn\html";
 
         private readonly string[] tab_id_wanted = new string[] { "ContentPlaceHolder1_a_0008", "ContentPlaceHolder1_a_0009", "ContentPlaceHolder1_a_0020",
                                                                  "ContentPlaceHolder1_a_0030", "ContentPlaceHolder1_a_0040", "ContentPlaceHolder1_a_0060",
@@ -67,6 +69,7 @@ namespace CompanioNc.View
         {
             // 漏了 +=, 難怪不fire
             fm.FrameLoadComplete += F_LoadCompleted;
+            log.Info($"  add delegate F_LoadCompleted.");
 
             // 20200508 加上此段, 因為如果沒有健保卡, 根本不會觸發F_LoadCompleted.
             // activate hotkeys 0
@@ -92,17 +95,11 @@ namespace CompanioNc.View
 
         private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
+            log.Info($"From {e.Message}, this is F_LoadCompleted.");
+            // 20200509 因為沒有先 -= F_LoadComplted, 造成了幽靈, 因此一定要 -= F_LoadComplted 在任何Exit之前.
+            // 每次作業F_LoadCompleted只會被呼叫一次,沒有被洗掉的情形
             fm.FrameLoadComplete -= F_LoadCompleted;
-            /// 會有兩次
-            /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
-            /// 如果認證OK, 會再透過javascript下載個案雲端資料, 觸發第二次
-            /// 這段程式的目的:
-            /// 1. 取得身分證字號
-            /// 2. 讀取有哪些tab
-
-            log.Info($"Entered F_LoadCompleted");
-            log.Info($"  delete delegate F_LoadCompleted.");
-
+            log.Info($"Delete delegate F_LoadCompleted.");
             if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame)
             {
                 // 沒有lbluserID, 例如沒插健保卡
@@ -111,6 +108,14 @@ namespace CompanioNc.View
                 log.Info($"Exit F_LoadCompleted (1/5). No NHI card inserted.");
                 return;
             }
+            /// 會有兩次
+            /// 第一次讀完檔案會再執行javascript, 在local用來認證健保卡, 沒過就不會有第二次
+            /// 如果認證OK, 會再透過javascript下載個案雲端資料, 觸發第二次
+            /// 這段程式的目的:
+            /// 1. 取得身分證字號
+            /// 2. 讀取有哪些tab
+
+            log.Info($"Entered F_LoadCompleted");
 
             HTMLDocument d = (HTMLDocument)g.Document;
             // 確定身分證字號
@@ -187,7 +192,7 @@ namespace CompanioNc.View
                 ListRetrieved?.Clear();
                 current_page = total_pages = 0;
 
-                log.Info($"  Start reading Operation(s).");
+                log.Info($"  start reading Operation(s).");
                 // 讀取所有要讀的tab, 這些資料位於"ContentPlaceHolder1_tab"
                 // IHTMLElement 無法轉型為 HTMLDocument
                 // 20200429 tested successful
@@ -204,7 +209,7 @@ namespace CompanioNc.View
                         BalloonTip += $"{vOP.Short_Name}\r\n";
                     }
                 }
-                log.Info($"  End of Reading Operation(s), 共{QueueOperation?.Count}個Operation(s).");
+                log.Info($"  end of Reading Operation(s), 共{QueueOperation?.Count}個Operation(s).");
 
                 #endregion 準備 - 製造QueueOperation
 
@@ -215,7 +220,7 @@ namespace CompanioNc.View
                     // 流程控制, fm = framemonitor
 
                     // 載入第一個operation
-                    log.Info($"  First operation loaded.");
+                    log.Info($"  the first operation loaded.");
                     current_op = QueueOperation.Dequeue();
                     tb.ShowBalloonTip($"開始讀取 [{current_op.UID}]", BalloonTip, BalloonIcon.Info);
 
@@ -225,21 +230,20 @@ namespace CompanioNc.View
                     if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                     {
                         // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
-                        log.Info($"  Goto F_Data_LoadCompleted. By direct call.");
                         log.Info($"  add delegate F_Data_LoadCompleted.");
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
                         {
                             Message = FrameLoadStates.DirectCall
                         };
+                        log.Info($"Exit F_LoadCompleted (3/5). Goto F_Data_LoadCompleted by direct call.");
                         F_Data_LoadCompleted(this, ex);
-                        log.Info($"Exit F_LoadCompleted (3/5). By direct call.");
                         return;
                     }
                     else
                     {
                         // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
-                        log.Info($"  Push TAB {current_op.TAB_ID} Button.");
+                        log.Info($"  push TAB {current_op.TAB_ID} Button.");
                         log.Info($"  add delegate F_Data_LoadCompleted.");
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
                         log.Info($"Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
@@ -251,7 +255,7 @@ namespace CompanioNc.View
                 {
                     /// 做個紀錄
                     /// 一個都沒有
-                    log.Info($"  No record at all.");
+                    log.Info($"  no record at all.");
                     tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
                     // 製作紀錄by rd
                     tbl_Query2 q = new tbl_Query2()
@@ -285,10 +289,18 @@ namespace CompanioNc.View
 
         private async void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            fm.FrameLoadComplete -= F_Data_LoadCompleted;
-
-            log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} {current_op?.Short_Name}");
+            log.Info($"From {e.Message}, this is F_Data_LoadCompleted.");
+            if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame) return;
+            if (current_op?.QDate == DateTime.Parse("1901/01/01"))
+            {
+                log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} 最後存入資料庫.");
+            }
+            else
+            {
+                log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} {current_op?.Short_Name}");
+            }
             log.Info($"  delete delegate F_Data_LoadComplated. [{current_op?.UID}]");
+            fm.FrameLoadComplete -= F_Data_LoadCompleted;
 
             // 這時候已經確保是 active
             // 每當刷新後都要重新讀一次
@@ -302,71 +314,34 @@ namespace CompanioNc.View
             ///     3-2. 要先排序, 排序也不會觸發LoadCompleted; 疑問會不會來不及?  -done, 不用再管排序
             ///     3-2. 都放在記憶體裡, 快速, in the LIST
             ///
+
             // special remark: current_op.QDate set to null 是表示來自多頁結束那裏
 
             if ((current_op != null) && (current_op?.QDate != DateTime.Parse("1901/01/01")))
             {
-                log.Info($"  1. Reading operation: {current_op.Short_Name}, {current_op?.UID}");
+                log.Info($"  1. Reading operation: {current_op.Short_Name}, [{current_op?.UID}]");
 
-                #region 讀取資料, 存入記憶體
+                #region 讀取資料, 存入記憶體, 存入檔案
 
                 foreach (Target_Table tt in current_op.Target)
                 {
                     // 是否有多tables, 端看tt.Children, 除了管制藥物外, 其餘都不用
                     if (tt.Children == null)
                     {
-                        log.Info($"  2. Read {tt.TargetID}, {current_op?.UID} {current_op?.Short_Name}");
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
 
-                        #region 儲存HTML檔
-
-                        // 製作自動檔名
-                        string temp_filepath = @"C:\vpn\html";
-                        // 存放目錄,不存在就要建立一個
-                        if (!System.IO.Directory.Exists(temp_filepath))
-                        {
-                            System.IO.Directory.CreateDirectory(temp_filepath);
-                        }
-                        // 自動產生名字
-                        temp_filepath += $"\\{tt.Short_Name}_{current_op.UID}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
-                        temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
-
-                        // 製作html檔 writing to html
-                        System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
-                        sw.Write(f.getElementById(tt.TargetID).outerHTML);
-                        sw.Close();
-
-                        #endregion 儲存HTML檔
+                        SaveHTML($"{tt.Short_Name}_{current_op.UID}", f.getElementById(tt.TargetID).outerHTML);
                     }
                     else
                     {
-                        log.Info($"  2. Read {tt.TargetID}, child {tt.Children}, {current_op?.UID} {current_op?.Short_Name}");
                         // 有多個table, 使用情形僅有管制藥物
                         ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).children(tt.Children).outerHTML, current_op.UID, current_op.QDate));
 
-                        #region 儲存HTML檔
-
-                        // 製作自動檔名
-                        string temp_filepath = @"C:\vpn\html";
-                        // 存放目錄,不存在就要建立一個
-                        if (!System.IO.Directory.Exists(temp_filepath))
-                        {
-                            System.IO.Directory.CreateDirectory(temp_filepath);
-                        }
-                        // 自動產生名字
-                        temp_filepath += $"\\{tt.Short_Name}_{tt.Children}_{current_op.UID}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
-                        temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
-
-                        // 製作html檔 writing to html
-                        System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
-                        sw.Write(f.getElementById(tt.TargetID).outerHTML);
-                        sw.Close();
-
-                        #endregion 儲存HTML檔
+                        SaveHTML($"{tt.Short_Name}_{tt.Children}_{current_op.UID}", f.getElementById(tt.TargetID).outerHTML);
                     }
                 }
 
-                #endregion 讀取資料, 存入記憶體
+                #endregion 讀取資料, 存入記憶體, 存入檔案
 
                 #region 判斷多頁
 
@@ -375,7 +350,7 @@ namespace CompanioNc.View
                 HtmlDocument p = new HtmlDocument();
                 if (f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input") == null)
                 {
-                    log.Info($"  3. Only one page detected, {current_op?.UID} {current_op?.Short_Name}.");
+                    log.Info($"  2. Only one page detected, {current_op?.UID} {current_op?.Short_Name}.");
                     total_pages = 1;
                 }
                 else
@@ -385,19 +360,19 @@ namespace CompanioNc.View
                     p.LoadHtml(f.getElementById(@"ctl00$ContentPlaceHolder1$pg_gvList_input").innerHTML);
                     HtmlNodeCollection o = p.DocumentNode.SelectNodes("//option");
                     total_pages = o.Count;
-                    log.Info($"  3. {total_pages} pages detected, {current_op?.UID} {current_op?.Short_Name}");
+                    log.Info($"  2. {total_pages} pages detected, {current_op?.UID} {current_op?.Short_Name}");
 
                     // 剛剛已經讀了第一頁了, 從下一頁開始
                     current_page = 2;
                     // 按鈕機制
                     fm.FrameLoadComplete += F_Pager_LoadCompleted;
                     // 轉軌
-                    log.Info($"add delegate F_Pager_LoadCompleted.");
+                    log.Info($"  add delegate F_Pager_LoadCompleted.");
                     foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
                     {
                         if (a.innerText == ">")
                         {
-                            log.Info("按了下一頁.");
+                            log.Info("  按了下一頁.");
                             log.Info($"Exit F_Data_LoadCompleted (1/3). Multipage, go to next page.");
                             a.click();
                             // 20200504 發現這裡執行完後還會執行後面的程序, 造成兩個程序的衝突
@@ -414,7 +389,7 @@ namespace CompanioNc.View
             if (QueueOperation.Count == 0)
             {
                 tb.ShowBalloonTip($"讀取完成 [{current_op?.UID}]", "開始解析與寫入資料庫", BalloonIcon.Info);
-                log.Info($"  F. All datatable loaded into memory. Start to analyze. [{current_op?.UID}]");
+                log.Info($"  all datatable loaded into memory. start to analyze. [{current_op?.UID}]");
 
                 // Count = 0 代表最後一個 tab
                 // 20200504 這裡一個BUG, 漏了把F_DATA_Loadcompleted刪掉,以至於不斷重複多次. ******
@@ -426,9 +401,9 @@ namespace CompanioNc.View
                 ///     4-3. 存入SQL
                 ///     4-4. 製作Query
                 /// 查核機制?
-                log.Info($"  Started async process, {current_op?.UID} {current_op?.Short_Name}");
+                log.Info($"  start async process, {current_op?.UID}");
                 List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
-                log.Info($"  Finished async process, {current_op?.UID} {current_op?.Short_Name}");
+                log.Info($"  end async process, {current_op?.UID}");
 
                 /// 1. 讀取特殊註記, 如果有的話
                 ///    這是在ContentPlaceHolder1_tab02
@@ -485,12 +460,12 @@ namespace CompanioNc.View
                     q.tcm_N = tcm_N;
                     dc.tbl_Query2.InsertOnSubmit(q);
                     dc.SubmitChanges();
-                    log.Info($"  4. Successfully write into tbl_Query2. \r\n From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
+                    log.Info($"  4. Successfully write into tbl_Query2. From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
                     tb.ShowBalloonTip($"寫入完成 [{current_op?.UID}]", "已寫入資料庫", BalloonIcon.Info);
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"  4. Failed to write into tbl_Querry2. \r\n From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] Error: {ex.Message}");
+                    log.Error($"  4. Failed to write into tbl_Querry2. From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] Error: {ex.Message}");
                 }
 
                 // 更新顯示資料
@@ -509,6 +484,7 @@ namespace CompanioNc.View
             {
                 // 下一個tab
                 current_op = QueueOperation.Dequeue();
+                log.Info($"  next operation loaded.");
                 log.Info($"  {current_op.TAB_ID} tab key pressed. [{current_op.UID}]");
                 log.Info($"  add delegate F_Data_LoadCompleted. [{current_op.UID}]");
                 log.Info($"Exit F_Data_LoadCompleted (3/3). Go to next tab. {QueueOperation.Count + 1} tabs to go.. [{current_op.UID}]");
@@ -521,9 +497,11 @@ namespace CompanioNc.View
 
         private void F_Pager_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            fm.FrameLoadComplete -= F_Pager_LoadCompleted;
+            log.Info($"From {e.Message}, this is F_Pager_LoadCompleted.");
+            if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame) return;
             log.Info($"Entered F_Pager_LoadCompleted");
             log.Info($"  delete delegate F_Pager_LoadComplated. [{current_op?.UID}]");
+            fm.FrameLoadComplete -= F_Pager_LoadCompleted;
 
             // 每當刷新後都要重新讀一次
             // d 是parent HTML document
@@ -537,27 +515,10 @@ namespace CompanioNc.View
                 // 這裡不用管多table, 因為多table只發生在管制藥那裏
                 ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
 
-                #region 儲存HTML檔
+                SaveHTML($"{tt.Short_Name}_{current_op.UID}", f.getElementById(tt.TargetID).outerHTML);
 
-                // 製作自動檔名
-                string temp_filepath = @"C:\vpn\html";
-                // 存放目錄,不存在就要建立一個
-                if (!System.IO.Directory.Exists(temp_filepath))
-                {
-                    System.IO.Directory.CreateDirectory(temp_filepath);
-                }
-                // 自動產生名字
-                temp_filepath += $"\\{tt.Short_Name}_{current_op.UID}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
-                temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
-
-                // 製作html檔 writing to html
-                System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
-                sw.Write(f.getElementById(tt.TargetID).outerHTML);
-                sw.Close();
-
-                #endregion 儲存HTML檔
             }
-            log.Info($"  {current_op.Short_Name}, page: {current_page}/{total_pages}. [{current_op.UID}]");
+            log.Info($"  1. Reading operation: {current_op.Short_Name}, [{current_op.UID}]. page: {current_page}/{total_pages}");
 
             // 判斷是否最後一頁, 最後一tab
             if ((current_page == total_pages) && (QueueOperation.Count == 0))
@@ -565,17 +526,16 @@ namespace CompanioNc.View
                 // 最後一頁
                 // 處理index
                 current_page = total_pages = 0;
-                log.Info("  current_page = 0, total_pages = 0, current_op = 0.");
 
                 // 20200506: current_op 歸零似乎是不行的
                 //current_op = null;
                 current_op.QDate = DateTime.Parse("1901/01/01");
 
-                log.Info($"Exit F_Pager_LoadCompleted (1/3). last page, last tab, go to finalization directly. [{current_op.UID}]");
-
                 // 這是沒有用的add delegate, 但是為了平衡, 避免可能的錯誤
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
-                log.Info("add delegate F_Data_LoadCompleted.");
+                log.Info("  add delegate F_Data_LoadCompleted.");
+
+                log.Info($"Exit F_Pager_LoadCompleted (1/3). last page, last tab, go to finalization directly. [{current_op.UID}]");
 
                 // 沒有按鍵無法直接觸發, 只好直接呼叫
                 FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
@@ -596,8 +556,9 @@ namespace CompanioNc.View
                 log.Info($"  add delegate F_Data_LoadCompleted. [{current_op.UID}]");
 
                 // 下一個tab
-                log.Info($"Exit F_Pager_LoadCompleted (2/3). last page, go to next tab by clicking. [{current_op.UID}]");
+                log.Info($"  next operation loaded.");
                 current_op = QueueOperation.Dequeue();
+                log.Info($"Exit F_Pager_LoadCompleted (2/3). last page, go to next tab by clicking. [{current_op.UID}]");
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
                 return;
@@ -640,7 +601,7 @@ namespace CompanioNc.View
             // deactivate hotkeys 2
             Deactivate_Hotkeys();
 
-            log.Info($"start to load {VPN_URL}");
+            log.Info($"Start to load {VPN_URL} by hotkey.");
 
             this.g.Navigate(VPN_URL);
         }
@@ -663,7 +624,7 @@ namespace CompanioNc.View
 
         private string MakeSure_UID(string vpnUID)
         {
-            log.Info($"Begin to check UID: {vpnUID}");
+            log.Info($"  Begin to check UID: {vpnUID}");
 
             string thesisUID = string.Empty;
             string thesisNAME = string.Empty;
@@ -688,11 +649,11 @@ namespace CompanioNc.View
             try
             {
                 string[] vs = this.m.strID.Content.ToString().Split(' ');
-                log.Info($"[{this.m.strID.Content}] being processed.");
+                log.Info($"    [{this.m.strID.Content}] being processed.");
                 // 身分證字號在[7], 還要去掉括弧
                 thesisUID = vs[7].Substring(1, (vs[7].Length - 2));
                 thesisNAME = vs[8];
-                log.Info($"杏翔系統目前UID: {thesisUID}");
+                log.Info($"    杏翔系統目前UID: {thesisUID}");
             }
             catch (Exception ex)
             {
@@ -700,7 +661,7 @@ namespace CompanioNc.View
                 /// 杏翔沒開, 或是沒連動, 反正就是抓不到
                 /// thesisUID = string.Empty;
                 /// thesisNAME = string.Empty;
-                log.Error($"杏翔系統無法取得UID: [{thesisUID}], ERROR:{ex.Message}");
+                log.Error($"    杏翔系統無法取得UID: [{thesisUID}], ERROR:{ex.Message}");
             }
 
             if (!string.IsNullOrEmpty(thesisUID))
@@ -719,14 +680,14 @@ namespace CompanioNc.View
                         string sqlUID = (from p in dc.tbl_patients
                                          where p.uid == thesisUID
                                          select p.uid).Single();
-                        log.Info($"VPN 有 [{vpnUID}], 杏翔 有 [{thesisUID}], 資料庫 有資料庫裏面也也有: [{sqlUID}]");
+                        log.Info($"    VPN 有 [{vpnUID}], 杏翔 有 [{thesisUID}], 資料庫 有資料庫裏面也也有: [{sqlUID}]");
                         // 如果沒有錯誤發生
                         // 此時為第一種狀況
                         /// VPN 有, 杏翔 有, 資料庫 有 => 理想狀況取的正確UID
                     }
                     catch (Exception ex)
                     {
-                        log.Error($"{ex.Message}: 資料庫裡沒有這個病人, 新加入tbl_patients.");
+                        log.Error($"    {ex.Message}: 資料庫裡沒有這個病人, 新加入tbl_patients.");
                         // Single() returns the item, throws an exception if there are 0 or more than one item in the sequence.
                         // 因為uid是primary key, 如果有錯誤只可能是沒有此uid
                         // 此時為第二種狀況
@@ -761,13 +722,13 @@ namespace CompanioNc.View
                             // 這是第四種狀況
                             // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
                             o = string.Empty;
-                            log.Info("VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
+                            log.Info("    VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
                             break;
 
                         case 1:
                             // passed test
                             // 這是第三種狀況(1/2)
-                            log.Info("VPN 有, 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
+                            log.Info("    VPN 有, 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
                             o = q.Single().uid;
                             break;
 
@@ -790,7 +751,7 @@ namespace CompanioNc.View
                                 }
                                 if (!(int.TryParse(answer, out int result))) answer = "0";
                             }
-                            log.Info("VPN 有, 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
+                            log.Info("    VPN 有, 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
                             o = q.ToList()[int.Parse(answer) - 1].uid;
                             break;
                     }
@@ -809,14 +770,14 @@ namespace CompanioNc.View
                     case 0:
                         // 這是第四種狀況
                         // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
-                        log.Info("VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
+                        log.Info("    VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
                         o = string.Empty;
                         break;
 
                     case 1:
                         // passed test
                         // 這是第三種狀況(1/2)
-                        log.Info("VPN 有, 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
+                        log.Info("    VPN 有, 杏翔 無, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
                         o = q.Single().uid;
                         break;
 
@@ -839,11 +800,12 @@ namespace CompanioNc.View
                             }
                             if (!(int.TryParse(answer, out int result))) answer = "0";
                         }
-                        log.Info("VPN 有, 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
+                        log.Info("    VPN 有, 杏翔 無, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
                         o = q.ToList()[int.Parse(answer) - 1].uid;
                         break;
                 }
             }
+            log.Info($"  End to check UID: {vpnUID}");
             return o;
         }
 
@@ -877,6 +839,27 @@ namespace CompanioNc.View
             }
         }
 
+        private void SaveHTML(string sname, string outerHTML)
+        {
+            // 製作自動檔名
+            string temp_filepath = HTML_DIRECTORY;
+            // 存放目錄,不存在就要建立一個
+            if (!System.IO.Directory.Exists(temp_filepath))
+            {
+                System.IO.Directory.CreateDirectory(temp_filepath);
+            }
+            // 自動產生名字
+            temp_filepath += $"\\{sname}_{DateTime.Now.Year}_{DateTime.Now.Month}_{DateTime.Now.Day}";
+            temp_filepath += $"_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.html";
+
+            // 製作html檔 writing to html
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(temp_filepath, true, System.Text.Encoding.Unicode);
+            sw.Write(outerHTML);
+            sw.Close();
+
+        }
+
         #endregion Hotkeys, Functions
+    
     }
 }

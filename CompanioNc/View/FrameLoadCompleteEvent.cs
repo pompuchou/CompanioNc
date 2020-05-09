@@ -14,7 +14,8 @@ namespace CompanioNc.View
     public class FrameMonitor : IDisposable
     {
         // Flag: Has Dispose already been called?
-        private static readonly log4net.ILog log = LogHelper.GetLogger();
+        //private static readonly log4net.ILog log = LogHelper.GetLogger();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         bool disposed = false;
         private readonly int _interval;
@@ -51,6 +52,7 @@ namespace CompanioNc.View
                     if (d.frames.length != 0) f = d.frames.item(0).document.body.document;
                     if ((fSTATE == "loading" || fSTATE == "interactive") && (f.readyState == "complete"))
                     {
+                        log.Info($"***** frame readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
                         fSTATE = f?.readyState;
                         // f is becoming ready
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
@@ -61,6 +63,7 @@ namespace CompanioNc.View
                     }
                     if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
                     {
+                        log.Info($"***** document only readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
                         // f is not becoming ready, but d is becoming ready
                         // this is like the situation of no NHI card
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()

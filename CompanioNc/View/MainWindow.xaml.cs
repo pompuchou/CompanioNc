@@ -27,7 +27,8 @@ namespace CompanioNc
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly log4net.ILog log = LogHelper.GetLogger();
+        //private static readonly log4net.ILog log = LogHelper.GetLogger();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly TaskbarIcon tb = new TaskbarIcon();
         public HotKeyManager hotKeyManager;

@@ -10,7 +10,8 @@ namespace CompanioNc.View
 {
     internal class VPN_Dictionary
     {
-        private static readonly log4net.ILog log = LogHelper.GetLogger();
+        //private static readonly log4net.ILog log = LogHelper.GetLogger();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// 20200427 created
@@ -149,7 +150,7 @@ namespace CompanioNc.View
 
         public static async Task<Response_DataModel> WriteSQL_Async(VPN_Retrieved vr)
         {
-            log.Info($"Enter WriteSQL_Async {vr.SQL_Tablename} writing.");
+            log.Info($"      Enter WriteSQL_Async {vr.SQL_Tablename} writing.");
             Response_DataModel output = new Response_DataModel();
             int _count = 0;
 
@@ -249,7 +250,7 @@ namespace CompanioNc.View
                 }
             });
             output.Count = _count;
-            log.Info($"Exit WriteSQL_Async {vr.SQL_Tablename} writing.");
+            log.Info($"      Exit WriteSQL_Async {vr.SQL_Tablename} writing.");
             return output;
         }
 
@@ -300,7 +301,7 @@ namespace CompanioNc.View
 
         private static int Write_all(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Enter Write_all. Current ID: {strUID}.");
+            log.Info($"        Enter Write_all. Current ID: {strUID}.");
 
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
@@ -376,21 +377,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_all. Current ID: {strUID}.");
+                log.Info($"        Exit Write_all. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    Allergy of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_drug_name}]");
-                log.Info($"  Exit Write_all. Current ID: {strUID}.");
+                log.Error($"        Allergy of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_drug_name}]");
+                log.Info($"        Exit Write_all. Current ID: {strUID}.");
                 return -1;
             }
         }
 
         private static int Write_dental(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Enter Write_all. Current ID: {strUID}.");
+            log.Info($"        Enter Write_dental. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_source = string.Empty, o_diagnosis = string.Empty, o_NHI_code = string.Empty;
@@ -496,21 +497,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_den. Current ID: {strUID}.");
+                log.Info($"        Exit Write_den. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    Dental of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_op_name}]");
-                log.Info($"  Exit Write_den. Current ID: {strUID}.");
+                log.Error($"        Dental of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_op_name}]");
+                log.Info($"        Exit Write_den. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_dis(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_dis. Current ID: {strUID}.");
+            log.Info($"        Enter Write_dis. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
@@ -598,21 +599,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_dis. Current ID: {strUID}.");
+                log.Info($"        Exit Write_dis. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    Discharge of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_diagnosis}]");
-                log.Info($"  Exit Write_dis. Current ID: {strUID}.");
+                log.Error($"        Discharge of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
+                log.Info($"        Exit Write_dis. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_lab(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_lab. Current ID: {strUID}.");
+            log.Info($"        Enter Write_lab. Current ID: {strUID}.");
             int count = 0, order_n = 0;
             try
             {
@@ -697,8 +698,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
-                    log.Error($"    Count: {count}; Order: {order_n}]");
+                    log.Error($"        lab of {strUID}, Error: {ex.Message}");
+                    log.Error($"        Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 try
@@ -707,8 +708,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
-                    log.Error($"    Count: {count}; Order: {order_n}]");
+                    log.Error($"        lab of {strUID}, Error: {ex.Message}");
+                    log.Error($"        Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 // 處理source
@@ -733,21 +734,21 @@ namespace CompanioNc.View
                         dc.SubmitChanges();
                     }
                 }
-                log.Info($"  Exit Write_lab. Current ID: {strUID}.");
+                log.Info($"        Exit Write_lab. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    lab of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}]");
-                log.Info($"  Exit Write_lab. Current ID: {strUID}.");
+                log.Error($"        lab of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}]");
+                log.Info($"        Exit Write_lab. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_med(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_med. Current ID: {strUID}.");
+            log.Info($"        Enter Write_med. Current ID: {strUID}.");
             int count = 0, order_n = 0;
             try
             {
@@ -853,8 +854,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
-                    log.Error($"    Count: {count}; Order: {order_n}]");
+                    log.Error($"        med of {strUID}, Error: {ex.Message}");
+                    log.Error($"        Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 try
@@ -863,8 +864,8 @@ namespace CompanioNc.View
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"    lab of {strUID}, Error: {ex.Message}");
-                    log.Error($"    Count: {count}; Order: {order_n}]");
+                    log.Error($"        med of {strUID}, Error: {ex.Message}");
+                    log.Error($"        Count: {count}; Order: {order_n}]");
                     Logging.Record_error(ex.Message);
                 }
                 // 這裡原本多了一次沒有try包覆的insert_p_cloudmed, 一但p_cloudmed有錯誤就沒辦法處理source
@@ -893,21 +894,21 @@ namespace CompanioNc.View
                         dc.SubmitChanges();
                     }
                 }
-                log.Info($"  Exit Write_med. Current ID: {strUID}.");
+                log.Info($"        Exit Write_med. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    med of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}]");
-                log.Info($"  Exit Write_med. Current ID: {strUID}.");
+                log.Error($"        med of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}]");
+                log.Info($"        Exit Write_med. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_op(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_op. Current ID: {strUID}.");
+            log.Info($"        Enter Write_op. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
@@ -1017,21 +1018,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_op. Current ID: {strUID}.");
+                log.Info($"        Exit Write_op. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    op of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_op_name}]");
-                log.Info($"  Exit Write_op. Current ID: {strUID}.");
+                log.Error($"        op of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_op_name}]");
+                log.Info($"        Exit Write_op. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_reh(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_reh. Current ID: {strUID}.");
+            log.Info($"        Enter Write_reh. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_class = string.Empty, o_source = string.Empty, o_diagnosis = string.Empty, o_type = string.Empty;
@@ -1164,21 +1165,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_reh. Current ID: {strUID}.");
+                log.Info($"        Exit Write_reh. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    REH of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_diagnosis}]");
-                log.Info($"  Exit Write_reh. Current ID: {strUID}.");
+                log.Error($"        REH of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
+                log.Info($"        Exit Write_reh. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_sch_re(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_sch_re. Current ID: {strUID}.");
+            log.Info($"        Enter Write_sch_re. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_drug = string.Empty, o_YM = string.Empty, drug_name = string.Empty;
@@ -1282,21 +1283,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_sch_re. Current ID: {strUID}.");
+                log.Info($"        Exit Write_sch_re. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    SCH_RE of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_drug}]");
-                log.Info($"  Exit Write_sch_re. Current ID: {strUID}.");
+                log.Error($"        SCH_RE of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_drug}]");
+                log.Info($"        Exit Write_sch_re. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_sch_up(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_sch_up. Current ID: {strUID}.");
+            log.Info($"        Enter Write_sch_up. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_drug = string.Empty, drug_name = string.Empty, o_STIME = string.Empty, o_clinic = string.Empty;
@@ -1406,21 +1407,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_sch_up. Current ID: {strUID}.");
+                log.Info($"        Exit Write_sch_up. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    SCH_UP of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_drug}]");
-                log.Info($"  Exit Write_sch_up. Current ID: {strUID}.");
+                log.Error($"        SCH_UP of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_drug}]");
+                log.Info($"        Exit Write_sch_up. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_tcm_de(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_tcm_de. Current ID: {strUID}.");
+            log.Info($"        Enter Write_tcm_de. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_diagnosis = string.Empty, o_NHI_code = string.Empty, o_complex = string.Empty;
@@ -1549,21 +1550,21 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_tcm_de. Current ID: {strUID}.");
+                log.Info($"        Exit Write_tcm_de. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    TCM_DE of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_diagnosis}]");
-                log.Info($"  Exit Write_tcm_de. Current ID: {strUID}.");
+                log.Error($"        TCM_DE of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
+                log.Info($"        Exit Write_tcm_de. Current ID: {strUID}.");
                 return 0;
             }
         }
 
         private static int Write_tcm_gr(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"  Exit Write_tcm_gr. Current ID: {strUID}.");
+            log.Info($"        Enter Write_tcm_gr. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_source = string.Empty, o_diagnosis = string.Empty, o_chronic = string.Empty, o_serial = string.Empty;
@@ -1660,14 +1661,14 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"  Exit Write_tcm_gr. Current ID: {strUID}.");
+                log.Info($"        Exit Write_tcm_gr. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
-                log.Error($"    TCM_GR of {strUID}, Error: {ex.Message}");
-                log.Error($"    Count: {count}; Order: {order_n}, [{o_diagnosis}]");
-                log.Info($"  Exit Write_tcm_gr. Current ID: {strUID}.");
+                log.Error($"        TCM_GR of {strUID}, Error: {ex.Message}");
+                log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
+                log.Info($"        Exit Write_tcm_gr. Current ID: {strUID}.");
                 return 0;
             }
         }
