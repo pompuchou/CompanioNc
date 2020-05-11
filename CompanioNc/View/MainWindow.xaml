@@ -124,19 +124,21 @@
                 </Grid.RowDefinitions>
                 <CheckBox Content="Unplug" FontSize="16" HorizontalAlignment="Left" IsChecked="{Binding UnPlug, Mode=TwoWay}"
                   Margin="10,10,0,0" VerticalAlignment="Center" Grid.Row="0" />
-                <actb:AutoCompleteTextBox Name="ACTextBox" FontSize="20"
-            Text="{Binding Source={StaticResource acvm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
-            Margin="100,3,3,6" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Width="140" Height="40"
-            ItemsSource="{Binding Source={StaticResource xml}}" ItemTemplateSelector="{StaticResource TemplateSelector}"
-            Binding="{Binding XPath=suggestion/@uid}" MaxCompletions="20" Visibility="{Binding UnPlug, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <actb:AutoCompleteTextBox Name="ACTextBox" FontSize="20" 
+                                          Text="{Binding Source={StaticResource acvm}, Path=QueryText, UpdateSourceTrigger=PropertyChanged}"
+                                          Margin="100,3,3,6" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" 
+                                          Width="140" Height="40" ItemsSource="{Binding Source={StaticResource xml}}" MaxCompletions="20" 
+                                          ItemTemplateSelector="{StaticResource TemplateSelector}" Binding="{Binding XPath=suggestion/@uid}" 
+                                          Visibility="{Binding UnPlug, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <actb:AutoCompleteTextBox.InputBindings>
                         <KeyBinding Command="{Binding Send_UID}" CommandParameter="{Binding Text, ElementName=ACTextBox}" Key="Enter" />
                     </actb:AutoCompleteTextBox.InputBindings>
                 </actb:AutoCompleteTextBox>
-                <TextBox x:Name="Label1" FontSize="16" Text="{Binding StrUID, Mode=TwoWay}" HorizontalAlignment="Right" Margin="6,6,420,6" IsReadOnly="True"
-               VerticalAlignment="Center" Grid.Row="0" TextChanged="Label1_TextChanged" BorderThickness="{Binding StrUID, Converter={StaticResource StringToThicknessConverter}}" />
+                <TextBox x:Name="Label1" FontSize="16" Text="{Binding StrUID, Mode=TwoWay}" HorizontalAlignment="Right" Margin="6,6,420,6" 
+                         IsReadOnly="True" VerticalAlignment="Center" Grid.Row="0" TextChanged="Label1_TextChanged" 
+                         BorderThickness="{Binding StrUID, Converter={StaticResource StringToThicknessConverter}}" />
                 <Label x:Name="strID" FontSize="16" Content="{Binding StrID}" HorizontalAlignment="Right" VerticalAlignment="Center"
-               Margin="6,6,6,6" Grid.Row="0" />
+                       Margin="6,6,6,6" Grid.Row="0" />
                 <TabControl Name="TabCon" FontSize="18" Grid.Row="1">
                     <TabItem Name="Tab1">
                         <TabItem.Header>
