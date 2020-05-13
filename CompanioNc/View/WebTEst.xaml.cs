@@ -198,6 +198,7 @@ namespace CompanioNc.View
                 // 20200429 tested successful
                 IHTMLElement List_under_investigation = d?.getElementById("ContentPlaceHolder1_tab");
                 // li 之下就是 a
+                List<string> balloonstring = new List<string>();
                 string BalloonTip = string.Empty;
                 foreach (IHTMLElement hTML in List_under_investigation?.all)
                 {
@@ -206,7 +207,23 @@ namespace CompanioNc.View
                         VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
                         QueueOperation.Enqueue(vOP);
                         log.Info($"    讀入operation: {vOP.Short_Name}, [{strUID}]");
-                        BalloonTip += $"{vOP.Short_Name}\r\n";
+                        balloonstring.Add(vOP.Short_Name);
+                    }
+                }
+
+                for (int i = 0; i < balloonstring.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        BalloonTip = balloonstring[i];
+                    }
+                    else if ((i % 2) == 1)
+                    {
+                        BalloonTip += $"; {balloonstring[i]}";
+                    }
+                    else if ((i % 2) == 0)
+                    {
+                        BalloonTip += $";\r\n{balloonstring[i]}";
                     }
                 }
                 log.Info($"  end of Reading Operation(s), 共{QueueOperation?.Count}個Operation(s).");
