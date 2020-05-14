@@ -217,13 +217,13 @@ namespace CompanioNc.View
                     {
                         BalloonTip = balloonstring[i];
                     }
-                    else if ((i % 2) == 1)
-                    {
-                        BalloonTip += $"; {balloonstring[i]}";
-                    }
-                    else if ((i % 2) == 0)
+                    else if ((i % 3) == 0)
                     {
                         BalloonTip += $";\r\n{balloonstring[i]}";
+                    }
+                    else
+                    {
+                        BalloonTip += $"; {balloonstring[i]}";
                     }
                 }
                 log.Info($"  end of Reading Operation(s), 共{QueueOperation?.Count}個Operation(s).");
