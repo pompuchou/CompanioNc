@@ -182,9 +182,12 @@ namespace CompanioNc.View
                             for (int i = 0; i < vr.Header_Want.Count(); i++)
                             {
                                 // 這個版本可以用在排序後, 字會多一個上下的符號
-                                if (strT.Length >= vr.Header_Want[i].Length)
+                                if (strT == vr.Header_Want[i])
                                 {
-                                    if (strT.Substring(0, vr.Header_Want[i].Length) == vr.Header_Want[i]) header_order.Add(i);
+                                    // 20200515 發現"慢連籤", "慢連籤領藥日", 會重複加進去header_order
+                                    // 因此改為全等, 因為並不會有排序的問題
+                                    header_order.Add(i);
+                                    break;
                                 }
                             }
                             if (header_order.Count == order_n) header_order.Add(-1);
@@ -1425,22 +1428,23 @@ namespace CompanioNc.View
             string o_diagnosis = string.Empty, o_NHI_code = string.Empty, o_complex = string.Empty;
             string o_base = string.Empty, o_effect = string.Empty, o_dosing = string.Empty;
             string o_type = string.Empty, o_serial = string.Empty;
-            int o_days = 0, o_amt = 0;
+            int o_days = 0;
+            float o_amt = 0;
             DateTime o_SDATE = new DateTime(), o_EDATE = new DateTime();
 
             int order_n = 0;
-            try
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                // 寫入資料庫
-                foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
-                {
-                    HtmlDocument h_ = new HtmlDocument();
-                    h_.LoadHtml(tr.InnerHtml);
-                    HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
-                    if ((tds == null) || (tds.Count == 0)) continue;
-                    order_n = 0;
-                    foreach (HtmlNode td in tds)
+                if ((tds == null) || (tds.Count == 0)) continue;
+                order_n = 0;
+                foreach (HtmlNode td in tds)
+                {
+                    try
                     {
                         switch (header_order[order_n])
                         {
@@ -1476,7 +1480,7 @@ namespace CompanioNc.View
 
                             case 6:
                                 // 給藥日數
-                                if (td.InnerText != string.Empty) o_days = int.Parse(td.InnerText);
+                                if (!string.IsNullOrEmpty(td.InnerText)) o_days = int.Parse(td.InnerText);
                                 break;
 
                             case 7:
@@ -1486,12 +1490,12 @@ namespace CompanioNc.View
 
                             case 8:
                                 // 給藥總量
-                                if (td.InnerText != string.Empty) o_amt = int.Parse(td.InnerText);
+                                if (!string.IsNullOrEmpty(td.InnerText)) o_amt = float.Parse(td.InnerText);
                                 break;
 
                             case 9:
                                 // 就醫(調劑)日期
-                                if (td.InnerText != string.Empty)
+                                if (!string.IsNullOrEmpty(td.InnerText))
                                 {
                                     string[] temp_d = td.InnerText.Split('/');
                                     DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1501,7 +1505,7 @@ namespace CompanioNc.View
 
                             case 10:
                                 // 慢連箋領藥日
-                                if (td.InnerText != string.Empty)
+                                if (!string.IsNullOrEmpty(td.InnerText))
                                 {
                                     string[] temp_d = td.InnerText.Split('/');
                                     DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1516,48 +1520,47 @@ namespace CompanioNc.View
                         }
                         order_n++;
                     }
-
-                    var q = from p in dc.tbl_cloudTCM_D
-                            where (p.uid == strUID) && (p.NHI_code == o_NHI_code) &&
-                                  (p.SDATE == o_SDATE) && (p.serial == o_serial)
-                            select p;
-                    if (q.Count() == 0)
+                    catch (Exception ex)
                     {
-                        tbl_cloudTCM_D newTCMD = new tbl_cloudTCM_D()
-                        {
-                            uid = strUID,
-                            QDATE = current_date,
-                            diagnosis = o_diagnosis,
-                            NHI_code = o_NHI_code,
-                            complex = o_complex,
-                            @base = o_base,
-                            effect = o_effect,
-                            dosing = o_dosing,
-                            days = (byte?)o_days,
-                            type = o_type,
-                            amt = (byte?)o_amt,
-                            SDATE = o_SDATE,
-                            EDATE = o_EDATE,
-                            serial = o_serial
-                        };
-
-                        // 存檔
-
-                        dc.tbl_cloudTCM_D.InsertOnSubmit(newTCMD);
-                        dc.SubmitChanges();
+                        log.Error($"        TCM_DE of {strUID}, Error: {ex.Message}");
+                        log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
                     }
-                    count++;
                 }
-                log.Info($"        Exit Write_tcm_de. Current ID: {strUID}.");
-                return count;
+                // 20200515 有時候amt會有小數點, 直接轉換就會報錯, 因此先轉換成float, 再換回整數, 就可以通過
+
+                var q = from p in dc.tbl_cloudTCM_D
+                        where (p.uid == strUID) && (p.NHI_code == o_NHI_code) &&
+                              (p.SDATE == o_SDATE) && (p.serial == o_serial)
+                        select p;
+                if (q.Count() == 0)
+                {
+                    tbl_cloudTCM_D newTCMD = new tbl_cloudTCM_D()
+                    {
+                        uid = strUID,
+                        QDATE = current_date,
+                        diagnosis = o_diagnosis,
+                        NHI_code = o_NHI_code,
+                        complex = o_complex,
+                        @base = o_base,
+                        effect = o_effect,
+                        dosing = o_dosing,
+                        days = (byte?)o_days,
+                        type = o_type,
+                        amt = (short?)o_amt,
+                        SDATE = o_SDATE,
+                        EDATE = o_EDATE,
+                        serial = o_serial
+                    };
+
+                    // 存檔
+
+                    dc.tbl_cloudTCM_D.InsertOnSubmit(newTCMD);
+                    dc.SubmitChanges();
+                }
+                count++;
             }
-            catch (Exception ex)
-            {
-                log.Error($"        TCM_DE of {strUID}, Error: {ex.Message}");
-                log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
-                log.Info($"        Exit Write_tcm_de. Current ID: {strUID}.");
-                return 0;
-            }
+            log.Info($"        Exit Write_tcm_de. Current ID: {strUID}.");
+            return count;
         }
 
         private static int Write_tcm_gr(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
@@ -1571,24 +1574,24 @@ namespace CompanioNc.View
 
             int order_n = 0;
 
-            try
+            // 寫入資料庫
+            foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
             {
-                // 寫入資料庫
-                foreach (HtmlNode tr in html.DocumentNode.SelectNodes("//table/tbody/tr"))
-                {
-                    HtmlDocument h_ = new HtmlDocument();
-                    h_.LoadHtml(tr.InnerHtml);
-                    HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
+                HtmlDocument h_ = new HtmlDocument();
+                h_.LoadHtml(tr.InnerHtml);
+                HtmlNodeCollection tds = h_.DocumentNode.SelectNodes("//td");
 
-                    if ((tds == null) || (tds.Count == 0)) continue;
-                    order_n = 0;
-                    foreach (HtmlNode td in tds)
+                if ((tds == null) || (tds.Count == 0)) continue;
+                order_n = 0;
+                foreach (HtmlNode td in tds)
+                {
+                    try
                     {
                         switch (header_order[order_n])
                         {
                             case 0:
                                 // 來源
-                                if (td.InnerText != string.Empty) o_source = MakeSure_source_3_lines(td.InnerHtml);
+                                if (!string.IsNullOrEmpty(td.InnerText)) o_source = MakeSure_source_3_lines(td.InnerHtml);
                                 break;
 
                             case 1:
@@ -1598,7 +1601,7 @@ namespace CompanioNc.View
 
                             case 2:
                                 // 給藥日數
-                                if (td.InnerText != string.Empty) o_days = int.Parse(td.InnerText);
+                                if (!string.IsNullOrEmpty(td.InnerText)) o_days = int.Parse(td.InnerText);
                                 break;
 
                             case 3:
@@ -1608,7 +1611,7 @@ namespace CompanioNc.View
 
                             case 4:
                                 // 就醫(調劑)日期
-                                if (td.InnerText != string.Empty)
+                                if (!string.IsNullOrEmpty(td.InnerText))
                                 {
                                     string[] temp_d = td.InnerText.Split('/');
                                     DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1618,7 +1621,7 @@ namespace CompanioNc.View
 
                             case 5:
                                 // 慢連箋領藥日
-                                if (td.InnerText != string.Empty)
+                                if (!string.IsNullOrEmpty(td.InnerText))
                                 {
                                     string[] temp_d = td.InnerText.Split('/');
                                     DateTime.TryParse($"{int.Parse(temp_d[0]) + 1911}/{temp_d[1]}/{temp_d[2]}", out DateTime d);
@@ -1633,42 +1636,39 @@ namespace CompanioNc.View
                         }
                         order_n++;
                     }
-
-                    var q = from p in dc.tbl_cloudTCM_G
-                            where (p.uid == strUID) && (p.SDATE == o_SDATE) && (p.serial == o_serial)
-                            select p;
-                    if (q.Count() == 0)
+                    catch (Exception ex)
                     {
-                        tbl_cloudTCM_G newTCMG = new tbl_cloudTCM_G()
-                        {
-                            uid = strUID,
-                            QDATE = current_date,
-                            source = o_source,
-                            diagnosis = o_diagnosis,
-                            days = (byte?)o_days,
-                            chronic = o_chronic,
-                            SDATE = o_SDATE,
-                            EDATE = o_EDATE,
-                            serial = o_serial
-                        };
-
-                        // 存檔
-
-                        dc.tbl_cloudTCM_G.InsertOnSubmit(newTCMG);
-                        dc.SubmitChanges();
+                        log.Error($"        TCM_GR of {strUID}, Error: {ex.Message}");
+                        log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
                     }
-                    count++;
                 }
-                log.Info($"        Exit Write_tcm_gr. Current ID: {strUID}.");
-                return count;
+                var q = from p in dc.tbl_cloudTCM_G
+                        where (p.uid == strUID) && (p.SDATE == o_SDATE) && (p.serial == o_serial)
+                        select p;
+                if (q.Count() == 0)
+                {
+                    tbl_cloudTCM_G newTCMG = new tbl_cloudTCM_G()
+                    {
+                        uid = strUID,
+                        QDATE = current_date,
+                        source = o_source,
+                        diagnosis = o_diagnosis,
+                        days = (byte?)o_days,
+                        chronic = o_chronic,
+                        SDATE = o_SDATE,
+                        EDATE = o_EDATE,
+                        serial = o_serial
+                    };
+
+                    // 存檔
+
+                    dc.tbl_cloudTCM_G.InsertOnSubmit(newTCMG);
+                    dc.SubmitChanges();
+                }
+                count++;
             }
-            catch (Exception ex)
-            {
-                log.Error($"        TCM_GR of {strUID}, Error: {ex.Message}");
-                log.Error($"        Count: {count}; Order: {order_n}, [{o_diagnosis}]");
-                log.Info($"        Exit Write_tcm_gr. Current ID: {strUID}.");
-                return 0;
-            }
+            log.Info($"        Exit Write_tcm_gr. Current ID: {strUID}.");
+            return count;
         }
 
         #endregion Write Part
