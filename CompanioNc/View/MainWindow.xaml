@@ -74,6 +74,8 @@
         <Style x:Key="NumberStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text,
                 Converter={StaticResource NumberToForegroundConverter}}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontWeight" Value="Bold" />
         </Style>
         <CollectionViewSource x:Key="xml">
             <CollectionViewSource.Source>
@@ -488,18 +490,19 @@
                 <DataGrid x:Name="DGQuery" Margin="12" FontSize="12" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                           AlternatingRowBackground="PapayaWhip"  Grid.Row="1">
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="N" Width="0.6*" Binding="{Binding row_n}" />
                         <DataGridTextColumn Header="日期" Width="2*" Binding="{Binding QDATE, StringFormat={}{0:yy/MM/dd hh:mm}}" />
-                        <DataGridTextColumn Header="身分證" Width="2*" Binding="{Binding uid}" />
+                        <DataGridTextColumn Header="身分證" Width="1.75*" Binding="{Binding uid}" />
                         <DataGridTextColumn Header="姓名" Width="1*" Binding="{Binding cname}" />
-                        <DataGridTextColumn Header="雲端藥歷" Width="1*" Binding="{Binding cloudmed_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="關懷名單" Width="1*" Binding="{Binding schedule_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="手術" Width="1*" Binding="{Binding op_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="牙醫" Width="1*" Binding="{Binding dental_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="過敏" Width="1*" Binding="{Binding allergy_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="檢驗結果" Width="1*" Binding="{Binding cloudlab_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="出院病摘" Width="1*" Binding="{Binding discharge_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="中醫用藥" Width="1*" Binding="{Binding tcm_N}" ElementStyle="{StaticResource NumberStyle}" />
-                        <DataGridTextColumn Header="復健" Width="1*" Binding="{Binding rehab_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="雲端" Width="0.8*" Binding="{Binding cloudmed_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="關懷" Width="0.8*" Binding="{Binding schedule_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="手術" Width="0.8*" Binding="{Binding op_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="牙醫" Width="0.8*" Binding="{Binding dental_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="過敏" Width="0.8*" Binding="{Binding allergy_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="檢驗" Width="0.8*" Binding="{Binding cloudlab_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="出院" Width="0.8*" Binding="{Binding discharge_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="中醫" Width="0.8*" Binding="{Binding tcm_N}" ElementStyle="{StaticResource NumberStyle}" />
+                        <DataGridTextColumn Header="復健" Width="0.8*" Binding="{Binding rehab_N}" ElementStyle="{StaticResource NumberStyle}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

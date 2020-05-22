@@ -6957,6 +6957,8 @@ namespace CompanioNc.Models
 	public partial class sp_querytable2Result
 	{
 		
+		private System.Nullable<long> _row_n;
+		
 		private long _Query_id;
 		
 		private string _uid;
@@ -6985,6 +6987,22 @@ namespace CompanioNc.Models
 		
 		public sp_querytable2Result()
 		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_row_n", DbType="BigInt")]
+		public System.Nullable<long> row_n
+		{
+			get
+			{
+				return this._row_n;
+			}
+			set
+			{
+				if ((this._row_n != value))
+				{
+					this._row_n = value;
+				}
+			}
 		}
 		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Query_id", DbType="BigInt NOT NULL")]

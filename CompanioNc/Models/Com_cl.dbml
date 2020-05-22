@@ -435,6 +435,7 @@
   </Function>
   <Function Name="dbo.sp_querytable2" Method="sp_querytable2">
     <ElementType Name="sp_querytable2Result">
+      <Column Name="row_n" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
       <Column Name="Query_id" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
       <Column Name="uid" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
       <Column Name="QDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
