@@ -717,8 +717,10 @@ namespace CompanioNc.View
                             cid = 0,
                             uid = thesisUID,
                             bd = dummyDateTime,
-                            cname = thesisNAME
+                            cname = thesisNAME,
+                            QDATE = DateTime.Now
                         };
+                        // 20200526 加入QDATE
                         dc.tbl_patients.InsertOnSubmit(newPt);
                         dc.SubmitChanges();
                     }

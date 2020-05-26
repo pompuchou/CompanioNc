@@ -34,6 +34,7 @@
       <Column Name="p02" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="p03" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="p04" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="QDATE" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
     </Type>
   </Table>
 </Database>

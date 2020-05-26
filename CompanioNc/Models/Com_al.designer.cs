@@ -556,6 +556,8 @@ namespace CompanioNc.Models
 		
 		private string _p04;
 		
+		private System.DateTime _QDATE;
+		
     #region 擴充性方法定義
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -578,6 +580,8 @@ namespace CompanioNc.Models
     partial void Onp03Changed();
     partial void Onp04Changing(string value);
     partial void Onp04Changed();
+    partial void OnQDATEChanging(System.DateTime value);
+    partial void OnQDATEChanged();
     #endregion
 		
 		public tbl_patients()
@@ -761,6 +765,26 @@ namespace CompanioNc.Models
 					this._p04 = value;
 					this.SendPropertyChanged("p04");
 					this.Onp04Changed();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_QDATE", DbType="DateTime NOT NULL")]
+		public System.DateTime QDATE
+		{
+			get
+			{
+				return this._QDATE;
+			}
+			set
+			{
+				if ((this._QDATE != value))
+				{
+					this.OnQDATEChanging(value);
+					this.SendPropertyChanging();
+					this._QDATE = value;
+					this.SendPropertyChanged("QDATE");
+					this.OnQDATEChanged();
 				}
 			}
 		}

@@ -14,10 +14,10 @@
         <elementListCompartment Id="0bc43623-6e2e-4415-8c50-2b4406e23349" absoluteBounds="3.765, 1.21, 1.9700000000000002, 1.5316874186197915" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="f9f7373d-b463-4a2a-96ea-ca3d525637b4" absoluteBounds="6.5, 0.875, 2, 2.4612756347656251">
+    <classShape Id="be4cf2d5-285d-483f-8bd2-5c7d491be735" absoluteBounds="6.125, 0.75, 2, 2.6460697428385416">
       <DataClassMoniker Name="/ComDataContext/tbl_patients" />
       <nestedChildShapes>
-        <elementListCompartment Id="16911b7e-8df0-470c-8ecd-257d79d09357" absoluteBounds="6.515, 1.335, 1.9700000000000002, 1.901275634765625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="fb98c7d2-4fae-44eb-b672-c206b0c363f9" absoluteBounds="6.14, 1.21, 1.9700000000000002, 2.0860697428385415" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
   </nestedChildShapes>
