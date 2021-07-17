@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>44</ApplicationRevision>
+    <ApplicationRevision>45</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -62,7 +62,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>images\Nerd.ico</ApplicationIcon>
@@ -88,6 +88,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Deployment" />
@@ -123,6 +124,9 @@
     <Compile Include="View\FrameLoadStates.cs" />
     <Compile Include="View\Response_DataModel.cs" />
     <Compile Include="View\SQLTableName.cs" />
+    <Compile Include="View\Start.xaml.cs">
+      <DependentUpon>Start.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\VPN_Dictionary.cs" />
     <Compile Include="View\Target_Table.cs" />
     <Compile Include="View\VPN_Operation.cs" />
@@ -130,6 +134,11 @@
     <Compile Include="View\WebTEst.xaml.cs">
       <DependentUpon>WebTEst.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\WebTEst_F_Data_LoadCompleted.cs" />
+    <Compile Include="View\WebTEst_F_LoadCompleted.cs" />
+    <Compile Include="View\WebTEst_F_Pager_LoadCompleted.cs" />
+    <Compile Include="View\WebTEst_MakeSureUID.cs" />
+    <Compile Include="View\WebTEst_SaveHTML.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -154,6 +163,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Start.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\WebTEst.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -185,7 +185,6 @@ namespace CompanioNc
             // Handle hotkey presses.
             hotKeyManager.KeyPressed += HotKeyManagerPressed;
 
-
             Refresh();
 
             Logging.Record_admin("Companion Log in", "");
@@ -308,6 +307,5 @@ namespace CompanioNc
 
             }
         }
-
     }
 }
