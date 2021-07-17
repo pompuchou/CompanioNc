@@ -35,8 +35,8 @@ namespace CompanioNc.View
             // 取得thesisUID
             try
             {
-                string[] vs = this.m.strID.Content.ToString().Split(' ');
-                log.Info($"    [{this.m.strID.Content}] being processed.");
+                string[] vs = s.m.strID.Content.ToString().Split(' ');
+                log.Info($"    [{s.m.strID.Content}] being processed.");
                 // 身分證字號在[7], 還要去掉括弧
                 thesisUID = vs[7].Substring(1, (vs[7].Length - 2));
                 thesisNAME = vs[8];

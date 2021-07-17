@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>45</ApplicationRevision>
+    <ApplicationRevision>47</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -127,6 +127,11 @@
     <Compile Include="View\Start.xaml.cs">
       <DependentUpon>Start.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Start_ButtonClick.cs" />
+    <Compile Include="View\Start_Close.cs" />
+    <Compile Include="View\Start_HotKeyManagerPressed.cs" />
+    <Compile Include="View\Start_Load.cs" />
+    <Compile Include="View\Start_Refresh.cs" />
     <Compile Include="View\VPN_Dictionary.cs" />
     <Compile Include="View\Target_Table.cs" />
     <Compile Include="View\VPN_Operation.cs" />

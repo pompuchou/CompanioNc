@@ -45,17 +45,17 @@ namespace CompanioNc.View
 
         private readonly TaskbarIcon tb = new TaskbarIcon();
 
-        private readonly MainWindow m;
+        private readonly Start s;
         private readonly FrameMonitor fm;
 
         #endregion FLAGS
 
         #region Constructor, Loaded, and Closed
 
-        public WebTEst(MainWindow mw)
+        public WebTEst(Start ss)
         {
             // 把Caller傳遞過來
-            m = mw;
+            s = ss;
             fm = new FrameMonitor(this, 100);
             InitializeComponent();
         }
@@ -82,7 +82,8 @@ namespace CompanioNc.View
             // deactivate hotkeys 1
             Deactivate_Hotkeys();
             log.Info($"WebTEst is being closed.");
-            m.VPNwindow.IsChecked = false;
+            // 20210717 改m為s.m
+            s.m.VPNwindow.IsChecked = false;
             fm.Dispose();
         }
 
@@ -127,8 +128,8 @@ namespace CompanioNc.View
             // 20200508 已經完成了, 又開始可以有反應了
             try
             {
-                m.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Register(Key.G, ModifierKeys.Control);
+                s.hotKeyManager.Register(Key.Y, ModifierKeys.Control);
+                s.hotKeyManager.Register(Key.G, ModifierKeys.Control);
                 log.Info("Hotkey Ctrl-Y, Ctrl-G registered.");
             }
             catch (Exception ex)
@@ -142,8 +143,8 @@ namespace CompanioNc.View
             // 20200508 加上不反應期的功能
             try
             {
-                m.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
-                m.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
+                s.hotKeyManager.Unregister(Key.Y, ModifierKeys.Control);
+                s.hotKeyManager.Unregister(Key.G, ModifierKeys.Control);
                 log.Info("Hotkey Ctrl-Y, Ctrl-G 1 unregistered.");
             }
             catch (Exception ex)

@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompanioNc.View"
         mc:Ignorable="d"
-        Title="陪伴系統" Height="60" Width="100">
+        Height="145" Width="95"
+        Loaded="Window_Loaded" Closed="Window_Closed" ResizeMode="NoResize" >
     <Grid>
-        
+        <Button HorizontalAlignment="Left" Margin="20,15,5,5" 
+                VerticalAlignment="Top" Width="75" Height="75" Click="Button_Click" >
+            <Image Source="..\Images\Nerd-7.jpg" />
+        </Button>
     </Grid>
 </Window>

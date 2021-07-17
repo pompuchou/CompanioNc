@@ -195,10 +195,10 @@ namespace CompanioNc.View
                 }
 
                 // 更新顯示資料
-                string tempSTR = m.Label1.Text;
-                m.Label1.Text = string.Empty;
-                m.Label1.Text = tempSTR;
-                m.Web_refresh();
+                string tempSTR = s.m.Label1.Text;
+                s.m.Label1.Text = string.Empty;
+                s.m.Label1.Text = tempSTR;
+                s.m.Web_refresh();
 
                 // activate hotkeys 4
                 Activate_Hotkeys();
