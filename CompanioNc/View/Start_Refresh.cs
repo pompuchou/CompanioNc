@@ -2,7 +2,9 @@
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace CompanioNc.View
 {
@@ -11,8 +13,11 @@ namespace CompanioNc.View
     /// </summary>
     public partial class Start : Window
     {
-        private void Refresh()
+
+        private async Task Refresh()
         {
+            this.RefreshButton.Visibility = Visibility.Hidden;
+            this.Background = Brushes.Red;
             // 如何判斷連線成功?
             // connection string
             string cs = ConfigurationManager.ConnectionStrings["CompanioNc.Properties.Settings.alConnectionString"].ConnectionString;
@@ -21,19 +26,22 @@ namespace CompanioNc.View
 
             using (SqlConnection sc = new SqlConnection(cs))
             {
-                try
+                await Task.Run(() =>
                 {
-                    // 嘗試打開連結, 成功了就打開MainWindow
-                    sc.Open();
-                    sc.Close();
-                    bSuccess = true;
-                    tb.ShowBalloonTip("連結成功", "Success", BalloonIcon.Info);
-                }
-                catch (Exception)
-                {
-                    bSuccess = false;
-                    tb.ShowBalloonTip("連結逾期", "Timeout", BalloonIcon.Info);
-                }
+                    try
+                    {
+                        // 嘗試打開連結, 成功了就打開MainWindow
+                        sc.Open();
+                        sc.Close();
+                        bSuccess = true;
+                        tb.ShowBalloonTip("連結成功", "Success", BalloonIcon.Info);
+                    }
+                    catch (Exception)
+                    {
+                        bSuccess = false;
+                        tb.ShowBalloonTip("連結逾期", "Timeout", BalloonIcon.Info);
+                    }
+                });
             };
 
             if (bSuccess)
@@ -47,6 +55,9 @@ namespace CompanioNc.View
             {
                 this.Visibility = Visibility.Visible;
             }
+            this.RefreshButton.Visibility = Visibility.Visible;
+            this.Background = Brushes.Beige;
+
         }
 
     }

@@ -98,13 +98,13 @@
         <elementListCompartment Id="86ef7cf3-b71a-43a5-bc65-cdcf567ff030" absoluteBounds="13.015, 9.835, 1.9700000000000002, 0.792510986328125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="b60e910b-e94a-4f3a-b225-00b7b17d87e7" isExpanded="false" absoluteBounds="6.25, 3.25, 2, 0.45">
+    <classShape Id="b60e910b-e94a-4f3a-b225-00b7b17d87e7" absoluteBounds="6.25, 3.25, 2, 3.3852461751302076">
       <DataClassMoniker Name="/Com_clDataContext/tbl_Query2" />
       <nestedChildShapes>
         <elementListCompartment Id="7e2522bf-169d-4b53-9bd6-7b6fb5b418eb" absoluteBounds="6.265, 3.71, 1.9700000000000002, 2.825246175130208" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="92f233e4-4590-4b4d-befd-ed008ad19e22" isExpanded="false" absoluteBounds="8, 4, 2, 0.45">
+    <classShape Id="92f233e4-4590-4b4d-befd-ed008ad19e22" absoluteBounds="8, 4, 2, 1.7220992024739577">
       <DataClassMoniker Name="/Com_clDataContext/tbl_NHI_lab_reminder" />
       <nestedChildShapes>
         <elementListCompartment Id="d41db220-2c34-42d7-862d-fc7c57bde8f4" absoluteBounds="8.015, 4.46, 1.9700000000000002, 1.1620992024739583" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />

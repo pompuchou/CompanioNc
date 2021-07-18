@@ -1,7 +1,5 @@
-﻿using CompanioNc.ViewModels;
-using mshtml;
+﻿using mshtml;
 using System;
-using System.Diagnostics;
 using System.Timers;
 
 namespace CompanioNc.View

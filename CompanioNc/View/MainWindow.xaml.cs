@@ -1,12 +1,11 @@
 ﻿using CompanioNc.Models;
 using CompanioNc.View;
 using CompanioNc.ViewModels;
-using GlobalHotKey;
 using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Deployment.Application;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace CompanioNc
 {
@@ -192,6 +191,7 @@ namespace CompanioNc
         {
             log.Info("WebTEst checkbox checked.");
             // 20210717 w 改成 s.w
+            // 20210718 改成async, failed
             if (s.w is null) s.w = new WebTEst(s);
             // 20200508 因為不反應的功能, 這裡不可以register; 會先完成一輪, 造成重複register就會當機
             // 因此全部remark, 
@@ -206,7 +206,7 @@ namespace CompanioNc
         {
             log.Info("WebTEst checkbox unchecked.");
             // 20210717 w 改成 s.w
-            s.w.Close();
+            if (s.w != null) s.w.Close();
             s.w = null;
         }
         

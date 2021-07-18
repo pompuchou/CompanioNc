@@ -9,9 +9,6 @@ namespace CompanioNc.View
     /// </summary>
     public partial class Start : Window
     {
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Refresh();
-        }
+        private async void Button_Click(object sender, RoutedEventArgs e) => await Refresh();
     }
 }

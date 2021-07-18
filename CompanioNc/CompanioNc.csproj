@@ -118,7 +118,7 @@
     </ApplicationDefinition>
     <Compile Include="ViewModels\CurrentPatient.cs" />
     <Compile Include="ViewModels\LogHelper.cs" />
-    <Compile Include="View\FrameLoadCompleteEvent.cs" />
+    <Compile Include="View\FrameMonitor.cs" />
     <Compile Include="ViewModels\Autocomplete_ViewModel.cs" />
     <Compile Include="View\FrameLoadCompleteEventArgs.cs" />
     <Compile Include="View\FrameLoadStates.cs" />

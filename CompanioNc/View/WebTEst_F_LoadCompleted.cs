@@ -122,6 +122,7 @@ namespace CompanioNc.View
                 {
                     if (tab_id_wanted.Contains(hTML.id))
                     {
+                        // 僅將要讀入的排入, 並沒有真的讀取資料
                         VPN_Operation vOP = VPN_Dictionary.Making_new_operation(hTML.id, strUID, DateTime.Now);
                         QueueOperation.Enqueue(vOP);
                         log.Info($"    讀入operation: {vOP.Short_Name}, [{strUID}]");

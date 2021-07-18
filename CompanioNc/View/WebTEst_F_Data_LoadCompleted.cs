@@ -52,11 +52,19 @@ namespace CompanioNc.View
                     // 是否有多tables, 端看tt.Children, 除了管制藥物外, 其餘都不用
                     if (tt.Children == null)
                     {
-                        ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
+                        try
+                        {
+                            // 20210718: 好像就是這裏出了問題
+                            ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, f.getElementById(tt.TargetID).outerHTML, current_op.UID, current_op.QDate));
 
-                        // 20200606 stop recording tables in html
-                        // 20210716 resume recording tables in html
-                        SaveHTML($"{tt.Short_Name}_{current_op.UID}", f.getElementById(tt.TargetID).outerHTML);
+                            // 20200606 stop recording tables in html
+                            // 20210716 resume recording tables in html
+                            SaveHTML($"{tt.Short_Name}_{current_op.UID}", f.getElementById(tt.TargetID).outerHTML);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Error($"  Failed to read html. From:  {tt.Short_Name}. Error: {ex.Message}");
+                        }
                     }
                     else
                     {
