@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>53</ApplicationRevision>
+    <ApplicationRevision>61</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -157,6 +157,7 @@
     <Compile Include="View\WebTEst_F_LoadCompleted.cs" />
     <Compile Include="View\WebTEst_F_Pager_LoadCompleted.cs" />
     <Compile Include="View\WebTEst_MakeSureUID.cs" />
+    <Compile Include="View\WebTEst_Parsing.cs" />
     <Compile Include="View\WebTEst_SaveHTML.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

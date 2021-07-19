@@ -11,7 +11,7 @@ namespace CompanioNc.View
     {
         private string MakeSure_UID(string vpnUID)
         {
-            log.Info($"  Begin to check UID: {vpnUID}");
+            //log.Info($"  Begin to check UID: {vpnUID}");
 
             string thesisUID = string.Empty;
             string thesisNAME = string.Empty;
@@ -117,7 +117,7 @@ namespace CompanioNc.View
                         case 1:
                             // passed test
                             // 這是第三種狀況(1/2)
-                            log.Info($"    VPN有[{vpnUID}], 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
+                            log.Info($"    VPN有[{vpnUID}], 杏翔 異, 資料庫有, 且只有一筆 => 直接從資料庫抓");
                             o = q.Single().uid;
                             break;
 
@@ -140,7 +140,7 @@ namespace CompanioNc.View
                                 }
                                 if (!(int.TryParse(answer, out int result))) answer = "0";
                             }
-                            log.Info("    VPN 有, 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
+                            log.Info($"    VPN有[{vpnUID}], 杏翔 異, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
                             o = q.ToList()[int.Parse(answer) - 1].uid;
                             break;
                     }
@@ -159,14 +159,14 @@ namespace CompanioNc.View
                     case 0:
                         // 這是第四種狀況
                         // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
-                        log.Info("    VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
+                        log.Info($"    VPN有[{vpnUID}], 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
                         o = string.Empty;
                         break;
 
                     case 1:
                         // passed test
                         // 這是第三種狀況(1/2)
-                        log.Info("    VPN 有, 杏翔 無, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
+                        log.Info($"    VPN有[{vpnUID}], 杏翔 無, 資料庫有, 且只有一筆 => 直接從資料庫抓");
                         o = q.Single().uid;
                         break;
 
@@ -189,12 +189,12 @@ namespace CompanioNc.View
                             }
                             if (!(int.TryParse(answer, out int result))) answer = "0";
                         }
-                        log.Info("    VPN 有, 杏翔 無, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
+                        log.Info($"    VPN有[{vpnUID}], 杏翔 無, 資料庫 有, 但有多筆 => 選擇後從資料庫抓");
                         o = q.ToList()[int.Parse(answer) - 1].uid;
                         break;
                 }
             }
-            log.Info($"  End to check UID: {vpnUID}");
+            //log.Info($"  End to check UID: {vpnUID}");
             return o;
         }
     }

@@ -19,6 +19,10 @@ namespace CompanioNc.View
             // 每次作業F_LoadCompleted只會被呼叫一次,沒有被洗掉的情形
             fm.FrameLoadComplete -= F_LoadCompleted;
             log.Info($"@@ delete delegate F_LoadCompleted.");
+
+            // 使用DocumentLoadCompletedButNotFrame, 會造成偶而不動作的症狀, 要找別的方式來處理沒插健保卡的判別
+            // 方法
+
             if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame)
             {
                 // 沒有lbluserID, 例如沒插健保卡
@@ -188,9 +192,9 @@ namespace CompanioNc.View
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
                         log.Info($"@@ Add delegate F_Data_LoadCompleted.");
                         // 20210719 有時候不fire
-                        Thread.Sleep(200);
+                        Thread.Sleep(100);
                         d.getElementById(current_op.TAB_ID).click();
-                        log.Info($"  push TAB {current_op.TAB_ID} Button.");
+                        log.Info($"[Action] push TAB {current_op.TAB_ID} Button.");
                         log.Info($"++ Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
                         return;
                     }

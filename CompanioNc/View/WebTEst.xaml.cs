@@ -66,7 +66,7 @@ namespace CompanioNc.View
             log.Info($" ");
             log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info($"-- add delegate F_LoadCompleted.");
+            log.Info($"@@ add delegate F_LoadCompleted.");
 
             // 20200508 加上此段, 因為如果沒有健保卡, 根本不會觸發F_LoadCompleted.
             // activate hotkeys 0
@@ -101,7 +101,7 @@ namespace CompanioNc.View
             log.Info($" ");
             log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info("-- add delegate F_LoadCompleted.");
+            log.Info("@@ add delegate F_LoadCompleted.");
 
             // deactivate hotkeys 2
             Deactivate_Hotkeys();
@@ -115,7 +115,7 @@ namespace CompanioNc.View
             log.Info($" ");
             log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info("-- add delegate F_LoadCompleted.");
+            log.Info("@@ add delegate F_LoadCompleted.");
             //this.g.Navigate(DEFAULT_URL);
 
             // deactivate hotkeys 2

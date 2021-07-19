@@ -1,5 +1,6 @@
 ﻿using mshtml;
 using System;
+using System.Diagnostics;
 using System.Timers;
 
 namespace CompanioNc.View
@@ -26,6 +27,8 @@ namespace CompanioNc.View
         {
             w = webTEst;
             _interval = Interval;
+            fSTATE = "";
+            dSTATE = "";
 
             this._timer2 = new System.Timers.Timer
             {
@@ -34,7 +37,6 @@ namespace CompanioNc.View
             this._timer2.Elapsed += new System.Timers.ElapsedEventHandler(TimersTimer_Elapsed);
             _timer2.Start();
             log.Info("%%% timer2 for monitoring VPN started.");
-
         }
 
         private void TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -47,20 +49,25 @@ namespace CompanioNc.View
                     // 加event handler
                     HTMLDocument d = (HTMLDocument)w.g.Document;
                     HTMLDocument f = new HTMLDocument();
-                    if (d.frames.length != 0) f = d.frames.item(0).document.body.document;
-                    if ((fSTATE == "loading" || fSTATE == "interactive") && (f.readyState == "complete"))
+                    if (d.frames.length != 0)
                     {
-                        // 20210719: mark this log to simplify logging
-                        // log.Info($"***** frame readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
-                        fSTATE = f?.readyState;
-                        // f is becoming ready
-                        FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                        f = d.frames.item(0).document.body.document;
+                        if ((fSTATE == "loading" || fSTATE == "interactive") && (f.readyState == "complete"))
                         {
-                            Message = FrameLoadStates.FrameLoadCompleted
-                        };
-                        OnFrameLoadComplete(ex);
+                            // 20210719: mark this log to simplify logging
+                            // log.Info($"***** frame readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
+                            //fSTATE = f?.readyState;
+                            // f is becoming ready
+                            FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                            {
+                                Message = FrameLoadStates.FrameLoadCompleted
+                            };
+                            OnFrameLoadComplete(ex);
+                        }
+                        fSTATE = f.readyState;
+                        dSTATE = d.readyState;
                     }
-                    if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
+                    else if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
                     {
                         // 20210719: mark this log to simplify logging
                         // log.Info($"***** document only readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
@@ -72,18 +79,18 @@ namespace CompanioNc.View
                         };
                         OnFrameLoadComplete(ex);
                     }
-                    //Debug.WriteLine($"before fSTATE={fSTATE}");
+                    Debug.WriteLine($"before fSTATE={fSTATE}");
                     dSTATE = d.readyState;
                     fSTATE = f.readyState;
-                    //Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
-                    //Debug.WriteLine($"after fSTATE={fSTATE}");
+                    Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
+                    Debug.WriteLine($"after fSTATE={fSTATE}");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Do nothing
                     // System.Windows.Forms.MessageBox.Show(ex.Message);
                     // log.Error(ex.Message);
-                    //Debug.WriteLine(ex.Message);
+                    Debug.WriteLine(ex.Message);
                 }
             }));
         }
