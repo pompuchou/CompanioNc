@@ -23,20 +23,81 @@ namespace CompanioNc.View
             {
                 log.Info("Hotkey Ctrl-F2 pressed.");
 
-                List<string> strAnswer = new List<string>{"OK.", "Stationary condition.", "For drug refill.", "No specific complaints.",
-                        "No change in clinical picture.", "Satisfied with medication.", "Improved condition.", "Stable mental status.",
-                        "Maintenance phase.", "Nothing particular."};
-                // 先決定一句還是兩句
+                // 20210718 簡單版本, Subjective
+
+                // 決定日期, 有strID就用, 沒有就用今天
+                string D = DateTime.Now.ToShortDateString();
+                if (DateTime.TryParse(m.strID.Content.ToString().Split(' ')[0], out DateTime o)) D = o.ToShortDateString();
+
                 Random crandom = new Random();
-                int n = crandom.Next(2) + 1;
-                int chosen = crandom.Next(10);
-                string output = strAnswer[chosen];
-                if (n == 2)
+                // 1句的機率, 2/3*1*2/3=4/9
+                // 3句的機率, 1/3*1*1/3=1/9
+                // 2句的機率, 4/9
+                // Short sentence
+                // 1/3 機會有這一段
+                int n;
+                string output;
+                List<string> strShort = new List<string>{"OK.", "No specific complaints.", 
+                    "Satisfied with medication.", "Nothing particular.",
+                    "Mostly unchanged since last visit.", "Aloof to inquiry.",
+                    "For drug refill.", "Maintenance phase.",
+                    "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", ""};
+                n = crandom.Next(strShort.Count);
+                output = strShort[crandom.Next(n)];
+
+                // Adjectives
+                List<string> strAdj = new List<string>{"Stationary ", 
+                    "No change in ", "Improved ", 
+                    "Stable ", "Unchanged ",
+                    "Stable ", "Unchanged ",
+                    "Fluctuated ", "Acceptable ", 
+                    "Tolerable ", "Fairly good ", 
+                    "Pretty good ", "Awesome ", 
+                    "Fantastic ", "Uneventful ",
+                    "Stationary ", "Stationary "};
+                n = crandom.Next(strAdj.Count);
+                if (output.Length != 0) output += " ";
+                output += strAdj[crandom.Next(n)];
+
+                // Nouns
+                List<string> strNoun = new List<string>{"condition.", "clinical picture.",
+                    "mental status.", "state.", 
+                    "course.", "situation.", 
+                    "being.", "progress.", 
+                    "psychiatric state.", "circumstance.", 
+                    "condition.", "condition.", 
+                    "mental status.", "clinical picture.", 
+                    "state.", "sate.", 
+                    "mental status.", "clinical picture.", 
+                    "situation.", "condition."};
+                n = crandom.Next(strNoun.Count);
+                output += strNoun[crandom.Next(n)];
+
+                // Ask for
+                // 1/3 有這一段
+                n = crandom.Next(3);
+                if (n == 0)
                 {
-                    strAnswer.Remove(output);
-                    output += " " + strAnswer[crandom.Next(9)];
+                    List<string> strVerb = new List<string>{"Ask for ", "Request for ", 
+                        "Need ", "Keep ", "Continue ", "Carry on ", "Keep on "};
+                    n = crandom.Next(strVerb.Count);
+                    output += $" {strVerb[crandom.Next(n)]}";
+
+                    List<string> strAdj2 = new List<string>{"same ", "the same ",
+                    "present ", "current ", "identical ", "", "", "", "", ""};
+                    n = crandom.Next(strAdj2.Count);
+                    output += strAdj2[crandom.Next(n)];
+
+                    List<string> strNoun2 = new List<string>{"medication.",
+                    "prescription refill.", "prescription.",
+                    "treatment plan.", "drug treatment.",
+                    "drug.", "psychiatric treatment."};
+                    n = crandom.Next(strNoun2.Count);
+                    output += strNoun2[crandom.Next(n)];
                 }
-                output = DateTime.Now.ToShortDateString() + ": " + output + "\n";
+
+                output =  $"{D}: {output}\n";
                 InputSimulator sim = new InputSimulator();
                 sim.Keyboard.TextEntry(output);
             }

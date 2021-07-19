@@ -59,6 +59,5 @@ namespace CompanioNc.View
             this.Background = Brushes.Beige;
 
         }
-
     }
 }

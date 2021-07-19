@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>47</ApplicationRevision>
+    <ApplicationRevision>49</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -134,6 +134,20 @@
     <Compile Include="View\Start_Refresh.cs" />
     <Compile Include="View\VPN_Dictionary.cs" />
     <Compile Include="View\Target_Table.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_Allergy.cs" />
+    <Compile Include="View\VPN_Dictionary_MakeSure2.cs" />
+    <Compile Include="View\VPN_Dictionary_MakeSure3.cs" />
+    <Compile Include="View\VPN_Dictionary_MakingNewOp.cs" />
+    <Compile Include="View\VPN_Dictionary_RunWriteSQL_Async.cs" />
+    <Compile Include="View\VPN_Dictionary_WriteSQL_Async.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_Dental.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_DischargeNote.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_Lab.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_Medicine.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_Operation.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_Rehab.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_ScheduledDrug.cs" />
+    <Compile Include="View\VPN_Dictionary_Write_TCM.cs" />
     <Compile Include="View\VPN_Operation.cs" />
     <Compile Include="View\VPN_Retrieved.cs" />
     <Compile Include="View\WebTEst.xaml.cs">

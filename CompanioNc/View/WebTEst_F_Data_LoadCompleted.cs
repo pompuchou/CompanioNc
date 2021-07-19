@@ -63,6 +63,8 @@ namespace CompanioNc.View
                         }
                         catch (Exception ex)
                         {
+                            // 存入空的HTML
+                            ListRetrieved.Add(new VPN_Retrieved(tt.Short_Name, tt.Header_Want, "", current_op.UID, current_op.QDate));
                             log.Error($"  Failed to read html. From:  {tt.Short_Name}. Error: {ex.Message}");
                         }
                     }

@@ -1,10 +1,8 @@
 ﻿using CompanioNc.Models;
 using CompanioNc.View;
 using CompanioNc.ViewModels;
-using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Deployment.Application;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompanioNc
@@ -26,8 +24,6 @@ namespace CompanioNc
     {
         //private static readonly log4net.ILog log = LogHelper.GetLogger();
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly TaskbarIcon tb = new TaskbarIcon();
         // 20210717 新增 Start s
         private readonly Start s;
 
