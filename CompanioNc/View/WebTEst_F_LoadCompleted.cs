@@ -6,6 +6,7 @@ using System;
 using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompanioNc.View
 {
@@ -13,17 +14,19 @@ namespace CompanioNc.View
     {
         private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            log.Info($"From {e.Message}, this is F_LoadCompleted.");
+            log.Info($"++ Enter F_LoadCompleted from {e.Message}.");
             // 20200509 因為沒有先 -= F_LoadComplted, 造成了幽靈, 因此一定要 -= F_LoadComplted 在任何Exit之前.
             // 每次作業F_LoadCompleted只會被呼叫一次,沒有被洗掉的情形
             fm.FrameLoadComplete -= F_LoadCompleted;
-            log.Info($"Delete delegate F_LoadCompleted.");
+            log.Info($"@@ delete delegate F_LoadCompleted.");
             if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame)
             {
                 // 沒有lbluserID, 例如沒插健保卡
                 // activate hotkeys 1
                 Activate_Hotkeys();
-                log.Info($"Exit F_LoadCompleted (1/5). No NHI card inserted.");
+                log.Info($"++ Exit F_LoadCompleted (1/5). No NHI card inserted.");
+                log.Info("===========================================================================");
+                log.Info($" ");
                 return;
             }
             /// 會有兩次
@@ -33,7 +36,8 @@ namespace CompanioNc.View
             /// 1. 取得身分證字號
             /// 2. 讀取有哪些tab
 
-            log.Info($"Entered F_LoadCompleted");
+            // 20210719: mark this line to simplify logging
+            // log.Info($"Entered F_LoadCompleted");
 
             HTMLDocument d = (HTMLDocument)g.Document;
             // 確定身分證字號
@@ -45,7 +49,9 @@ namespace CompanioNc.View
 
                 // activate hotkeys 2
                 Activate_Hotkeys();
-                log.Info($"Exit F_LoadCompleted (2/5). NHI card inserted but no such person.");
+                log.Info($"++ Exit F_LoadCompleted (2/5). NHI card inserted but no such person.");
+                log.Info("===========================================================================");
+                log.Info($" ");
                 return;
             }
             else
@@ -166,31 +172,33 @@ namespace CompanioNc.View
                     if (d.getElementById(current_op.TAB_ID.Replace("_a_", "_li_")).className == "active")
                     {
                         // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
-                        log.Info($"  add delegate F_Data_LoadCompleted.");
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
+                        log.Info($"@@ Add delegate F_Data_LoadCompleted.");
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
                         {
                             Message = FrameLoadStates.DirectCall
                         };
-                        log.Info($"Exit F_LoadCompleted (3/5). Goto F_Data_LoadCompleted by direct call.");
+                        log.Info($"++ Exit F_LoadCompleted (3/5). Goto F_Data_LoadCompleted by direct call.");
                         F_Data_LoadCompleted(this, ex);
                         return;
                     }
                     else
                     {
                         // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
-                        log.Info($"  push TAB {current_op.TAB_ID} Button.");
-                        log.Info($"  add delegate F_Data_LoadCompleted.");
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
-                        log.Info($"Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
+                        log.Info($"@@ Add delegate F_Data_LoadCompleted.");
+                        // 20210719 有時候不fire
+                        Thread.Sleep(200);
                         d.getElementById(current_op.TAB_ID).click();
+                        log.Info($"  push TAB {current_op.TAB_ID} Button.");
+                        log.Info($"++ Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
                         return;
                     }
                 }
                 else
                 {
-                    /// 做個紀錄
-                    /// 一個都沒有
+                    // 做個紀錄
+                    // 一個都沒有
                     log.Info($"  no record at all.");
                     tb.ShowBalloonTip("沒有資料", "健保資料庫裡沒有資料可讀取", BalloonIcon.Info);
                     // 製作紀錄by rd
@@ -216,7 +224,9 @@ namespace CompanioNc.View
 
                     // activate hotkeys 3
                     Activate_Hotkeys();
-                    log.Info($"Exit F_LoadCompleted (5/5). NHI inserted and verified but completey no data.");
+                    log.Info($"++ Exit F_LoadCompleted (5/5). NHI inserted and verified but completey no data.");
+                    log.Info("===========================================================================");
+                    log.Info($" ");
                 }
 
                 #endregion 執行

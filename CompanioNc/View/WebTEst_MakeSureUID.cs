@@ -36,10 +36,10 @@ namespace CompanioNc.View
             try
             {
                 string[] vs = s.m.strID.Content.ToString().Split(' ');
-                log.Info($"    [{s.m.strID.Content}] being processed.");
                 // 身分證字號在[7], 還要去掉括弧
                 thesisUID = vs[7].Substring(1, (vs[7].Length - 2));
                 thesisNAME = vs[8];
+                log.Info($"    [{s.m.strID.Content}] being processed.");
                 log.Info($"    杏翔系統目前UID: {thesisUID}");
             }
             catch (Exception ex)
@@ -48,7 +48,7 @@ namespace CompanioNc.View
                 /// 杏翔沒開, 或是沒連動, 反正就是抓不到
                 /// thesisUID = string.Empty;
                 /// thesisNAME = string.Empty;
-                log.Error($"    杏翔系統無法取得UID: [{thesisUID}], ERROR:{ex.Message}");
+                log.Error($"    杏翔系統無法取得UID, ERROR:{ex.Message}");
             }
 
             if (!string.IsNullOrEmpty(thesisUID))
@@ -67,7 +67,7 @@ namespace CompanioNc.View
                         string sqlUID = (from p in dc.tbl_patients
                                          where p.uid == thesisUID
                                          select p.uid).Single();
-                        log.Info($"    VPN 有 [{vpnUID}], 杏翔 有 [{thesisUID}], 資料庫 有資料庫裏面也也有: [{sqlUID}]");
+                        log.Info(message: $"    VPN有[{vpnUID}], 杏翔有[{thesisUID}], 資料庫有[{sqlUID}]");
                         // 如果沒有錯誤發生
                         // 此時為第一種狀況
                         /// VPN 有, 杏翔 有, 資料庫 有 => 理想狀況取的正確UID
@@ -111,13 +111,13 @@ namespace CompanioNc.View
                             // 這是第四種狀況
                             // VPN 有, 杏翔 無, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼
                             o = string.Empty;
-                            log.Info("    VPN 有, 杏翔 異, 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
+                            log.Info($"    VPN有[{vpnUID}], 杏翔異[{thesisUID}], 資料庫 無 => 新個案, 不做任何動作, 絕不補中間三碼");
                             break;
 
                         case 1:
                             // passed test
                             // 這是第三種狀況(1/2)
-                            log.Info("    VPN 有, 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
+                            log.Info($"    VPN有[{vpnUID}], 杏翔 異, 資料庫 有, 且只有一筆 => 直接從資料庫抓");
                             o = q.Single().uid;
                             break;
 

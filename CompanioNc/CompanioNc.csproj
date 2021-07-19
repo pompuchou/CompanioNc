@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>49</ApplicationRevision>
+    <ApplicationRevision>53</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -193,7 +193,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ViewModels\Convertors\ValueConverters.cs" />
-    <Compile Include="ViewModels\HotKeyPressed.cs" />
     <Compile Include="ViewModels\Log.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Selectors\MyDataTemplateSelector.cs" />

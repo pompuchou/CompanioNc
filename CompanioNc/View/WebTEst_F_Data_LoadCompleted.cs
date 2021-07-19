@@ -15,12 +15,16 @@ namespace CompanioNc.View
         {
             log.Info($"From {e.Message}, this is F_Data_LoadCompleted.");
             if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame) return;
+
+            // 20210719: 將QDATE設定為1901/1/1, 是傳達這是最後一頁了, 設定在F_Pager_LoadCompleted
             if (current_op?.QDate == DateTime.Parse("1901/01/01"))
             {
-                log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} 最後存入資料庫.");
+                // 不用再讀取資料了, 直接到存入資料庫部分
+                log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} 已經讀完所有資料, 最後存入資料庫.");
             }
             else
             {
+                // 還需要讀取資料
                 log.Info($"Entered F_Data_LoadCompleted, {current_op?.UID} {current_op?.Short_Name}");
             }
             log.Info($"  delete delegate F_Data_LoadComplated. [{current_op?.UID}]");
@@ -41,8 +45,10 @@ namespace CompanioNc.View
 
             // special remark: current_op.QDate set to null 是表示來自多頁結束那裏
 
+            // 20210719: 將QDATE設定為1901/1/1, 是傳達這是最後一頁了, 設定在F_Pager_LoadCompleted
             if ((current_op != null) && (current_op?.QDate != DateTime.Parse("1901/01/01")))
             {
+                // 表示不是最後一頁, 還要讀取資料
                 log.Info($"  1. Reading operation: {current_op.Short_Name}, [{current_op?.UID}]");
 
                 #region 讀取資料, 存入記憶體, 存入檔案
@@ -214,6 +220,8 @@ namespace CompanioNc.View
                 Activate_Hotkeys();
 
                 log.Info($"Exit F_Data_LoadCompleted (2/3). The REAL END! [{current_op.UID}]");
+                log.Info("===========================================================================");
+                log.Info($" ");
                 return;
             }
             else
@@ -230,6 +238,5 @@ namespace CompanioNc.View
                 return;
             }
         }
-
     }
 }

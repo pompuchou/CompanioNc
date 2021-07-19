@@ -63,8 +63,10 @@ namespace CompanioNc.View
         private void WebTEst_Loaded(object sender, RoutedEventArgs e)
         {
             // 漏了 +=, 難怪不fire
+            log.Info($" ");
+            log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info($"  add delegate F_LoadCompleted.");
+            log.Info($"-- add delegate F_LoadCompleted.");
 
             // 20200508 加上此段, 因為如果沒有健保卡, 根本不會觸發F_LoadCompleted.
             // activate hotkeys 0
@@ -96,21 +98,24 @@ namespace CompanioNc.View
             /// 目的: 更新雲端資料, 讀寫雲端資料
             /// 現在可以合併兩個步驟為一個步驟
             /// 想到一個複雜的方式, 不斷利用LoadCompleted
+            log.Info($" ");
+            log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info("add delegate F_LoadCompleted.");
+            log.Info("-- add delegate F_LoadCompleted.");
 
             // deactivate hotkeys 2
             Deactivate_Hotkeys();
 
-            log.Info($"Start to load {VPN_URL} by hotkey.");
-
             this.g.Navigate(VPN_URL);
+            log.Info($"Start to load {VPN_URL} by hotkey.");
         }
 
         public void HotKey_Ctrl_G()
         {
+            log.Info($" ");
+            log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info("add delegate F_LoadCompleted.");
+            log.Info("-- add delegate F_LoadCompleted.");
             //this.g.Navigate(DEFAULT_URL);
 
             // deactivate hotkeys 2

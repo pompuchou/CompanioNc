@@ -40,6 +40,7 @@ namespace CompanioNc.View
 
                 // 20200506: current_op 歸零似乎是不行的
                 //current_op = null;
+                // 20210719: 將QDATE設定為1901/1/1, 是傳達這是最後一頁了, 設定在F_Pager_LoadCompleted
                 current_op.QDate = DateTime.Parse("1901/01/01");
 
                 // 這是沒有用的add delegate, 但是為了平衡, 避免可能的錯誤

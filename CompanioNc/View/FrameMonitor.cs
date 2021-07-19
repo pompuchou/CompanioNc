@@ -33,7 +33,7 @@ namespace CompanioNc.View
             };
             this._timer2.Elapsed += new System.Timers.ElapsedEventHandler(TimersTimer_Elapsed);
             _timer2.Start();
-            log.Info("timer2 for monitoring VPN started.");
+            log.Info("%%% timer2 for monitoring VPN started.");
 
         }
 
@@ -50,7 +50,8 @@ namespace CompanioNc.View
                     if (d.frames.length != 0) f = d.frames.item(0).document.body.document;
                     if ((fSTATE == "loading" || fSTATE == "interactive") && (f.readyState == "complete"))
                     {
-                        log.Info($"***** frame readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
+                        // 20210719: mark this log to simplify logging
+                        // log.Info($"***** frame readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
                         fSTATE = f?.readyState;
                         // f is becoming ready
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
@@ -61,7 +62,8 @@ namespace CompanioNc.View
                     }
                     if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
                     {
-                        log.Info($"***** document only readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
+                        // 20210719: mark this log to simplify logging
+                        // log.Info($"***** document only readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
                         // f is not becoming ready, but d is becoming ready
                         // this is like the situation of no NHI card
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
@@ -118,7 +120,7 @@ namespace CompanioNc.View
                 //
                 _timer2.Stop();
                 _timer2.Dispose();
-                log.Info("timer2 for monitoring VPN stopped.");
+                log.Info("%%% timer2 for monitoring VPN stopped.");
             }
 
             disposed = true;

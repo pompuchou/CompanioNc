@@ -47,8 +47,11 @@ namespace CompanioNc.ViewModels
                 //// (e.g. during debug)
                 version = "debugging, not installed";
             }
-
-            log.Info($"CompanioNc log in, version: {version}.");
+            log.Info($" ");
+            log.Info($"*****************************************");
+            log.Info($"* CompanioNc log in, version: {version}. *");
+            log.Info($"*****************************************");
+            log.Info($" ");
 
             // initially not unplug
             UnPlug = false;
@@ -216,7 +219,7 @@ namespace CompanioNc.ViewModels
                 {
                     // true, which means UNPLUG
                     this._timer1.Stop();
-                    log.Info("timer1 for monitoring Thesis stopped.");
+                    log.Info("%% timer1 for monitoring Thesis stopped.");
                     StrUID = string.Empty;
                     StrID = string.Empty;
                 }
@@ -225,7 +228,7 @@ namespace CompanioNc.ViewModels
                     // false, default value
                     StrUID = string.Empty;
                     StrID = string.Empty;
-                    log.Info("timer1 for monitoring Thesis started by unPlug checkbox.");
+                    log.Info("%% timer1 for monitoring Thesis started by unPlug checkbox.");
                     this._timer1.Start();
                 }
                 OnPropertyChanged("UnPlug");
@@ -408,7 +411,7 @@ namespace CompanioNc.ViewModels
         ~MainVM()  // destructor
         {
             _timer1.Stop();
-            log.Info("timer1 for monitoring Thesis stopped.");
+            log.Info("%% timer1 for monitoring Thesis stopped.");
 
         }
     }

@@ -21,7 +21,8 @@ namespace CompanioNc.View
         {
             if ((e.HotKey.Key == Key.F2) && (e.HotKey.Modifiers == ModifierKeys.Control))
             {
-                log.Info("Hotkey Ctrl-F2 pressed.");
+                // 20210719 mark this line to simplify logging, Reason: 太多了啦
+                // log.Info("Hotkey Ctrl-F2 pressed.");
 
                 // 20210718 簡單版本, Subjective
 
