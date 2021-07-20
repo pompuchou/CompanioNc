@@ -10,7 +10,7 @@ namespace CompanioNc.View
     {
         public static async Task<Response_DataModel> WriteSQL_Async(VPN_Retrieved vr)
         {
-            log.Info($"      Enter WriteSQL_Async {vr.SQL_Tablename} writing.");
+            log.Debug($"      Enter WriteSQL_Async {vr.SQL_Tablename} writing.");
             Response_DataModel output = new Response_DataModel();
             int _count = 0;
 
@@ -113,7 +113,7 @@ namespace CompanioNc.View
                 }
             });
             output.Count = _count;
-            log.Info($"      Exit WriteSQL_Async {vr.SQL_Tablename} writing.");
+            log.Debug($"      Exit WriteSQL_Async {vr.SQL_Tablename} writing.");
             return output;
         }
     }

@@ -11,7 +11,7 @@ namespace CompanioNc.View
     {
         private static int Write_med(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"        Enter Write_med. Current ID: {strUID}.");
+            log.Debug($"        Enter Write_med. Current ID: {strUID}.");
             int count = 0, order_n = 0;
             try
             {
@@ -157,14 +157,14 @@ namespace CompanioNc.View
                         dc.SubmitChanges();
                     }
                 }
-                log.Info($"        Exit Write_med. Current ID: {strUID}.");
+                log.Debug($"        Exit Write_med. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
                 log.Error($"        med of {strUID}, Error: {ex.Message}");
                 log.Error($"        Count: {count}; Order: {order_n}]");
-                log.Info($"        Exit Write_med. Current ID: {strUID}.");
+                log.Debug($"        Exit Write_med. Current ID: {strUID}.");
                 return 0;
             }
         }

@@ -20,15 +20,19 @@ namespace CompanioNc.View
         private readonly int _interval;
         private readonly WebTEst w;
         private readonly System.Timers.Timer _timer2;
-        private string fSTATE; // the readyState of frame(0)
-        private string dSTATE; // the readyState of upmost document 
+        private string old_fSTATE; // the readyState of old frame(0)
+        private string old_dSTATE; // the readyState of old upmost document 
+        private string new_fSTATE; // the readyState of new frame(0)
+        private string new_dSTATE; // the readyState of new upmost document 
 
         public FrameMonitor(WebTEst webTEst, int Interval)
         {
             w = webTEst;
             _interval = Interval;
-            fSTATE = "";
-            dSTATE = "";
+            old_fSTATE = "non-exist";
+            old_dSTATE = "non-exist";
+            new_fSTATE = "non-exist";
+            new_dSTATE = "non-exist";
 
             this._timer2 = new System.Timers.Timer
             {
@@ -51,11 +55,14 @@ namespace CompanioNc.View
                     HTMLDocument f = new HTMLDocument();
                     if (d.frames.length != 0)
                     {
+                        // 有frame
                         f = d.frames.item(0).document.body.document;
-                        if ((fSTATE == "loading" || fSTATE == "interactive") && (f.readyState == "complete"))
+                        new_dSTATE = d.readyState;
+                        new_fSTATE = f.readyState;
+                        if ((old_fSTATE == "loading" || old_fSTATE == "interactive" || old_fSTATE == "non-exist") && (new_fSTATE == "complete"))
                         {
                             // 20210719: mark this log to simplify logging
-                            // log.Info($"***** frame readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
+                            //log.Debug($"***** frame readystate fired; f(old):{old_fSTATE} f(new):{new_fSTATE}; d(old):{old_dSTATE} d(new):{new_dSTATE}. *****");
                             //fSTATE = f?.readyState;
                             // f is becoming ready
                             FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
@@ -64,33 +71,37 @@ namespace CompanioNc.View
                             };
                             OnFrameLoadComplete(ex);
                         }
-                        fSTATE = f.readyState;
-                        dSTATE = d.readyState;
                     }
-                    else if ((dSTATE == "loading" || dSTATE == "interactive") && (d.readyState == "complete"))
+                    else
                     {
-                        // 20210719: mark this log to simplify logging
-                        // log.Info($"***** document only readystate fired; f:{fSTATE}[{f?.readyState}]; d:{dSTATE}[{d.readyState}]. *****");
-                        // f is not becoming ready, but d is becoming ready
-                        // this is like the situation of no NHI card
-                        FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                        new_dSTATE = d.readyState;
+                        new_fSTATE = "non-exist";
+                        if ((old_dSTATE == "loading" || old_dSTATE == "interactive") && (new_dSTATE == "complete"))
                         {
-                            Message = FrameLoadStates.DocumentLoadCompletedButNotFrame
-                        };
-                        OnFrameLoadComplete(ex);
+                            // 20210719: mark this log to simplify logging
+                            //log.Debug($"***** document only readystate fired; f(old):{old_fSTATE} f(new):{new_fSTATE}; d(old):{old_dSTATE} d(new):{new_dSTATE}. *****");
+                            // f is not becoming ready, but d is becoming ready
+                            // this is like the situation of no NHI card
+                            FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
+                            {
+                                Message = FrameLoadStates.DocumentLoadCompletedButNotFrame
+                            };
+                            OnFrameLoadComplete(ex);
+                        }
                     }
-                    Debug.WriteLine($"before fSTATE={fSTATE}");
-                    dSTATE = d.readyState;
-                    fSTATE = f.readyState;
-                    Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
-                    Debug.WriteLine($"after fSTATE={fSTATE}");
+                    //log.Debug($"Before Document:{old_dSTATE}, Frame:{old_fSTATE}; After Document:{new_dSTATE}, Frame:{new_fSTATE}");
+                    old_dSTATE = new_dSTATE;
+                    old_fSTATE = new_fSTATE;
+                    //Debug.WriteLine($"before fSTATE={fSTATE}");
+                    //Debug.WriteLine($"Main: {d.readyState}, Child: {f.readyState}");
+                    //Debug.WriteLine($"after fSTATE={fSTATE}");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Do nothing
                     // System.Windows.Forms.MessageBox.Show(ex.Message);
-                    // log.Error(ex.Message);
-                    Debug.WriteLine(ex.Message);
+                    //log.Error(ex.Message);
+                    //Debug.WriteLine(ex.Message);
                 }
             }));
         }

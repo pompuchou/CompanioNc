@@ -14,11 +14,11 @@ namespace CompanioNc.View
     {
         private void F_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            log.Info($"++ Enter F_LoadCompleted from {e.Message}.");
+            log.Debug($"++ Enter F_LoadCompleted from {e.Message}.");
             // 20200509 因為沒有先 -= F_LoadComplted, 造成了幽靈, 因此一定要 -= F_LoadComplted 在任何Exit之前.
             // 每次作業F_LoadCompleted只會被呼叫一次,沒有被洗掉的情形
             fm.FrameLoadComplete -= F_LoadCompleted;
-            log.Info($"@@ delete delegate F_LoadCompleted.");
+            log.Debug($"@@ delete delegate F_LoadCompleted.");
 
             // 使用DocumentLoadCompletedButNotFrame, 會造成偶而不動作的症狀, 要找別的方式來處理沒插健保卡的判別
             // 方法
@@ -28,7 +28,7 @@ namespace CompanioNc.View
                 // 沒有lbluserID, 例如沒插健保卡
                 // activate hotkeys 1
                 Activate_Hotkeys();
-                log.Info($"++ Exit F_LoadCompleted (1/5). No NHI card inserted.");
+                log.Debug($"++ Exit F_LoadCompleted (1/5). No NHI card inserted.");
                 log.Info("===========================================================================");
                 log.Info($" ");
                 return;
@@ -53,7 +53,7 @@ namespace CompanioNc.View
 
                 // activate hotkeys 2
                 Activate_Hotkeys();
-                log.Info($"++ Exit F_LoadCompleted (2/5). NHI card inserted but no such person.");
+                log.Debug($"++ Exit F_LoadCompleted (2/5). NHI card inserted but no such person.");
                 log.Info("===========================================================================");
                 log.Info($" ");
                 return;
@@ -166,7 +166,7 @@ namespace CompanioNc.View
                     // 流程控制, fm = framemonitor
 
                     // 載入第一個operation
-                    log.Info($"  the first operation loaded.");
+                    //log.Info($"  the first operation loaded.");
                     current_op = QueueOperation.Dequeue();
                     tb.ShowBalloonTip($"開始讀取 [{current_op.UID}]", BalloonTip, BalloonIcon.Info);
 
@@ -177,12 +177,12 @@ namespace CompanioNc.View
                     {
                         // 由於此時沒有按鍵, 因此無法觸發LoadComplete, 必須人工觸發
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
-                        log.Info($"@@ Add delegate F_Data_LoadCompleted.");
+                        log.Debug($"@@ Add delegate F_Data_LoadCompleted.");
                         FrameLoadCompleteEventArgs ex = new FrameLoadCompleteEventArgs()
                         {
                             Message = FrameLoadStates.DirectCall
                         };
-                        log.Info($"++ Exit F_LoadCompleted (3/5). Goto F_Data_LoadCompleted by direct call.");
+                        log.Debug($"++ Exit F_LoadCompleted (3/5). Goto F_Data_LoadCompleted by direct call.");
                         F_Data_LoadCompleted(this, ex);
                         return;
                     }
@@ -190,12 +190,12 @@ namespace CompanioNc.View
                     {
                         // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
                         fm.FrameLoadComplete += F_Data_LoadCompleted;
-                        log.Info($"@@ Add delegate F_Data_LoadCompleted.");
+                        log.Debug($"@@ Add delegate F_Data_LoadCompleted.");
                         // 20210719 有時候不fire
-                        Thread.Sleep(100);
+                        Thread.Sleep(150);
                         d.getElementById(current_op.TAB_ID).click();
                         log.Info($"[Action] push TAB {current_op.TAB_ID} Button.");
-                        log.Info($"++ Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
+                        log.Debug($"++ Exit F_LoadCompleted (4/5). Go to next tab by pushing tab button.");
                         return;
                     }
                 }
@@ -228,7 +228,7 @@ namespace CompanioNc.View
 
                     // activate hotkeys 3
                     Activate_Hotkeys();
-                    log.Info($"++ Exit F_LoadCompleted (5/5). NHI inserted and verified but completey no data.");
+                    log.Debug($"++ Exit F_LoadCompleted (5/5). NHI inserted and verified but completey no data.");
                     log.Info("===========================================================================");
                     log.Info($" ");
                 }

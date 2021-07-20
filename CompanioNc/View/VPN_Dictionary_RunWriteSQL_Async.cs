@@ -13,11 +13,11 @@ namespace CompanioNc.View
 
             foreach (VPN_Retrieved vr in vrs)
             {
-                log.Info($"      Task {vr.SQL_Tablename} of {vr.UID} added");
+                log.Debug($"      Task {vr.SQL_Tablename} of {vr.UID} added");
                 tasks.Add(WriteSQL_Async(vr));
             }
             var output = await Task.WhenAll(tasks);
-
+            
             log.Info($"[End] RunWriteSQL_Async.Current ID: {vrs[0].UID}. Number of tables: {vrs.Count}");
             return new List<Response_DataModel>(output);
         }

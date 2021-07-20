@@ -10,7 +10,7 @@ namespace CompanioNc.View
     {
         private static int Write_sch_re(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"        Enter Write_sch_re. Current ID: {strUID}.");
+            log.Debug($"        Enter Write_sch_re. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_drug = string.Empty, o_YM = string.Empty, drug_name = string.Empty;
@@ -113,14 +113,14 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"        Exit Write_sch_re. Current ID: {strUID}.");
+                log.Debug($"        Exit Write_sch_re. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
                 log.Error($"        SCH_RE of {strUID}, Error: {ex.Message}");
                 log.Error($"        Count: {count}; Order: {order_n}, [{o_drug}]");
-                log.Info($"        Exit Write_sch_re. Current ID: {strUID}.");
+                log.Debug($"        Exit Write_sch_re. Current ID: {strUID}.");
                 return 0;
             }
         }

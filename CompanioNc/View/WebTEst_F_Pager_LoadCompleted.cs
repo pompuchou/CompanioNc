@@ -8,9 +8,9 @@ namespace CompanioNc.View
     {
         private void F_Pager_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            log.Info($"++ Entered F_Pager_LoadCompleted from {e.Message}");
+            log.Debug($"++ Entered F_Pager_LoadCompleted from {e.Message}");
             if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame) return;
-            log.Info($"@@ delete delegate F_Pager_LoadComplated. [{current_op?.UID}]");
+            log.Debug($"@@ delete delegate F_Pager_LoadComplated. [{current_op?.UID}]");
             fm.FrameLoadComplete -= F_Pager_LoadCompleted;
 
             // 每當刷新後都要重新讀一次
@@ -70,12 +70,12 @@ namespace CompanioNc.View
                 current_page = total_pages = 0;
                 // 轉軌
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
-                log.Info($"@@ add delegate F_Data_LoadCompleted. [{current_op.UID}]");
-                Thread.Sleep(100);
+                log.Debug($"@@ add delegate F_Data_LoadCompleted. [{current_op.UID}]");
+                Thread.Sleep(150);
                 // 下一個tab
                 log.Info($"[Action]  {current_op.TAB_ID} tab key pressed.");
                 current_op = QueueOperation.Dequeue();
-                log.Info($"++ Exit F_Pager_LoadCompleted (2/3). last page, go to next tab by clicking. [{current_op.UID}]");
+                log.Debug($"++ Exit F_Pager_LoadCompleted (2/3). last page, go to next tab by clicking. [{current_op.UID}]");
                 d.getElementById(current_op.TAB_ID).click();
                 // 此段程式的一個出口點
                 return;
@@ -88,10 +88,10 @@ namespace CompanioNc.View
                 // 如何下一頁, 可能要用invokescript
                 // 按鈕機制
                 fm.FrameLoadComplete += F_Pager_LoadCompleted;
-                log.Info($"@@ add delegate F_Pager_LoadCompleted. [{current_op.UID}]");
-                Thread.Sleep(100);
+                log.Debug($"@@ add delegate F_Pager_LoadCompleted. [{current_op.UID}]");
+                Thread.Sleep(150);
                 log.Info($"[Action] 下一頁按下去了.(多頁) [{current_op.UID}]");
-                log.Info($"++ Exit F_Pager_LoadCompleted (3/3). go to next page by clicking. [{current_op.UID}]");
+                log.Debug($"++ Exit F_Pager_LoadCompleted (3/3). go to next page by clicking. [{current_op.UID}]");
                 foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
                 {
                     if (a.innerText == ">")

@@ -30,10 +30,10 @@ namespace CompanioNc.View
             ///     4-3. 存入SQL
             ///     4-4. 製作Query
             /// 查核機制?
-            log.Info($"[Start] async process, {current_op?.UID}");
+            log.Debug($"[Start] async process, {current_op?.UID}");
             List<Response_DataModel> rds = await VPN_Dictionary.RunWriteSQL_Async(ListRetrieved);
-            log.Info($"[End] async process, {current_op?.UID}");
-
+            log.Debug($"[End] async process, {current_op?.UID}");
+            
             /// 1. 讀取特殊註記, 如果有的話
             ///    這是在ContentPlaceHolder1_tab02
             ///    是個table
@@ -93,12 +93,12 @@ namespace CompanioNc.View
                 q.tcm_N = tcm_N;
                 dc.tbl_Query2.InsertOnSubmit(q);
                 dc.SubmitChanges();
-                log.Info($"  4. Successfully write into tbl_Query2. From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
+                log.Info($"[Final Step]Successfully write into tbl_Query2. From: {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}]");
                 tb.ShowBalloonTip($"寫入完成 [{current_op?.UID}]", "已寫入資料庫", BalloonIcon.Info);
             }
             catch (Exception ex)
             {
-                log.Error($"  4. Failed to write into tbl_Querry2. From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] Error: {ex.Message}");
+                log.Error($"[Final Step]Failed to write into tbl_Querry2. From:  {ListRetrieved.First().UID}, [{ListRetrieved.First().QDate}] Error: {ex.Message}");
             }
 
             // 更新顯示資料
@@ -110,7 +110,7 @@ namespace CompanioNc.View
             // activate hotkeys 4
             Activate_Hotkeys();
 
-            log.Info(o);
+            log.Debug(o);
             log.Info("===========================================================================");
             log.Info($" ");
 

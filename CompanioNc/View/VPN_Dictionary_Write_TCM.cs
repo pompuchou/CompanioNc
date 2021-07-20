@@ -10,7 +10,7 @@ namespace CompanioNc.View
     {
         private static int Write_tcm_de(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"        Enter Write_tcm_de. Current ID: {strUID}.");
+            log.Debug($"        Enter Write_tcm_de. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_diagnosis = string.Empty, o_NHI_code = string.Empty, o_complex = string.Empty;
@@ -147,13 +147,13 @@ namespace CompanioNc.View
                 }
                 count++;
             }
-            log.Info($"        Exit Write_tcm_de. Current ID: {strUID}.");
+            log.Debug($"        Exit Write_tcm_de. Current ID: {strUID}.");
             return count;
         }
 
         private static int Write_tcm_gr(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"        Enter Write_tcm_gr. Current ID: {strUID}.");
+            log.Debug($"        Enter Write_tcm_gr. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_source = string.Empty, o_diagnosis = string.Empty, o_chronic = string.Empty, o_serial = string.Empty;
@@ -255,7 +255,7 @@ namespace CompanioNc.View
                 }
                 count++;
             }
-            log.Info($"        Exit Write_tcm_gr. Current ID: {strUID}.");
+            log.Debug($"        Exit Write_tcm_gr. Current ID: {strUID}.");
             return count;
         }
     }

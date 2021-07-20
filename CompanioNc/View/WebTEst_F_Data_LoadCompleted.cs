@@ -10,7 +10,7 @@ namespace CompanioNc.View
     {
         private void F_Data_LoadCompleted(object sender, FrameLoadCompleteEventArgs e)
         {
-            log.Info($"++ Enter F_Data_LoadCompleted from {e.Message}.");
+            log.Debug($"++ Enter F_Data_LoadCompleted from {e.Message}.");
             if (e.Message == FrameLoadStates.DocumentLoadCompletedButNotFrame) return;
             // 每當刷新後都要重新讀一次
             // d 是parent HTML document
@@ -24,10 +24,10 @@ namespace CompanioNc.View
             {
                 // 不active反而可以用按鍵, 自動會觸發F_Data_LoadCompleted
                 // 20210719 有時候不fire
-                Thread.Sleep(100);
+                Thread.Sleep(150);
                 d.getElementById(current_op.TAB_ID).click();
                 log.Info($"[Action] push TAB {current_op.TAB_ID} Button.");
-                log.Info($"++ Exit F_Data_LoadCompleted (1/4). Not in the right page, click again.");
+                log.Debug($"++ Exit F_Data_LoadCompleted (1/4). Not in the right page, click again.");
                 return;
             }
             #endregion
@@ -44,7 +44,7 @@ namespace CompanioNc.View
             /// 還需要讀取資料
             log.Info($"Current OP: {current_op?.UID} {current_op?.Short_Name}");
             //}
-            log.Info($"@@ delete delegate F_Data_LoadComplated. [{current_op?.UID}]");
+            log.Debug($"@@ delete delegate F_Data_LoadComplated. [{current_op?.UID}]");
             fm.FrameLoadComplete -= F_Data_LoadCompleted;
 
             // 這時候已經確保是 active
@@ -125,14 +125,14 @@ namespace CompanioNc.View
                     // 按鈕機制
                     fm.FrameLoadComplete += F_Pager_LoadCompleted;
                     // 轉軌
-                    log.Info($"@@ add delegate F_Pager_LoadCompleted.");
-                    Thread.Sleep(100);
+                    log.Debug($"@@ add delegate F_Pager_LoadCompleted.");
+                    Thread.Sleep(150);
                     foreach (IHTMLElement a in f.getElementById("ContentPlaceHolder1_pg_gvList").all)
                     {
                         if (a.innerText == ">")
                         {
                             log.Info("[Action] 按了下一頁.");
-                            log.Info($"++ Exit F_Data_LoadCompleted (2/4). Multipage, go to next page.");
+                            log.Debug($"++ Exit F_Data_LoadCompleted (2/4). Multipage, go to next page.");
                             a.click();
                             // 20200504 發現這裡執行完後還會執行後面的程序, 造成兩個程序的衝突
                             // 此段程式的一個出口點
@@ -158,11 +158,11 @@ namespace CompanioNc.View
                 // 下一個tab
                 current_op = QueueOperation.Dequeue();
                 fm.FrameLoadComplete += F_Data_LoadCompleted;
-                Thread.Sleep(100);
-                log.Info($"@@ add delegate F_Data_LoadCompleted. [{current_op.UID}]");
+                log.Debug($"@@ add delegate F_Data_LoadCompleted. [{current_op.UID}]");
+                Thread.Sleep(150);
                 d.getElementById(current_op.TAB_ID).click();
-                log.Info($"[Action] {current_op.TAB_ID} tab key pressed. [{current_op.UID}]");
-                log.Info($"++ Exit F_Data_LoadCompleted (4/4). Go to next tab. {QueueOperation.Count + 1} tabs to go.. [{current_op.UID}]");
+                log.Debug($"[Action] {current_op.TAB_ID} tab key pressed. [{current_op.UID}]");
+                log.Debug($"++ Exit F_Data_LoadCompleted (4/4). Go to next tab. {QueueOperation.Count + 1} tabs to go.. [{current_op.UID}]");
                 return;
             }
         }

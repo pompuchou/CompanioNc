@@ -1,6 +1,7 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
@@ -66,12 +67,15 @@ namespace CompanioNc.View
             log.Info($" ");
             log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info($"@@ add delegate F_LoadCompleted.");
+            log.Debug($"@@ add delegate F_LoadCompleted.");
 
             // 20200508 加上此段, 因為如果沒有健保卡, 根本不會觸發F_LoadCompleted.
             // activate hotkeys 0
             // 如果我讓它可以觸發的話, 就不用activate hotkeys了
             // Activate_Hotkeys();
+
+            // 20210720 加上延遲
+            Thread.Sleep(150);
 
             log.Info($"Start to load {VPN_URL} not by hotkey.");
             // 20210716: g 是什麼啊?
@@ -101,7 +105,10 @@ namespace CompanioNc.View
             log.Info($" ");
             log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info("@@ add delegate F_LoadCompleted.");
+            log.Debug("@@ add delegate F_LoadCompleted.");
+
+            // 20210720 加上延遲
+            Thread.Sleep(150);
 
             // deactivate hotkeys 2
             Deactivate_Hotkeys();
@@ -115,8 +122,11 @@ namespace CompanioNc.View
             log.Info($" ");
             log.Info("===========================================================================");
             fm.FrameLoadComplete += F_LoadCompleted;
-            log.Info("@@ add delegate F_LoadCompleted.");
+            log.Debug("@@ add delegate F_LoadCompleted.");
             //this.g.Navigate(DEFAULT_URL);
+
+            // 20210720 加上延遲, 理由: 可能delegate還沒登記好, 就已經網頁更新好了
+            Thread.Sleep(150);
 
             // deactivate hotkeys 2
             Deactivate_Hotkeys();

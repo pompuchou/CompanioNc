@@ -11,7 +11,7 @@ namespace CompanioNc.View
     {
         private static int Write_lab(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"        Enter Write_lab. Current ID: {strUID}.");
+            log.Debug($"        Enter Write_lab. Current ID: {strUID}.");
             int count = 0, order_n = 0;
             Com_clDataContext dc = new Com_clDataContext();
             count = 0;
@@ -143,7 +143,7 @@ namespace CompanioNc.View
                     dc.SubmitChanges();
                 }
             }
-            log.Info($"        Exit Write_lab. Current ID: {strUID}.");
+            log.Debug($"        Exit Write_lab. Current ID: {strUID}.");
             return count;
         }
     }

@@ -10,7 +10,7 @@ namespace CompanioNc.View
     {
         private static int Write_op(HtmlDocument html, List<int> header_order, string strUID, DateTime current_date)
         {
-            log.Info($"        Enter Write_op. Current ID: {strUID}.");
+            log.Debug($"        Enter Write_op. Current ID: {strUID}.");
             Com_clDataContext dc = new Com_clDataContext();
             int count = 0;
             string o_source = string.Empty, o_dep = string.Empty, o_diagnosis = string.Empty;
@@ -120,14 +120,14 @@ namespace CompanioNc.View
                     }
                     count++;
                 }
-                log.Info($"        Exit Write_op. Current ID: {strUID}.");
+                log.Debug($"        Exit Write_op. Current ID: {strUID}.");
                 return count;
             }
             catch (Exception ex)
             {
                 log.Error($"        op of {strUID}, Error: {ex.Message}");
                 log.Error($"        Count: {count}; Order: {order_n}, [{o_op_name}]");
-                log.Info($"        Exit Write_op. Current ID: {strUID}.");
+                log.Debug($"        Exit Write_op. Current ID: {strUID}.");
                 return 0;
             }
         }
